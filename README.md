@@ -37,7 +37,7 @@ The automated mod installer will create a folder inside the Half-Life Alyx\game 
 
 ### Manual installation
 
-If you want to install manually, download the repository in zip format and extract the "freeman" folder to your hla\game\ folder and run the game with the parameters below.
+If you want to install manually, download the repository in zip format and extract the "freeman" and "bin" folders to your hla\game\ folder and run \game\bin\win64\hlapatcher.exe.  Then run as below.
 
 ## Running the game
 
