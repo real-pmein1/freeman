@@ -1,0 +1,10 @@
+TESTED UP TO STARTUP - bfeber mod dated 2023-07-16
+--------------------
+
+Freeman			-		bfeber
+Uses 1.2.1		-		Uses 1.5.4
+Uses dll		-		Uses default files
+			-		No mouse movement during logo
+			-		Has text on logo
+Uses setpos_player	-		Uses noclip
+			-		No mouse movement during intro text
