@@ -6,7 +6,7 @@ Convars:RegisterConvar("sv_flashlight_brightness", "2", "Brightness of the flash
 Convars:RegisterConvar("sv_flashlight_shadowtex_size", "128", "The X and Y size of the shadow texture", FCVAR_REPLICATED)
 Convars:RegisterConvar("sv_flashlight_range", "700", "max range of the flashlight", FCVAR_REPLICATED)
 
-local function destroy_flashlight()
+function destroy_flashlight()
 	if flashlight_ent ~= nil and not flashlight_ent:IsNull() then
 		flashlight_ent:Destroy()
 		flashlight_ent = nil
@@ -15,10 +15,14 @@ local function destroy_flashlight()
 	if not flashlight_ent == nil and flashlight_ent:IsNull() then
 		flashlight_ent = nil
 	end
-	EmitSoundOnClient("HL2Player.FlashLightOff",Entities:GetLocalPlayer())
+	--EmitSoundOnClient("HL2Player.FlashLightOff",Entities:GetLocalPlayer())
+	if _G.flashlight_on == 1 then
+		--EmitSoundOnClient("HL2Player.FlashLightOff",player)
+		SendToConsole("play sounds/items/flashlight1")
+	end
 end 
 
-local function create_flashlight()
+function create_flashlight()
 	local player = Entities:GetLocalPlayer()
 
 	local ang = player:EyeAngles()
@@ -70,7 +74,8 @@ local function create_flashlight()
 		flashlight_ent:SetLocalAngles(ang.x, 0, 0)
 		return FrameTime()
 	end, "flashlight_think", 0)
-	EmitSoundOnClient("HL2Player.FlashLightOn",player)
+	--EmitSoundOnClient("HL2Player.FlashLightOn",player)
+	SendToConsole("play sounds/items/flashlight1")
 end 
 
 Convars:RegisterCommand("inv_flashlight", function()

@@ -1,5 +1,5 @@
-TESTED UP TO STARTUP - bfeber mod dated 2023-07-16
---------------------
+TESTED UP TO A2_HEADCRABS_TUNNEL - bfeber mod dated 2023-07-16
+--------------------------------
 
 Freeman			-		bfeber
 Uses 1.2.1		-		Uses 1.5.4
@@ -8,3 +8,40 @@ Uses dll		-		Uses default files
 			-		Has text on logo
 Uses setpos_player	-		Uses noclip
 			-		No mouse movement during intro text
+Uses bugbait x-hair	-		Uses dot x-hair
+Has zoom on mouse3	-		No zoom (is on pistol as upgrade)
+Usable radio		-		Only radio anntenna works
+Proper FOV		-		Wide FOV in game
+			-		Has onscreen tutorial msgs + sound
+			-		Snark food can upside down
+			-		Camera unusable
+			-		Openable washing machines
+Usable washing machines	-
+Usable monitors		-
+Usable light switches	-
+			-		Action too slow at top of stairs
+			-		Smooth ladder climb
+			-		Teleport into elevator shaft
+			-		Teleport into Russell room
+			-		Has heart image on health indicator
+			-		Can grab from distance
+			-		Uses HLA pistol
+			-		Chapter 1 text on world_2
+			-		Cant jump over railings at QZ entrance
+			-		Resin count in yellow
+			-		Highlights toner paths
+			-		Barrel and box collisions
+			-		Has crouch-jump
+			-		Hold E for tank rotation
+			-		Working wrist pockets
+			-		Train door poles easier to pull out
+			-		Working fabricators
+			-		Health stations open without healing if no grub
+			-		Wood breaks on use
+			-		Increased gamma
+			-		Damage is one "loop" not two
+			-		Glass breaks when walking into it
+			-		Floppy disk talks about internet
+			-		16-button puzzle works better
+Bell works		-		Bell stays "pulled"
+Flashlight auto or man	-		Flashlight manual only

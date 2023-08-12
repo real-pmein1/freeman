@@ -5,6 +5,7 @@ if GlobalSys:CommandLineCheck("-novr") then
     DoIncludeScript("flashlight.lua", nil)
     DoIncludeScript("jumpfix.lua", nil)
     DoIncludeScript("wristpockets.lua", nil)
+	--DoIncludeScript("pos.lua", nil)
 
     if player_hurt_ev ~= nil then
         StopListeningToGameEvent(player_hurt_ev)
@@ -310,6 +311,24 @@ if GlobalSys:CommandLineCheck("-novr") then
         local player = Entities:GetLocalPlayer()
 
         if not player:IsUsePressed() then
+			------ PMEIN1 FIND PLAYER POS ----------
+			local playerEnt = Entities:GetLocalPlayer()
+			EmitSoundOnClient("HL2Player.Use", playerEnt)
+			local startVector = playerEnt:EyePosition()
+			local fullpos = string.sub(string.format("%s", startVector),26,-2)
+			local xpos_index = string.find(fullpos, " ")
+			local xpos = tonumber(string.sub(fullpos,0,xpos_index - 1))
+			local ypos_index = string.find(fullpos, " ", xpos_index + 1)
+			local ypos = tonumber(string.sub(fullpos,xpos_index + 1,ypos_index - 1))
+			local zpos = tonumber(string.sub(fullpos,ypos_index + 1,fullpos:len()))
+			--print(fullpos)
+			--print(xpos_index)
+			--print(ypos_index)
+			print("Current x position: " .. xpos)
+			print("Current y position: " .. ypos)
+			print("Current z position: " .. zpos)
+			local map = GetMapName()
+			---------------------------------------
             player:Attribute_SetIntValue("use_released", 0)
             DoEntFire("!picker", "RunScriptFile", "check_useextra_distance", 0, nil, nil)
 
@@ -474,12 +493,101 @@ if GlobalSys:CommandLineCheck("-novr") then
             if GetMapName() == "a1_intro_world" then
                 if vlua.find(Entities:FindAllInSphere(Vector(648,-1757,-141), 10), player) then
                     ClimbLadder(-64)
-                elseif vlua.find(Entities:FindAllInSphere(Vector(530,-2331,-84), 20), player) then
-                    ClimbLadderSound()
-                    SendToConsole("fadein 0.2")
-                    SendToConsole("setpos_exact 574 -2328 -130")
-                    SendToConsole("ent_fire 563_vent_door DisablePickup")
-                    SendToConsole("-use")
+                --elseif vlua.find(Entities:FindAllInSphere(Vector(530,-2331,-84), 20), player) then
+                    --ClimbLadderSound()
+                    --SendToConsole("fadein 0.2")
+                    --SendToConsole("setpos_exact 574 -2328 -130")
+                    --SendToConsole("ent_fire 563_vent_door DisablePickup")
+                    --SendToConsole("-use")
+                end
+				
+                local startVector = player:EyePosition()
+                local traceTable =
+                {
+                    startpos = startVector;
+                    endpos = startVector + RotatePosition(Vector(0,0,0), player:GetAngles(), Vector(100, 0, 0));
+                    ignore = player;
+                    mask =  33636363
+                }
+            
+				local startVectorAngle = playerEnt:EyeAngles()
+				local eyeangle = string.sub(string.format("%s", startVectorAngle),26,-2)
+				local xang_index = string.find(eyeangle, " ")
+				local xang = tonumber(string.sub(eyeangle,0,xang_index - 1))
+				local yang_index = string.find(eyeangle, " ", xang_index + 1)
+				local yang = tonumber(string.sub(eyeangle,xang_index + 1,yang_index - 1))
+				local zang = tonumber(string.sub(eyeangle,yang_index + 1,eyeangle:len()))
+				print(xang)
+				
+                TraceLine(traceTable)
+            
+                if traceTable.hit 
+                then
+					local class = traceTable.enthit:GetClassname()
+					local name = traceTable.enthit:GetName()
+					local model = traceTable.enthit:GetModelName()
+					local player = Entities:GetLocalPlayer()
+					print("Class: " .. class)
+					print("Name: " .. name)
+					print("Model: " .. model)
+					
+					local nearest_commentary_node = Entities:FindByClassnameNearest("logic_branch", startVector, 50)
+					print(nearest_commentary_node:GetName())
+					
+                    local ent = Entities:FindByClassnameNearest("func_physical_button", traceTable.pos, 10)
+                    if ent and ent:Attribute_GetIntValue("used", 0) == 0 then
+                        ent:FireOutput("OnIn", nil, nil, nil, 0)
+                        ent:Attribute_SetIntValue("used", 1)
+                        StartSoundEventFromPosition("Button_Basic.Press", player:EyePosition())
+                    end
+					local branch_screen_up_right = Entities:FindByNameNearest("branch_screen_up_right", startVector, 30)
+					local branch_screen_up_left = Entities:FindByNameNearest("branch_screen_up_left", startVector, 30)
+					local branch_screen_lower_right = Entities:FindByNameNearest("branch_screen_lower_right", startVector, 30)
+					local branch_screen_left_lower = Entities:FindByNameNearest("branch_screen_left_lower", startVector, 40)
+					local sw_205_6591_switch_handpose_branch = Entities:FindByNameNearest("205_6591_switch_handpose_branch", startVector, 45)
+					local sw_205_6594_switch_handpose_branch = Entities:FindByNameNearest("205_6594_switch_handpose_branch", startVector, 60)
+					local sw_273_3640_ispowered = Entities:FindByNameNearest("273_3640_ispowered", startVector, 40)
+					local sw_273_3641_ispowered = Entities:FindByNameNearest("273_3641_ispowered", startVector, 40)
+					local sw_273_3642_ispowered = Entities:FindByNameNearest("273_3642_ispowered", startVector, 40)
+					local sw_273_3825_ispowered = Entities:FindByNameNearest("273_3825_ispowered", startVector, 40)
+					if branch_screen_up_right and (xang < 0.2 and xang > -2.7) then
+						SendToConsole("ent_fire branch_screen_up_right toggletest")
+					elseif branch_screen_lower_right and xang > 18 then
+						SendToConsole("ent_fire branch_screen_lower_right toggletest")
+					elseif branch_screen_up_left and xang < 32 then
+						SendToConsole("ent_fire branch_screen_up_left toggletest")
+					elseif branch_screen_left_lower and xang > 41 then
+						SendToConsole("ent_fire branch_screen_left_lower toggletest")
+					elseif sw_205_6591_switch_handpose_branch then
+						if Storage:LoadBoolean("sw_205_6591_switch_off") then
+							SendToConsole("ent_fire 205_6591_switch_on_relay trigger")
+							Storage:SaveBoolean("sw_205_6591_switch_off", false)
+						else
+							SendToConsole("ent_fire 205_6591_switch_off_relay trigger")
+							Storage:SaveBoolean("sw_205_6591_switch_off", true)
+						end
+					elseif sw_205_6594_switch_handpose_branch then
+						if Storage:LoadBoolean("sw_205_6594_switch_off") then
+							SendToConsole("ent_fire 205_6594_switch_on_relay trigger")
+							Storage:SaveBoolean("sw_205_6594_switch_off", false)
+						else
+							SendToConsole("ent_fire 205_6594_switch_off_relay trigger")
+							Storage:SaveBoolean("sw_205_6594_switch_off", true)
+						end
+					elseif sw_273_3640_ispowered and model == "" then
+						SendToConsole("ent_fire 273_3640_snd_switch startsound")
+						SendToConsole("ent_fire 273_3640_ispowered test")
+					elseif sw_273_3641_ispowered and model == "" then
+						SendToConsole("ent_fire 273_3641_snd_switch startsound")
+						SendToConsole("ent_fire 273_3641_ispowered test")
+					elseif sw_273_3642_ispowered and model == "" then
+						SendToConsole("ent_fire 273_3642_snd_switch startsound")
+						SendToConsole("ent_fire 273_3642_ispowered test")
+					elseif sw_273_3825_ispowered and model == "" then
+						SendToConsole("ent_fire 273_3825_snd_switch startsound")
+						SendToConsole("ent_fire 273_3825_ispowered test")
+					end
+				--else
                 end
             end
 
@@ -505,6 +613,25 @@ if GlobalSys:CommandLineCheck("-novr") then
 
     player_spawn_ev = ListenToGameEvent('player_activate', function(info)
         if not IsServer() then return end
+		
+		------ PMEIN1 FIND PLAYER POS ----------
+		local playerEnt = Entities:GetLocalPlayer()
+		EmitSoundOnClient("HL2Player.Use", playerEnt)
+		local startVector = playerEnt:EyePosition()
+		local fullpos = string.sub(string.format("%s", startVector),26,-2)
+		local xpos_index = string.find(fullpos, " ")
+		local xpos = tonumber(string.sub(fullpos,0,xpos_index - 1))
+		local ypos_index = string.find(fullpos, " ", xpos_index + 1)
+		local ypos = tonumber(string.sub(fullpos,xpos_index + 1,ypos_index - 1))
+		local zpos = tonumber(string.sub(fullpos,ypos_index + 1,fullpos:len()))
+		--print(fullpos)
+		--print(xpos_index)
+		--print(ypos_index)
+		print("Current x position: " .. xpos)
+		print("Current y position: " .. ypos)
+		print("Current z position: " .. zpos)
+		local map = GetMapName()
+		---------------------------------------
 
         local loading_save_file = false
         local ent = Entities:FindByClassname(ent, "player_speedmod")
@@ -516,17 +643,23 @@ if GlobalSys:CommandLineCheck("-novr") then
 
         SendToConsole("mouse_pitchyaw_sensitivity " .. MOUSE_SENSITIVITY)
         SendToConsole("snd_remove_soundevent HL2Player.UseDeny")
+		
+		--if GetMapName() == "a1_intro_world_2" then
+		SendToConsole('ent_remove position_script')
+		SendToConsole('ent_create logic_script {"targetname" "position_script" "origin" "0 0 0" "vscripts" "player_pos.lua"')
+		--end
 
         if GetMapName() == "startup" then
             SendToConsole("sv_cheats 1")
             SendToConsole("hidehud 96")
             SendToConsole("mouse_disableinput 1")
             SendToConsole("bind " .. PRIMARY_ATTACK .. " +use")
+			SendToConsole("fov_desired 80")
             if not loading_save_file then
                 SendToConsole("ent_fire player_speedmod ModifySpeed 0")
                 SendToConsole("setpos 0 -6154 6.473839")
                 ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="140 140 140", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=10, ["x"]=-1, ["y"]=2})
-                DoEntFireByInstanceHandle(ent, "SetText", "NoVR by GB_2 Development Team", 0, nil, nil)
+                --DoEntFireByInstanceHandle(ent, "SetText", "NoVR by GB_2 Development Team", 0, nil, nil)
                 DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
             else
                 GoToMainMenu()
@@ -555,6 +688,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. CROUCH .. " +iv_duck")
             SendToConsole("bind " .. SPRINT .. " +iv_sprint")
             SendToConsole("bind " .. PAUSE .. " pause")
+			SendToConsole("bind c ent_messages")
             SendToConsole("hl2_sprintspeed 140")
             SendToConsole("hl2_normspeed 140")
             SendToConsole("r_drawviewmodel 0")
@@ -585,7 +719,10 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("ent_fire *_van_door_* DisablePickup")
             SendToConsole("ent_fire *_cage_door_* DisablePickup")
             SendToConsole("ent_fire firedoor DisablePickup")
-            SendToConsole("ent_remove player_flashlight")
+			if Entities:FindByName(nil, "player_flashlight") then
+				SendToConsole("ent_remove player_flashlight")
+				SendToConsole("inv_flashlight")
+			end
             SendToConsole("hl_headcrab_deliberate_miss_chance 0")
             SendToConsole("headcrab_powered_ragdoll 0")
             SendToConsole("combine_grenade_timer 4")
@@ -750,7 +887,8 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("ent_create env_message { targetname text_smg_upgrade_aimdownsights message SMG_UPGRADE_AIMDOWNSIGHTS }")
 
             SendToConsole("ent_remove text_resin")
-            SendToConsole("ent_create game_text { targetname text_resin effect 2 spawnflags 1 color \"255 220 0\" color2 \"92 107 192\" fadein 0 fadeout 0.15 fxtime 0.25 holdtime 5 x 0.02 y -0.16 }")
+            --SendToConsole("ent_create game_text { targetname text_resin effect 2 spawnflags 1 color \"255 220 0\" color2 \"92 107 192\" fadein 0 fadeout 0.15 fxtime 0.25 holdtime 5 x 0.02 y -0.16 }")
+			SendToConsole("ent_create game_text { targetname text_resin effect 2 spawnflags 1 color \"83 199 198\" color2 \"92 107 192\" fadein 0 fadeout 0.15 fxtime 0.25 holdtime 5 x 0.02 y -0.16 }")
 			
             WristPockets_StartupPreparations()
             WristPockets_CheckPocketItemsOnLoading(Entities:GetLocalPlayer(), loading_save_file)
@@ -800,7 +938,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                     SendToConsole("ent_create env_message { targetname text_gg message GRAVITYGLOVES }")
                     SendToConsole("ent_create env_message { targetname text_shoot message SHOOT }")
 
-                    SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
+                    --SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
                 end
 
                 ent = Entities:GetLocalPlayer()
@@ -1112,6 +1250,7 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("setang_exact 0.4 0 0")
         SendToConsole("mouse_disableinput 0")
         SendToConsole("hidehud 96")
+		SendToConsole("fov_desired 90")
     end
 
     function MoveFreely(a, b)

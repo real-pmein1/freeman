@@ -1,5 +1,17 @@
 DoIncludeScript("bindings.lua", nil)
 
+------ PMEIN1 FIND PLAYER POS ----------
+local playerEnt = Entities:GetLocalPlayer()
+EmitSoundOnClient("HL2Player.Use", playerEnt)
+local startVector = playerEnt:EyePosition()
+local fullpos = string.sub(string.format("%s", startVector),26,-2)
+local xpos_index = string.find(fullpos, " ")
+local xpos = tonumber(string.sub(fullpos,0,xpos_index - 1))
+local ypos_index = string.find(fullpos, " ", xpos_index + 1)
+local ypos = tonumber(string.sub(fullpos,xpos_index + 1,ypos_index - 1))
+local zpos = tonumber(string.sub(fullpos,ypos_index + 1,fullpos:len()))
+----------------------------------------
+
 local map = GetMapName()
 local class = thisEntity:GetClassname()
 local name = thisEntity:GetName()
@@ -497,11 +509,13 @@ if name == "microphone" or name == "call_button_prop" or model == "maps/a1_intro
 end
 
 if name == "205_2653_door" or name == "205_2653_door2" or name == "205_8018_button_pusher_prop" then
-    SendToConsole("ent_fire debug_roof_elevator_call_relay trigger")
+    --SendToConsole("ent_fire debug_roof_elevator_call_relay trigger")
+	SendToConsole("ent_fire 205_8018_button_branch test")
 end
 
 if name == "205_8032_button_pusher_prop" then
-    SendToConsole("ent_fire debug_elevator_relay trigger")
+    --SendToConsole("ent_fire debug_elevator_relay trigger")
+	SendToConsole("ent_fire 205_8032_button_branch test")
 end
 
 if model == "models/props/eli_manor/antique_globe01a.vmdl" then
@@ -532,8 +546,34 @@ if vlua.find(model, "models/props/c17/antenna01") then
     thisEntity:ApplyLocalAngularVelocityImpulse(Vector(0,0,-2000))
 end
 
+if name == "205_4130_alyx_radio_antenna" then
+	SendToConsole("ent_fire 205_4130_relay_start_radio trigger")
+	Storage:SaveBoolean("radio_antenna_raised", true)
+	Storage:SaveString("radio_station", "d")
+end
+
+if map == "a1_intro_world" and Storage:LoadBoolean("radio_antenna_raised") then
+	if ((xpos > -260 and xpos < -211) and (ypos > 1970 and ypos < 2002)) then
+		SendToConsole("ent_fire 205_4130_alyx_radio enablereturntocompletion")
+		if Storage:LoadString("radio_station") == "d" then
+			SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0.23")
+			Storage:SaveString("radio_station", "a")
+		elseif Storage:LoadString("radio_station") == "a" then
+			SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0.53")
+			Storage:SaveString("radio_station", "b")
+		elseif Storage:LoadString("radio_station") == "b" then
+			SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0.83")
+			Storage:SaveString("radio_station", "c")
+		elseif Storage:LoadString("radio_station") == "c" then
+			SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0")
+			Storage:SaveString("radio_station", "d")
+		end
+	end
+end
+
 if name == "979_518_button_pusher_prop" then
-    SendToConsole("ent_fire debug_choreo_start_relay trigger")
+    --SendToConsole("ent_fire debug_choreo_start_relay trigger")
+	SendToConsole("ent_fire counter_button_press setvalue 1")
 end
 
 
@@ -561,9 +601,10 @@ if vlua.find(name, "mailbox") and vlua.find(model, "door") then
 end
 
 if name == "russell_entry_window" then
-    SendToConsole("fadein 0.2")
-    SendToConsole("ent_fire russell_entry_window SetCompletionValue 1")
-    SendToConsole("setpos -1728 275 100")
+--    SendToConsole("fadein 0.2")
+--    SendToConsole("ent_fire russell_entry_window SetCompletionValue 1")
+--    SendToConsole("setpos -1728 275 100")
+	SendToConsole("ent_fire russell_entry_window setreturntocompletionamount 1;ent_fire russell_entry_window setreturntocompletionstyle 2;ent_fire russell_entry_window enablereturntocompletion")
 end
 
 if vlua.find(model, "models/props/interior_furniture/interior_furniture_cabinet_002_door_") then
@@ -597,6 +638,17 @@ end
 
 if model == "models/props/distillery/firebox_1_door_a.vmdl" then
     thisEntity:ApplyLocalAngularVelocityImpulse(Vector(0,0,2000))
+end
+
+
+---------- a2_hideout ----------
+
+if map == "a2_hideout" then
+	local playerEnt = Entities:GetLocalPlayer()
+	local startVector = playerEnt:EyePosition()
+	ent = Entities:FindByNameNearest("bell", startVector, 40)
+	SendToConsole("ent_fire bell setreturntocompletionstyle 0")
+	SendToConsole("ent_fire bell enablereturntocompletion;ent_fire bell setreturntocompletionamount 1;ent_fire bell setreturntocompletionamount 0 1")
 end
 
 

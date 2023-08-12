@@ -1,0 +1,13 @@
+TESTED UP TO A2_HEADCRABS_TUNNEL - bfeber mod dated 2023-07-16
+--------------------------------
+
+Freeman merged into bfeber:
+
+Removed text on intro logo
+Added usable radio
+Fixed FOV for menu and altered for in-game
+Added usable washing machines
+Added usable monitors
+Added usable light switches
+Enabled bell to be used multiple times
+Added automatic flashlight
