@@ -4,8 +4,9 @@ TESTED UP TO A3_HOTEL_LOBBY_BASEMENT - bfeber mod dated 2023-07-16
 Freeman merged into bfeber:
 
 Removed text on intro logo
-Added usable radio
 Fixed FOV for menu and altered for in-game
+Added usable radio
+Changed rooftop elevator call/floor buttons from debug commands to button presses
 Added usable washing machines
 Added usable monitors
 Added usable light switches
