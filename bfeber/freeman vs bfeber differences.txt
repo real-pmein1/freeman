@@ -1,4 +1,4 @@
-TESTED UP TO A2_HEADCRABS_TUNNEL - bfeber mod dated 2023-07-16
+TESTED UP TO A3_HOTEL_LOBBY_BASEMENT - bfeber mod dated 2023-07-16
 --------------------------------
 
 Freeman			-		bfeber
@@ -45,3 +45,8 @@ Usable light switches	-
 			-		16-button puzzle works better
 Bell works		-		Bell stays "pulled"
 Flashlight auto or man	-		Flashlight manual only
+Button color in Term'l	-		Not correct color
+Hotel entry works	-		Needs pressing on window
+Lobby piano speech	-		Lobby piano does nothing
+Lobby power better	-		Simple power on only
+			-		Xen grenades work

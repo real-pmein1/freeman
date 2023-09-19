@@ -7,6 +7,9 @@ Convars:RegisterConvar("sv_flashlight_shadowtex_size", "128", "The X and Y size 
 Convars:RegisterConvar("sv_flashlight_range", "700", "max range of the flashlight", FCVAR_REPLICATED)
 
 function destroy_flashlight()
+	if Entities:FindByName(nil, "player_flashlight") then
+		SendToConsole("play sounds/items/flashlight1")
+	end
 	if flashlight_ent ~= nil and not flashlight_ent:IsNull() then
 		flashlight_ent:Destroy()
 		flashlight_ent = nil
@@ -16,10 +19,9 @@ function destroy_flashlight()
 		flashlight_ent = nil
 	end
 	--EmitSoundOnClient("HL2Player.FlashLightOff",Entities:GetLocalPlayer())
-	if _G.flashlight_on == 1 then
+	--if _G.flashlight_on == 1 then
 		--EmitSoundOnClient("HL2Player.FlashLightOff",player)
-		SendToConsole("play sounds/items/flashlight1")
-	end
+	--end
 end 
 
 function create_flashlight()

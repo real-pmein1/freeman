@@ -648,6 +648,14 @@ if GlobalSys:CommandLineCheck("-novr") then
 		SendToConsole('ent_remove position_script')
 		SendToConsole('ent_create logic_script {"targetname" "position_script" "origin" "0 0 0" "vscripts" "player_pos.lua"')
 		--end
+		
+		if FLASHLIGHT == "" then
+		    print("AUTO FLASHLIGHT ENABLED")
+			playerEnt:Attribute_SetIntValue("auto_flashlight", 1)
+		else
+		    print("AUTO FLASHLIGHT DISABLED")
+			playerEnt:Attribute_SetIntValue("auto_flashlight", 0)
+		end
 
         if GetMapName() == "startup" then
             SendToConsole("sv_cheats 1")
@@ -688,6 +696,8 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. CROUCH .. " +iv_duck")
             SendToConsole("bind " .. SPRINT .. " +iv_sprint")
             SendToConsole("bind " .. PAUSE .. " pause")
+			--SendToConsole("bind " .. FLASHLIGHT .. " \"\"")
+			SendToConsole("unbind " .. FLASHLIGHT)
 			SendToConsole("bind c ent_messages")
             SendToConsole("hl2_sprintspeed 140")
             SendToConsole("hl2_normspeed 140")
@@ -1033,7 +1043,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                     end
 
                     ent = Entities:GetLocalPlayer()
-                    if ent:Attribute_GetIntValue("has_flashlight", 0) == 1 then
+                    if (ent:Attribute_GetIntValue("has_flashlight", 0) == 1) and (ent:Attribute_GetIntValue("auto_flashlight", 1) == 0) then
                         SendToConsole("bind " .. FLASHLIGHT .. " inv_flashlight")
                     end
                 elseif GetMapName() == "a2_hideout" then
@@ -1049,7 +1059,9 @@ if GlobalSys:CommandLineCheck("-novr") then
                         ent:RedirectOutput("OnTrigger", "ShowCrouchJumpTutorial", ent)
                     end
                 else
-                    SendToConsole("bind " .. FLASHLIGHT .. " inv_flashlight")
+                    if Entities:GetLocalPlayer():Attribute_GetIntValue("auto_flashlight", 1) == 0 then
+                        SendToConsole("bind " .. FLASHLIGHT .. " inv_flashlight")
+					end
 
                     if GetMapName() == "a2_drainage" then
                         if not loading_save_file then
@@ -1164,7 +1176,7 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                             if Entities:GetLocalPlayer():Attribute_GetIntValue("eavesdropping", 0) == 1 then
                                 SendToConsole("bind " .. PRIMARY_ATTACK .. " \"\"")
-                                SendToConsole("bind " .. FLASHLIGHT .. " \"\"")
+                                --SendToConsole("bind " .. FLASHLIGHT .. " \"\"")
                             end
 
                             if not loading_save_file then
@@ -1222,7 +1234,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                         elseif GetMapName() == "a5_ending" then
                             SendToConsole("ent_remove weapon_pistol;ent_remove weapon_shotgun;ent_remove weapon_ar2;ent_remove weapon_smg1")
                             SendToConsole("r_drawviewmodel 0")
-                            SendToConsole("bind " .. FLASHLIGHT .. " \"\"")
+                            --SendToConsole("bind " .. FLASHLIGHT .. " \"\"")
 
                             ent = Entities:FindByName(nil, "relay_advisor_void")
                             ent:RedirectOutput("OnTrigger", "GiveAdvisorVortEnergy", ent)

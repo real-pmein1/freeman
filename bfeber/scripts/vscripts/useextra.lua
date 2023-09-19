@@ -855,10 +855,10 @@ if map == "a3_hotel_interior_rooftop" and name == "window_sliding1" then
     end, "", 0)
 end
 
-if name == "2860_window_sliding1" then
-    SendToConsole("fadein 0.2")
-    SendToConsole("setpos_exact 1437 -1422 140")
-end
+--if name == "2860_window_sliding1" then
+--    SendToConsole("fadein 0.2")
+--    SendToConsole("setpos_exact 1437 -1422 140")
+--end
 
 if map == "a3_station_street" then
     if name == "power_stake_1_start" then
@@ -869,7 +869,10 @@ end
 
 if name == "2_11128_cshield_station_prop_button" and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
     thisEntity:Attribute_SetIntValue("used", 1)
-    SendToConsole("ent_fire 2_11128_cshield_station_relay_button_pressed Trigger")
+    SendToConsole("ent_fire 2_11128_cshield_station_prop_button setanimation button_press")
+    SendToConsole("ent_fire 2_11128_cshield_station_relay_button_pressed trigger")
+    SendToConsole("ent_fire 2_11128_cshield_station_prop_button setbodygroup button_state,1")
+    SendToConsole("ent_fire 2_11128_cshield_station_snd_button_pushed startsound")
 end
 
 if name == "2_11128_cshield_station_1" and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
@@ -1150,9 +1153,11 @@ end
 if map == "a2_headcrabs_tunnel" then
     if name == "flashlight" then
         SendToConsole("ent_fire_output flashlight OnAttachedToHand")
-        SendToConsole("bind " .. FLASHLIGHT .. " inv_flashlight")
+        --SendToConsole("bind " .. FLASHLIGHT .. " inv_flashlight")
         player:Attribute_SetIntValue("has_flashlight", 1)
         SendToConsole("ent_remove flashlight")
+		create_flashlight()
+		_G.flashlight_on = "1"
     end
 end
 
@@ -1169,9 +1174,26 @@ end
 
 if map == "a3_hotel_lobby_basement" then
     if name == "power_stake_1_start" and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
-        SendToConsole("ent_fire_output power_logic_enable_lights OnTrigger")
-        SendToConsole("ent_fire_output toner_path_11 OnPowerOn")
+        --SendToConsole("ent_fire_output power_logic_enable_lights OnTrigger")
+        --SendToConsole("ent_fire_output toner_path_11 OnPowerOn")
+        --player:Attribute_SetIntValue("EnabledHotelLobbyPower", 1)
+		SendToConsole("ent_fire power_stake_1_start disable")
+		--SendToConsole("ent_fire toner_path_6_complete trigger")
+		--SendToConsole("ent_fire toner_path_6_relay_power_on trigger")
+		SendToConsole("ent_fire_output toner_path_6 OnPowerOn")
+		SendToConsole("ent_fire power_logic_enable_lights trigger")
+		SendToConsole("ent_fire toner_path_lights_status_light_1 skin 2")
+		player:Attribute_SetIntValue("EnabledHotelLobbyPowerP1", 1)
+	elseif name == "power_stake_2_start" and thisEntity:Attribute_GetIntValue("used", 0) == 0  and player:Attribute_GetIntValue("EnabledHotelLobbyPowerP1", 0) == 1 then
+		SendToConsole("ent_fire power_stake_2_start disable")
+		SendToConsole("ent_fire_output toner_path_9 onpoweron")
+		SendToConsole("ent_fire_output toner_path_11 onpoweron")
+		SendToConsole("ent_fire path_11_panel_event_light_1 skin 1")
         player:Attribute_SetIntValue("EnabledHotelLobbyPower", 1)
+	elseif class == "hlvr_piano_key_model" and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
+		SendToConsole("play sounds/items/halls_of_alyx")
+		SendToConsole("ent_fire piano_played_followup trigger")
+        thisEntity:Attribute_SetIntValue("used", 1)
     end
 end
 
