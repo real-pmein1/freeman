@@ -1,4 +1,4 @@
-TESTED UP TO A3_HOTEL_LOBBY_BASEMENT - bfeber mod dated 2023-07-16
+TESTED UP TO A3_HOTEL_INTERIOR_ROOFTOP - bfeber mod dated 2023-08-02
 --------------------------------
 
 Freeman merged into bfeber:
@@ -14,17 +14,20 @@ Removed "use-to-teleport" and added auto-teleport on:
 	Elevator shaft in a1_intro_world_2
 	Russell's hideout apartment window in a1_intro_world_2
 	Entry window to the Northern Star in a3_station_street
+	Upper window in the Northen Star in a3_hotel_interior_rooftop
 Enabled bell to be used multiple times
 Added automatic flashlight (includes constant position monitoring)
 Added manual/auto toggle via the bindings.lua file (assign letter to toggle manual on, remove for auto)
 Fixed flashlight power off sound
-Corrected the Combine shield button in Terminal Gardens
+Fixed the Combine shield button in Terminal Gardens
 Added breaking sound to Northern Star window entry when the window closes
 Added location-based lobby piano speech
 Added played lobby piano speech
 Added "halls of alyx", played when using the lobby piano (Alyx's rendition of Portal 2's Halls of Science 4 theme)
 Extended the lobby power up sequence to include the power stake at the elevator
 Added extra lights to the lobby power up sequence
+Added button depress animation to the hotel/Terminal Gardens elevator
+Fixed "zombieparty" window
 
 
 MOST IMPORTANT TO DO:
