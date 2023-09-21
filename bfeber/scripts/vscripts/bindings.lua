@@ -21,5 +21,6 @@ MAIN_MENU         = "M"
 PAUSE             = "P"
 NOCLIP            = "V"
 CONSOLE           = "~"
+NOTARGET          = "N"
 --FOV               = 90.0
 FOV               = 55.0

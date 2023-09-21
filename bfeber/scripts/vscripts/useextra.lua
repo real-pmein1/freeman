@@ -852,8 +852,9 @@ if class == "prop_dynamic" then
 end
 
 if map == "a3_hotel_interior_rooftop" and name == "window_sliding1" then
-    SendToConsole("fadein 0.2")
-    SendToConsole("setpos_exact 788 -1420 576")
+	SendToConsole("ent_fire zombieparty_window_slideconstraint setoffset 1")
+    --SendToConsole("fadein 0.2")
+    --SendToConsole("setpos_exact 788 -1420 576")
     SendToConsole("-use")
     thisEntity:SetThink(function()
         SendToConsole("+use")
@@ -897,6 +898,7 @@ end
 
 if name == "2_203_inside_elevator_button" then
     SendToConsole("ent_fire_output 2_203_elev_button_elevator_handpose OnHandPosed")
+	SendToConsole("ent_fire 2_203_inside_elevator_button setanimation button_press")
 end
 
 if name == "inside_elevator_button" then
