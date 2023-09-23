@@ -295,8 +295,8 @@ if not vlua.find(model, "doorhandle") and name ~= "@pod_shell" and name ~= "589_
             count = count + 0.001
         elseif name == "12712_shotgun_wheel" then
             count = count + 0.003
-        elseif name == "console_selector_interact" then
-            count = count + 0.0005
+        --elseif name == "console_selector_interact" then
+            --count = count + 0.0005
         else
             count = count + 0.01
         end
@@ -331,11 +331,11 @@ if not vlua.find(model, "doorhandle") and name ~= "@pod_shell" and name ~= "589_
                 bar = Entities:FindByName(nil, "12712_shotgun_bar_for_wheel")
                 bar:Kill()
                 SendToConsole("ent_remove shotgun_pickup_blocker")
-            elseif name == "console_opener_prop_handle_interact" then
-                SendToConsole("ent_fire_output console_opener_prop_handle_interact OnCompletionA")
-                Entities:FindByName(nil, "console_selector_interact"):Attribute_SetIntValue("used", 0)
-            elseif name == "console_selector_interact" then
-                SendToConsole("ent_fire_output console_opener_logic_isselected_* ontrue")
+            --elseif name == "console_opener_prop_handle_interact" then
+                --SendToConsole("ent_fire_output console_opener_prop_handle_interact OnCompletionA")
+                --Entities:FindByName(nil, "console_selector_interact"):Attribute_SetIntValue("used", 0)
+            --elseif name == "console_selector_interact" then
+                --SendToConsole("ent_fire_output console_opener_logic_isselected_* ontrue")
             end
             return nil
         else
@@ -1139,8 +1139,34 @@ if class == "item_hlvr_combine_console_tank" then
     end
 end
 
-if name == "room1_lights_circuitbreaker_switch" then
+if name == "console_selector_interact" then
+    if thisEntity:GetMoveParent() then
+        DoEntFireByInstanceHandle(thisEntity, "ClearParent", "", 0, nil, nil)
+    else
+        local viewmodel = Entities:FindByClassname(nil, "viewmodel")
+        local look_delta = player:EyeAngles()
+		SendToConsole("ent_fire console_selector_interact enablereturntocompletion")
+        player:SetThink(function()
+			static_look = 0
+            if player:Attribute_GetIntValue("use_released", 0) == 0 then
+                local x = ((look_delta.x - player:EyeAngles().x)/10) * -1
+                look_delta = player:EyeAngles()
+				static_look = static_look + x
+				thisEntity:Attribute_SetFloatValue(static_look2, thisEntity:Attribute_GetFloatValue(static_look2, 0.000000) + static_look)
+				SendToConsole("ent_fire console_selector_interact setreturntocompletionamount " .. thisEntity:Attribute_GetFloatValue(static_look2, 0.000000))
+                return 0
+            end
+        end, "Interacting", 0)
+    end
+end
+
+if name == "room1_lights_circuitbreaker_switch" and player:Attribute_GetIntValue("room1_lights_circuitbreaker_switch_pulled", 0) == 0 then
     SendToConsole("ent_fire_output controlroom_circuitbreaker_relay ontrigger")
+	if player:Attribute_GetIntValue("auto_flashlight", 1) == 1 and _G.flashlight_on == "0" then
+		create_flashlight()
+		_G.flashlight_on = "1"
+	end
+	player:Attribute_SetIntValue("room1_lights_circuitbreaker_switch_pulled", 1)
 end
 
 if map == "a4_c17_parking_garage" then
@@ -1202,6 +1228,14 @@ if map == "a3_hotel_lobby_basement" then
 		SendToConsole("ent_fire piano_played_followup trigger")
         thisEntity:Attribute_SetIntValue("used", 1)
     end
+end
+
+if map == "a3_hotel_street" then
+	if name == "console_opener_prop_handle_interact" then
+		SendToConsole("ent_fire console_opener_prop_handle_interact enablereturntocompletion")
+		SendToConsole("ent_fire console_opener_prop_handle_interact setreturntocompletionamount 1")
+		SendToConsole("ent_fire console_opener_prop_handle_interact setreturntocompletionamount 0 3")
+	end
 end
 
 if name == "plug_console_starter_lever" then

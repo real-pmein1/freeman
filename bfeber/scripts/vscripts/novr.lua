@@ -696,10 +696,11 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. CROUCH .. " +iv_duck")
             SendToConsole("bind " .. SPRINT .. " +iv_sprint")
             SendToConsole("bind " .. PAUSE .. " pause")
-			SendToConsole("bind " .. NOTARGET .. " notarget;")
+			SendToConsole("bind " .. NOTARGET_ON .. " notarget 1;")
+			SendToConsole("bind " .. NOTARGET_OFF .. " notarget 0;")
 			--SendToConsole("bind " .. FLASHLIGHT .. " \"\"")
 			SendToConsole("unbind " .. FLASHLIGHT)
-			--SendToConsole("bind c ent_messages")
+			SendToConsole("bind c ent_messages")
             SendToConsole("hl2_sprintspeed 140")
             SendToConsole("hl2_normspeed 140")
             SendToConsole("r_drawviewmodel 0")
@@ -752,8 +753,10 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("sk_antlion_worker_spit_interval_min 1")
             SendToConsole("sk_antlion_worker_spit_speed 1200")
             SendToConsole("sk_plr_dmg_pistol 7")
-            SendToConsole("sk_plr_dmg_ar2 9")
-            SendToConsole("sk_plr_dmg_smg1 5")
+            --SendToConsole("sk_plr_dmg_ar2 9")
+			SendToConsole("sk_plr_dmg_ar2 999")
+            --SendToConsole("sk_plr_dmg_smg1 5")
+            SendToConsole("sk_plr_dmg_smg1 999")
             --SendToConsole("player_use_radius 60")
             SendToConsole("hlvr_physcannon_forward_offset -5")
             -- TODO: Lower this when picking up very low mass objects
@@ -1109,7 +1112,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                         end
 
                         SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
-                        Entities:FindByName(nil, "console_selector_interact"):Attribute_SetIntValue("used", 1)
+                        --Entities:FindByName(nil, "console_selector_interact"):Attribute_SetIntValue("used", 1)
                         ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(775, 1677, 248), 10)
                         if ent then
                             ent:Kill()

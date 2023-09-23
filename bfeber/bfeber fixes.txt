@@ -1,10 +1,11 @@
-TESTED UP TO A3_HOTEL_INTERIOR_ROOFTOP - bfeber mod dated 2023-08-02
+TESTED UP TO A3_HOTEL_STREET - bfeber mod dated 2023-08-02
 --------------------------------
 
 Freeman merged into bfeber:
 
 Removed text on intro logo
 Fixed FOV for menu and altered for in-game
+Added notarget on/off bindings ready for Jeff neutering
 Added usable radio
 Changed rooftop elevator call/floor buttons from debug commands to button presses
 Added usable washing machines
@@ -28,7 +29,10 @@ Extended the lobby power up sequence to include the power stake at the elevator
 Added extra lights to the lobby power up sequence
 Added button depress animation to the hotel/Terminal Gardens elevator
 Fixed "zombieparty" window
+Fixed the power-down lever in the poison hc room to not play its sound more than once
+Fixed power puzzle on hotel roof using manual dial rotation and timed lever reset
 
 
 MOST IMPORTANT TO DO:
 Fix all clipping issues on stairs etc
+Fix reviver hearts puzzle on a3_hotel_interior_rooftop

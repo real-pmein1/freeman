@@ -1,4 +1,4 @@
-TESTED UP TO A3_HOTEL_INTERIOR_ROOFTOP - bfeber mod dated 2023-08-02
+TESTED UP TO A3_HOTEL_STREET - bfeber mod dated 2023-08-02
 --------------------------------
 
 Freeman				-	bfeber
@@ -53,3 +53,5 @@ Lobby power better		-	Simple power on only
 				-	Xen grenades work
 Hotel/T-Gardens elevator issues	-	Elevator works but button doesn't depress
 Working zombieparty window	-	Needs pressing on window
+2 reviver hearts for puzzle	-	Uses 3 reviver hearts for door puzzle near hotel roof
+Correctly working power puzzle	-	Uses an automatic wheel to open all power puzzle doors
