@@ -868,8 +868,8 @@ end
 
 if map == "a3_station_street" then
     if name == "power_stake_1_start" then
-        SendToConsole("ent_fire_output toner_path_alarm_1 OnPowerOn")
-        SendToConsole("ent_fire toner_path_6_relay_debug Trigger")
+        --SendToConsole("ent_fire_output toner_path_alarm_1 OnPowerOn")
+        --SendToConsole("ent_fire toner_path_6_relay_debug Trigger")
     end
 end
 
@@ -927,9 +927,12 @@ if name == "5325_4704_toner_port_train_gate" then
     SendToConsole("ent_fire_output 5325_4704_train_gate_path_22_to_end OnPowerOn")
 end
 
-if name == "270_trip_mine_item_1" then
-    SendToConsole("ent_fire 270_trip_mine_item_1 deactivatemine")
+if class == "item_hlvr_weapon_tripmine" then
+	SendToConsole("ent_fire !picker deactivatemine")
 end
+--if name == "270_trip_mine_item_1" then
+    --SendToConsole("ent_fire 270_trip_mine_item_1 deactivatemine")
+--end
 
 if class == "prop_hlvr_crafting_station_console" then
     local function AnimTagListener(sTagName, nStatus)
@@ -1235,6 +1238,22 @@ if map == "a3_hotel_street" then
 		SendToConsole("ent_fire console_opener_prop_handle_interact enablereturntocompletion")
 		SendToConsole("ent_fire console_opener_prop_handle_interact setreturntocompletionamount 1")
 		SendToConsole("ent_fire console_opener_prop_handle_interact setreturntocompletionamount 0 3")
+	end
+end
+
+if map == "a3_hotel_street" then
+	if name == "power_stake_1_start" then
+		SendToConsole("ent_fire power_stake_1_start onplugrotated")
+		SendToConsole("ent_fire_output toner_path_1 onpoweron")
+		SendToConsole("ent_fire_output toner_path_2 onpoweron")
+		SendToConsole("ent_fire_output toner_path_4 onpoweron")
+		SendToConsole("ent_fire_output toner_path_5 onpoweron")
+		SendToConsole("ent_fire_output toner_path_7 onpoweron")
+		SendToConsole("ent_fire_output toner_path_9 onpoweron")
+		SendToConsole("ent_fire_output toner_path_10 onpoweron")
+		SendToConsole("ent_fire_output toner_path_11 onpoweron")
+		SendToConsole("ent_fire_output toner_path_12 onpoweron")
+		SendToConsole("ent_fire_output toner_path_13 onpoweron")
 	end
 end
 

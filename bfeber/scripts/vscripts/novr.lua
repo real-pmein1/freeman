@@ -6,6 +6,14 @@ if GlobalSys:CommandLineCheck("-novr") then
     DoIncludeScript("jumpfix.lua", nil)
     DoIncludeScript("wristpockets.lua", nil)
 	--DoIncludeScript("pos.lua", nil)
+	
+	_G.cc_enabled = cvar_getf("closecaption")
+	if _G.cc_enabled == 1 then
+		print("CC in variable: " .. _G.cc_enabled)
+		cvar_setf("closecaption", 0)
+		print("CC DISABLED")
+		print("CC in game: " .. cvar_getf("closecaption"))
+	end
 
     if player_hurt_ev ~= nil then
         StopListeningToGameEvent(player_hurt_ev)
@@ -446,21 +454,24 @@ if GlobalSys:CommandLineCheck("-novr") then
 
             if GetMapName() == "a3_c17_processing_plant" then
                 if vlua.find(Entities:FindAllInSphere(Vector(-80, -2215, 760), 20), player) then
-                    ClimbLadderSound()
-                    SendToConsole("fadein 0.2")
-                    SendToConsole("setpos_exact -26 -2215 870")
+					ClimbLadder(880)
+                    --ClimbLadderSound()
+                    --SendToConsole("fadein 0.2")
+                    --SendToConsole("setpos_exact -26 -2215 870")
                 end
 
-                if vlua.find(Entities:FindAllInSphere(Vector(-240,-2875,392), 20), player) then
-                    ClimbLadderSound()
-                    SendToConsole("fadein 0.2")
-                    SendToConsole("setpos_exact -241 -2823 410")
+                if vlua.find(Entities:FindAllInSphere(Vector(-237,-2856,392), 1), player) then
+					ClimbLadder(420)
+                    --ClimbLadderSound()
+                    --SendToConsole("fadein 0.2")
+                    --SendToConsole("setpos_exact -241 -2823 410")
                 end
 
                 if vlua.find(Entities:FindAllInSphere(Vector(414,-2459,328), 20), player) then
-                    ClimbLadderSound()
-                    SendToConsole("fadein 0.2")
-                    SendToConsole("setpos_exact 365 -2465 410")
+					ClimbLadder(420)
+                    --ClimbLadderSound()
+                    --SendToConsole("fadein 0.2")
+                    --SendToConsole("setpos_exact 365 -2465 410")
                 end
 
                 if vlua.find(Entities:FindAllInSphere(Vector(-1392,-2471,115), 20), player) then
@@ -473,6 +484,14 @@ if GlobalSys:CommandLineCheck("-novr") then
                     ClimbLadderSound()
                     SendToConsole("fadein 0.2")
                     SendToConsole("setpos_exact -1392 -2471 53")
+                end
+
+                if vlua.find(Entities:FindAllInSphere(Vector(324,-3480,312), 20), player) then
+					ClimbLadder(400)
+                end
+
+                if vlua.find(Entities:FindAllInSphere(Vector(-1615,-2047,111), 20), player) then
+					ClimbLadder(200)
                 end
             end
 
@@ -607,6 +626,13 @@ if GlobalSys:CommandLineCheck("-novr") then
         end
     end, "", 0)
 
+    --if player_connect_full_event ~= nil then
+        --StopListeningToGameEvent(player_connect_full_event)
+    --end
+	
+	--player_connect_full_event = ListenToGameEvent('player_connect_full', function(info)
+    --end, nil)
+	
     if player_spawn_ev ~= nil then
         StopListeningToGameEvent(player_spawn_ev)
     end
@@ -655,6 +681,13 @@ if GlobalSys:CommandLineCheck("-novr") then
 		else
 		    print("AUTO FLASHLIGHT DISABLED")
 			playerEnt:Attribute_SetIntValue("auto_flashlight", 0)
+		end
+		
+		if _G.cc_enabled == 1 then
+			print("CC in variable: " .. _G.cc_enabled)
+			cvar_setf("closecaption", 1)
+			print("CC ENABLED")
+			print("CC in game: " .. cvar_getf("closecaption"))
 		end
 
         if GetMapName() == "startup" then
@@ -1111,18 +1144,18 @@ if GlobalSys:CommandLineCheck("-novr") then
                             Entities:FindByName(nil, "elev_anim_door"):Attribute_SetIntValue("toggle", 1)
                         end
 
-                        SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+                        --SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
                         --Entities:FindByName(nil, "console_selector_interact"):Attribute_SetIntValue("used", 1)
-                        ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(775, 1677, 248), 10)
-                        if ent then
-                            ent:Kill()
-                        end
-                        ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(1440, 1306, 331), 10)
-                        if ent then
-                            ent:Kill()
-                        end
+                        --ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(775, 1677, 248), 10)
+                        --if ent then
+                            --ent:Kill()
+                        --end
+                        --ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(1440, 1306, 331), 10)
+                        --if ent then
+                            --ent:Kill()
+                        --end
                     elseif GetMapName() == "a3_c17_processing_plant" then
-                        SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+                        --SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
 
                         if not loading_save_file then
                             ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["solid"]=6, ["renderamt"]=0, ["model"]="models/props/construction/construction_yard_lift.vmdl", ["origin"]="-1984 -2456 154", ["angles"]="0 270 0", ["parentname"]="pallet_crane_platform"})
@@ -1131,18 +1164,18 @@ if GlobalSys:CommandLineCheck("-novr") then
                             DoEntFireByInstanceHandle(ent, "ShowMessage", "", 0, nil, nil)
                         end
 
-                        ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-896, -3768, 348), 10)
-                        if ent then
-                            ent:Kill()
-                        end
-                        ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1165, -3770, 158), 10)
-                        if ent then
-                            ent:Kill()
-                        end
-                        ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1105, -4058, 163), 10)
-                        if ent then
-                            ent:Kill()
-                        end
+                        --ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-896, -3768, 348), 10)
+                        --if ent then
+                            --ent:Kill()
+                        --end
+                        --ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1165, -3770, 158), 10)
+                        --if ent then
+                            --ent:Kill()
+                        --end
+                        --ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1105, -4058, 163), 10)
+                        --if ent then
+                            --ent:Kill()
+                        --end
                     elseif GetMapName() == "a3_distillery" then
                         ent = Entities:FindByName(nil, "exit_counter")
                         ent:RedirectOutput("OnHitMax", "EnablePlugLever", ent)
