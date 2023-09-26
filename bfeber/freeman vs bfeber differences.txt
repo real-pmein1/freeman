@@ -56,3 +56,5 @@ Working zombieparty window	-	Needs pressing on window
 2 reviver hearts for puzzle	-	Uses 3 reviver hearts for door puzzle near hotel roof
 Correctly working power puzzle	-	Uses an automatic wheel to open all power puzzle doors
 Tripmines can be disabled	-	Tripmines are semi-enabled and cannot be deactivated
+Semi-working pallet elec puzzle	-	Puzzle bypassed
+Semi-working pallet levers	-	Basic pallet levers 

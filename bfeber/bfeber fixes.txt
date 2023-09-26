@@ -35,8 +35,13 @@ Fixed the power-down lever in the poison hc room to not play its sound more than
 Fixed power puzzle on hotel roof using manual dial rotation and timed lever reset
 Fixed tripmines to be deactivatable
 Added more ladder climbing in a3_c17_processing_plant
+Fixed pallet levers electical puzzle
+Fixed pallet levers including unpowered levers
+Added basic view rotation to ladder at end of a3_c17_processing_plant
 
 
 MOST IMPORTANT TO DO:
 Fix all clipping issues on stairs etc
 Fix reviver hearts puzzle on a3_hotel_interior_rooftop
+Fix second crafting station on a3_c17_processing_plant as it opens on its own
+Replay a3_c17_processing_plant to ensure all issues captured

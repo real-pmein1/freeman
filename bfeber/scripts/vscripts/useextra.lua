@@ -288,7 +288,9 @@ if not vlua.find(model, "doorhandle") and name ~= "@pod_shell" and name ~= "589_
     end
     thisEntity:SetThink(function()
         if not is_console then
-            DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
+			if not name == "pallet_lever_unpowered" then --or not name == "pallet_lever" or not name == "pallet_lever_vertical" then
+				DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
+			end
         end
 
         if map == "a3_distillery" and name == "verticaldoor_wheel" then
@@ -662,6 +664,65 @@ if name == "vent_door" then
     end
 end
 
+if name == "pallet_lever_unpowered" then
+    if thisEntity:GetMoveParent() then
+        DoEntFireByInstanceHandle(thisEntity, "ClearParent", "", 0, nil, nil)
+    else
+        local viewmodel = Entities:FindByClassname(nil, "viewmodel")
+        local look_delta = player:EyeAngles()
+		SendToConsole("ent_fire pallet_lever_unpowered enablereturntocompletion")
+        player:SetThink(function()
+			static_look = 0
+            if player:Attribute_GetIntValue("use_released", 0) == 0 then
+                local x = ((look_delta.x - player:EyeAngles().x)/10) * -1
+                look_delta = player:EyeAngles()
+				static_look = static_look + x
+				thisEntity:Attribute_SetFloatValue(static_look2, thisEntity:Attribute_GetFloatValue(static_look2, 0.500000) + static_look)
+				SendToConsole("ent_fire !picker setreturntocompletionamount " .. thisEntity:Attribute_GetFloatValue(static_look2, 0.500000))
+                return 0
+            end
+        end, "Interacting", 0)
+    end
+elseif name == "pallet_lever_vertical" then
+    if thisEntity:GetMoveParent() then
+        DoEntFireByInstanceHandle(thisEntity, "ClearParent", "", 0, nil, nil)
+    else
+        local viewmodel = Entities:FindByClassname(nil, "viewmodel")
+        local look_delta = player:EyeAngles()
+		SendToConsole("ent_fire pallet_lever_vertical enablereturntocompletion")
+        player:SetThink(function()
+			static_look = 0
+            if player:Attribute_GetIntValue("use_released", 0) == 0 then
+                local x = ((look_delta.x - player:EyeAngles().x)/10) * -1
+                look_delta = player:EyeAngles()
+				static_look = static_look + x
+				thisEntity:Attribute_SetFloatValue(static_look2, thisEntity:Attribute_GetFloatValue(static_look2, 0.500000) + static_look)
+				SendToConsole("ent_fire !picker setreturntocompletionamount " .. thisEntity:Attribute_GetFloatValue(static_look2, 0.500000))
+                return 0
+            end
+        end, "Interacting", 0)
+    end
+elseif name == "pallet_lever" then
+    if thisEntity:GetMoveParent() then
+        DoEntFireByInstanceHandle(thisEntity, "ClearParent", "", 0, nil, nil)
+    else
+        local viewmodel = Entities:FindByClassname(nil, "viewmodel")
+        local look_delta = player:EyeAngles()
+		SendToConsole("ent_fire pallet_lever enablereturntocompletion")
+        player:SetThink(function()
+			static_look = 0
+            if player:Attribute_GetIntValue("use_released", 0) == 0 then
+                local x = ((look_delta.x - player:EyeAngles().x)/10) * -1
+                look_delta = player:EyeAngles()
+				static_look = static_look + x
+				thisEntity:Attribute_SetFloatValue(static_look2, thisEntity:Attribute_GetFloatValue(static_look2, 0.500000) + static_look)
+				SendToConsole("ent_fire !picker setreturntocompletionamount " .. thisEntity:Attribute_GetFloatValue(static_look2, 0.500000))
+                return 0
+            end
+        end, "Interacting", 0)
+    end
+end
+
 
 ---------- a3_distillery ----------
 
@@ -985,7 +1046,8 @@ if class == "prop_hlvr_crafting_station_console" then
 
     if thisEntity:GetGraphParameter("bBootup") == false then
         local ent = Entities:FindByClassnameNearest("prop_hlvr_crafting_station", thisEntity:GetOrigin(), 20)
-        DoEntFireByInstanceHandle(ent, "OpenStation", "", 0, nil, nil)
+        --DoEntFireByInstanceHandle(ent, "OpenStation", "", 0, nil, nil)
+		SendToConsole("ent_fire " .. ent:GetName() .. " OpenStation")
     elseif thisEntity:Attribute_GetIntValue("crafting_station_ready", 0) == 1 then
         if thisEntity:GetGraphParameter("bCollectingResin") then
             if Convars:GetStr("chosen_upgrade") ~= "" then
@@ -1344,6 +1406,7 @@ if name == "lift_button_box" then
         SendToConsole("ent_fire_output lift_button_up onin")
         thisEntity:Attribute_SetIntValue("used", 1)
     end
+	SendToConsole("ent_fire 254_2183_1855_crafting_hacking_plug enable")
 end
 
 if name == "1517_3301_lift_prop_animated" then
@@ -1351,15 +1414,31 @@ if name == "1517_3301_lift_prop_animated" then
 end
 
 if name == "shack_path_6_port_1" then
-    SendToConsole("ent_fire_output pallet_panel_power_on ontrigger")
+    --SendToConsole("ent_fire_output pallet_panel_power_on ontrigger")
+	SendToConsole("ent_fire shack_path_6_port_1 onplugrotated")
+	SendToConsole("ent_fire_output shack_path_6 onpoweron")
+	SendToConsole("ent_fire_output shack_path_7 onpoweron")
+	SendToConsole("ent_fire_output shack_path_8 onpoweron")
+	SendToConsole("ent_fire_output shack_path_9 onpoweron")
+	SendToConsole("ent_fire_output shack_path_10 onpoweron")
+	SendToConsole("ent_fire_output shack_path_11 onpoweron")
+end
+
+if name == "shack_path_1_port_1" then
+	SendToConsole("ent_fire shack_path_1_port_1 onplugrotated")
+	SendToConsole("ent_fire_output shack_path_1 onpoweron")
+	SendToConsole("ent_fire_output shack_path_2 onpoweron")
+	SendToConsole("ent_fire_output shack_path_3 onpoweron")
+	SendToConsole("ent_fire_output shack_path_4 onpoweron")
+	SendToConsole("ent_fire_output shack_path_5 onpoweron")
 end
 
 if name == "pallet_lever_vertical" then
-    SendToConsole("ent_fire_output pallet_logic_phys_raise ontrigger")
+    --SendToConsole("ent_fire_output pallet_logic_phys_raise ontrigger")
 end
 
 if name == "pallet_lever" then
-    SendToConsole("ent_fire_output pallet_logic_extend ontrigger")
+    --SendToConsole("ent_fire_output pallet_logic_extend ontrigger")
 end
 
 if class == "item_hlvr_headcrab_gland" then
@@ -1497,4 +1576,8 @@ elseif class == "item_healthvial" then
 		WristPockets_PickUpHealthPen(player, thisEntity)
 		FireGameEvent("item_pickup", item_pickup_params)
     end
+end
+
+if class == "prop_animinteractable" and (name ~= "pallet_lever" or name ~= "pallet_lever_unpowered" or name ~= "pallet_lever_vertical") then
+	SendToConsole("ent_fire !picker enablereturntocompletion;ent_fire !picker setreturntocompletionamount 1")
 end

@@ -8,9 +8,11 @@ if GlobalSys:CommandLineCheck("-novr") then
 	--DoIncludeScript("pos.lua", nil)
 	
 	_G.cc_enabled = cvar_getf("closecaption")
+	Convars:RegisterConvar("cc_enabled", "0", "Closed Caption Level Persistence", FCVAR_REPLICATED)
 	if _G.cc_enabled == 1 then
 		print("CC in variable: " .. _G.cc_enabled)
 		cvar_setf("closecaption", 0)
+		cvar_setf("cc_enabled", 1)
 		print("CC DISABLED")
 		print("CC in game: " .. cvar_getf("closecaption"))
 	end
@@ -453,6 +455,8 @@ if GlobalSys:CommandLineCheck("-novr") then
             end
 
             if GetMapName() == "a3_c17_processing_plant" then
+				--SendToConsole("ent_fire pallet_lever_unpowered enablereturntocompletion")
+				--SendToConsole("ent_fire pallet_lever_unpowered setreturntocompletionamount 1")
                 if vlua.find(Entities:FindAllInSphere(Vector(-80, -2215, 760), 20), player) then
 					ClimbLadder(880)
                     --ClimbLadderSound()
@@ -475,9 +479,10 @@ if GlobalSys:CommandLineCheck("-novr") then
                 end
 
                 if vlua.find(Entities:FindAllInSphere(Vector(-1392,-2471,115), 20), player) then
-                    ClimbLadderSound()
-                    SendToConsole("fadein 0.2")
-                    SendToConsole("setpos_exact -1415 -2485 410")
+					ClimbLadderRight(420, 180)
+                    --ClimbLadderSound()
+                    --SendToConsole("fadein 0.2")
+                    --SendToConsole("setpos_exact -1415 -2485 410")
                 end
 
                 if vlua.find(Entities:FindAllInSphere(Vector(-1420,-2482,472), 20), player) then
@@ -492,6 +497,10 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                 if vlua.find(Entities:FindAllInSphere(Vector(-1615,-2047,111), 20), player) then
 					ClimbLadder(200)
+                end
+
+                if vlua.find(Entities:FindAllInSphere(Vector(-1460,-2737,126), 20), player) then
+					ClimbLadder(180)
                 end
             end
 
@@ -683,6 +692,8 @@ if GlobalSys:CommandLineCheck("-novr") then
 			playerEnt:Attribute_SetIntValue("auto_flashlight", 0)
 		end
 		
+		_G.cc_enabled = cvar_getf("cc_enabled")
+		print("CC in variable: " .. _G.cc_enabled)
 		if _G.cc_enabled == 1 then
 			print("CC in variable: " .. _G.cc_enabled)
 			cvar_setf("closecaption", 1)
@@ -1401,6 +1412,28 @@ if GlobalSys:CommandLineCheck("-novr") then
                 return 0
             end
         end, "ClimbUp", 0)
+    end
+
+    function ClimbLadderRight(height, rotation)
+        local ent = Entities:GetLocalPlayer()
+        local ticks = 0
+        ent:SetThink(function()
+            if ent:GetOrigin().z > height then
+                ent:SetVelocity(Vector(ent:GetRightVector().x, ent:GetRightVector().y, 0):Normalized() * 150)
+            else
+                ent:SetVelocity(Vector(0, 0, 0))
+                ent:SetOrigin(ent:GetOrigin() + Vector(0, 0, 2.1))
+                ticks = ticks + 1
+                if ticks == 25 then
+                    SendToConsole("snd_sos_start_soundevent Step_Player.Ladder_Single")
+                    ticks = 0
+                end
+                return 0
+            end
+			if rotation then
+				ent:SetAngles(0, rotation, 0)
+			end
+        end, "ClimbUpRight", 0)
     end
 
     function ClimbLadderSound()
