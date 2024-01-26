@@ -38,6 +38,7 @@ Instructions will be provided in due course as to how to compile the launcher fr
 
 ## Credits
 Original launcher made by [bfeber](https://www.github.com/bfeber/HLA-NoVR-Launcher)
+
 The awesome background video was made by [Half Peeps](https://www.youtube.com/@HALFPEEPS).
 
 ## License
