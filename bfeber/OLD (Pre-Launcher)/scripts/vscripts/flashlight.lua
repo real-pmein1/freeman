@@ -1,0 +1,99 @@
+-- Flashlight Script made by JJL772: https://github.com/JJL772/half-life-alyx-scripts
+
+-- Convars for the flashlight 
+Convars:RegisterConvar("sv_flashlight_color", "255 255 255 255", "Color of the flashlight", FCVAR_REPLICATED)
+Convars:RegisterConvar("sv_flashlight_brightness", "1", "Brightness of the flashlight", FCVAR_REPLICATED)
+Convars:RegisterConvar("sv_flashlight_shadowtex_size", "1024", "The X and Y size of the shadow texture", FCVAR_REPLICATED)
+Convars:RegisterConvar("sv_flashlight_range", "700", "max range of the flashlight", FCVAR_REPLICATED)
+
+function destroy_flashlight()
+	if Entities:FindByName(nil, "player_flashlight") then
+		SendToConsole("play sounds/items/flashlight1")
+	end
+	if flashlight_ent ~= nil and not flashlight_ent:IsNull() then
+		flashlight_ent:Destroy()
+		flashlight_ent = nil
+	end 
+	-- Fix if the flashlight was deleted but not set to nil
+	if not flashlight_ent == nil and flashlight_ent:IsNull() then
+		flashlight_ent = nil
+	end
+	--EmitSoundOnClient("HL2Player.FlashLightOff",Entities:GetLocalPlayer())
+	--if _G.flashlight_on == 1 then
+		--EmitSoundOnClient("HL2Player.FlashLightOff",player)
+	--end
+end 
+
+function create_flashlight()
+	local player = Entities:GetLocalPlayer()
+
+	local ang = player:EyeAngles()
+	local rot = player:GetAngles():Forward() 
+	local size = Convars:GetStr("sv_flashlight_shadowtex_size")
+	
+	local lighttbl = {
+		targetname = "player_flashlight",
+		origin = player:EyePosition(),
+		angles = ang,
+		enabled = "1",
+		color = Convars:GetStr("sv_flashlight_color"),
+ 		brightness = Convars:GetStr("sv_flashlight_brightness"),
+ 		range = Convars:GetStr("sv_flashlight_range"),
+ 		castshadows = "1",
+ 		shadowtexturewidth = size,
+ 		shadowtextureheight = size,
+ 		style = "0",
+ 		fademindist = "0",
+ 		fademaxdist = "6000",
+ 		bouncescale = "1.0",
+ 		renderdiffuse = "1",
+ 		renderspecular = "1",
+ 		directlight = "2",
+ 		indirectlight = "0",
+ 		attenuation1 = "0.0",
+ 		attenuation2 = "1.0",	
+ 		innerconeangle = "10",
+		outerconeangle = "32",
+		lightcookie = "flashlight" 
+	}
+
+	flashlight_ent = SpawnEntityFromTableSynchronous("light_spot", lighttbl)
+
+	if flashlight_ent == nil then
+		print("Failed to spawn flashlight")
+		return 
+	end
+	flashlight_ent:SetParent(player, "flashlight")
+	
+	-- Apparently the flashlight wont follow the player's view properly when parented to the player
+	-- so for now ill just not parent it and do it the wrong way
+	flashlight_ent:SetThink(function()
+		if flashlight_ent == nil then return end 
+		local player = Entities:GetLocalPlayer() 
+		local ang = player:EyeAngles()
+		-- TODO: Why does EyePosition break things sometimes?
+		local flPos = player:EyePosition()
+		flPos.x = flPos.x + 1 -- near or far of player
+		flPos.y = flPos.y + 3.5 -- left or right 
+		flPos.z = flPos.z - 1 -- higher or lower of player
+		flashlight_ent:SetLocalOrigin(flPos - player:GetOrigin()) 
+		flashlight_ent:SetLocalAngles(ang.x, 0, 0)
+		return FrameTime()
+	end, "flashlight_think", 0)
+	--EmitSoundOnClient("HL2Player.FlashLightOn",player)
+	SendToConsole("play sounds/items/flashlight1")
+end 
+
+Convars:RegisterCommand("inv_flashlight", function()
+	if flashlight_ent ~= nil then
+		destroy_flashlight()
+	else
+		create_flashlight()
+	end 
+end, "Toggles the flashlight", 0)
+
+Convars:RegisterCommand("disable_flashlight", function()
+	if flashlight_ent ~= nil then
+		destroy_flashlight()
+	end 
+end, "Disables the flashlight", 0)

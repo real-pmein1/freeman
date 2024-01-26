@@ -1,0 +1,47 @@
+TESTED UP TO A3_C17_PROCESSING_PLANT - bfeber mod dated 2023-08-02
+--------------------------------
+
+Freeman merged into bfeber:
+
+Removed text on intro logo
+Fixed FOV for menu and altered for in-game
+Partially fixed black bar on loading screen when subtitles are enabled
+Added notarget on/off bindings ready for Jeff neutering
+Added usable radio
+Changed rooftop elevator call/floor buttons from debug commands to button presses
+Added usable washing machines
+Added usable monitors
+Added usable light switches
+Removed "use-to-teleport" and added auto-teleport on:
+	Elevator shaft in a1_intro_world_2
+	Russell's hideout apartment window in a1_intro_world_2
+	Entry window to the Northern Star in a3_station_street
+	Upper window in the Northen Star in a3_hotel_interior_rooftop
+	All configured ladders in a3_c17_processing_plant
+Enabled bell to be used multiple times
+Added automatic flashlight (includes constant position monitoring)
+Added manual/auto toggle via the bindings.lua file (assign letter to toggle manual on, remove for auto)
+Fixed flashlight power off sound
+Fixed the Combine shield button in Terminal Gardens
+Added breaking sound to Northern Star window entry when the window closes
+Added location-based lobby piano speech
+Added played lobby piano speech
+Added "halls of alyx", played when using the lobby piano (Alyx's rendition of Portal 2's Halls of Science 4 theme)
+Extended the lobby power up sequence to include the power stake at the elevator
+Added extra lights to the lobby power up sequence
+Added button depress animation to the hotel/Terminal Gardens elevator
+Fixed "zombieparty" window
+Fixed the power-down lever in the poison hc room to not play its sound more than once
+Fixed power puzzle on hotel roof using manual dial rotation and timed lever reset
+Fixed tripmines to be deactivatable
+Added more ladder climbing in a3_c17_processing_plant
+Fixed pallet levers electical puzzle
+Fixed pallet levers including unpowered levers
+Added basic view rotation to ladder at end of a3_c17_processing_plant
+
+
+MOST IMPORTANT TO DO:
+Fix all clipping issues on stairs etc
+Fix reviver hearts puzzle on a3_hotel_interior_rooftop
+Fix second crafting station on a3_c17_processing_plant as it opens on its own
+Replay a3_c17_processing_plant to ensure all issues captured
