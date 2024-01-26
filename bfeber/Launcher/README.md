@@ -5,6 +5,8 @@ Modified by pmein1, original by bfeber
 
 ## Installation
 
+This launcher is currently using bfeber's v2.4 code.
+
 ### Windows
 [Download and extract the archive to a folder of your choice.](https://github.com/real-pmein1/freeman/releases/latest/download/HLA-NoVR-Launcher.7z)
 
