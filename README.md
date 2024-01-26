@@ -16,9 +16,9 @@ An updated functionality list will be added to in due course.
 
 ## Requirements
 
-Half-Life: Alyx v1.5.4
-[HLA-NoVR-Launcher v2.4](https://github.com/real-pmein1/freeman/releases/tag/L2.4)
-Windows 10 or 11
++ Half-Life: Alyx v1.5.4
++ [HLA-NoVR-Launcher v2.4](https://github.com/real-pmein1/freeman/releases/tag/L2.4)
++ Windows 10 or 11
 
 ## Installation/Running the Game
 
