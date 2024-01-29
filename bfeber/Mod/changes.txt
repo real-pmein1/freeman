@@ -1,6 +1,7 @@
 startup
 =======
 
+Added player_pos script for in-game position-based triggers
 Changed bind for console to ~
 Changed in-game field of view to 55 to stop fish-eye effect
 Removed bind for flashlight for auto-flashlight
