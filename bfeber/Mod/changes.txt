@@ -3,8 +3,12 @@ startup
 
 Added player_pos script for in-game position-based triggers
 Changed bind for console to ~
-Changed in-game field of view to 55 to stop fish-eye effect
+Changed in-game field of view to 60 to stop fish-eye effect but allow the showing of wearables
+Changed resin HUD counter to blue
 Removed bind for flashlight for auto-flashlight
+
+TO DO:
+Fix long/big tutorial messages
 
 a1_intro_world
 ==============
@@ -31,3 +35,8 @@ Changed the crashed van to require crouching to exit it
 Changed the parked car to have its door correctly open
 Changed Russell's window to be correctly closed instead of partially open
 Changed the auto-teleport on Russell's window so it can be manually opened
+
+a2_quarantine_entrance
+======================
+
+Fixed multitool tutorial messages overlap by increasing timer to 10 seconds

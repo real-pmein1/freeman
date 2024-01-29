@@ -1384,7 +1384,8 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("ent_create env_message { targetname text_smg_upgrade_aimdownsights message SMG_UPGRADE_AIMDOWNSIGHTS }")
 
             SendToConsole("ent_remove text_resin")
-            SendToConsole("ent_create game_text { targetname text_resin effect 2 spawnflags 1 color \"255 220 0\" holdtime 0.11 x 0.027 y -0.15 }")
+            --SendToConsole("ent_create game_text { targetname text_resin effect 2 spawnflags 1 color \"255 220 0\" holdtime 0.11 x 0.027 y -0.15 }")
+            SendToConsole("ent_create game_text { targetname text_resin effect 2 spawnflags 1 color \"83 199 198\" holdtime 0.11 x 0.027 y -0.15 }")
 
             SendToConsole("ent_remove text_grenade")
             SendToConsole("ent_create env_message { targetname text_grenade message GRENADE }")
@@ -2315,7 +2316,8 @@ if GlobalSys:CommandLineCheck("-novr") then
         Entities:GetLocalPlayer():SetThink(function()
             SendToConsole("ent_fire text_multitool_use ShowMessage")
             SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-        end, "MultiToolTutorial", 5)
+        --end, "MultiToolTutorial", 5)
+        end, "MultiToolTutorial", 10)
     end
 
     function ShowBreakBoardsTutorial()
