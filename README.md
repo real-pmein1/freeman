@@ -4,6 +4,8 @@ This mod is designed to run Half-Life: Alyx without the VR hardware requirement 
 
 This new version is based on [bfeber's HLA-NoVR mod](https://github.com/bfeber/HLA-NoVR) with some quality of life changes.
 
+The mod's changelog can be found [here](https://github.com/real-pmein1/freeman/blob/main/bfeber/Mod/changes.txt).
+
 The intended audience of this mod are those who are unable to use VR (sight issues, other disabilities, money contraints etc) or those who simply do not want to keep getting out their VR equipment for short periods of gaming.
 
 If you can use VR and haven't yet played HL: Alyx in VR, I would suggest to do so.  Using this mod turns the game into a different experience, but no less fun.
