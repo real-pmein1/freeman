@@ -878,7 +878,9 @@ if GlobalSys:CommandLineCheck("-novr") then
 
             if vlua.find(Entities:FindAllInSphere(Vector(-702, -1024, -238), 20), player) then
                 local ent = Entities:FindByName(nil, "bell")
-                DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
+                --DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
+				SendToConsole("ent_fire bell setreturntocompletionstyle 0")
+				SendToConsole("ent_fire bell enablereturntocompletion;ent_fire bell setreturntocompletionamount 1;ent_fire bell setreturntocompletionamount 0 1")
             end
         elseif GetMapName() == "a2_headcrabs_tunnel" and vlua.find(Entities:FindAllInSphere(Vector(354, -251, -62), 18), player) then
             ClimbLadder(22)

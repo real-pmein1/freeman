@@ -47,3 +47,9 @@ a2_pistol
 =========
 
 No changes
+
+a2_hideout
+==========
+
+Fixed hideout bell not being able to be pulled more than once
+
