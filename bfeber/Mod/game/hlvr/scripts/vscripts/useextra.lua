@@ -1,10 +1,26 @@
 DoIncludeScript("bindings.lua", nil)
 
+------ PMEIN1 FIND PLAYER POS ----------
+local playerEnt = Entities:GetLocalPlayer()
+EmitSoundOnClient("HL2Player.Use", playerEnt)
+local startVector = playerEnt:EyePosition()
+local fullpos = string.sub(string.format("%s", startVector),26,-2)
+local xpos_index = string.find(fullpos, " ")
+local xpos = tonumber(string.sub(fullpos,0,xpos_index - 1))
+local ypos_index = string.find(fullpos, " ", xpos_index + 1)
+local ypos = tonumber(string.sub(fullpos,xpos_index + 1,ypos_index - 1))
+local zpos = tonumber(string.sub(fullpos,ypos_index + 1,fullpos:len()))
+----------------------------------------
+
 local map = GetMapName()
 local class = thisEntity:GetClassname()
 local name = thisEntity:GetName()
 local model = thisEntity:GetModelName()
 local player = Entities:GetLocalPlayer()
+
+print(class)
+print(name)
+print(model)
 
 player:Attribute_SetIntValue("useextra_executed", 1)
 
@@ -435,8 +451,29 @@ end
 
 ---------- a1_intro_world ----------
 
-if name == "microphone" or name == "call_button_prop" or model == "maps/a1_intro_world/entities/unnamed_205_2961_1020.vmdl" then
-    SendToConsole("ent_fire call_button_relay trigger")
+--if name == "microphone" or name == "call_button_prop" or model == "maps/a1_intro_world/entities/unnamed_205_2961_1020.vmdl" then
+if name == "call_button_prop_2" then
+    SendToConsole("ent_fire_output call_button onin")
+end
+
+if name == "button_monitor_upper_left_2" then
+	SendToConsole("ent_fire branch_screen_up_left toggletest")
+	SendToConsole("ent_fire snd_button_a StartSound")
+end
+
+if name == "button_monitor_upper_right_2" then
+	SendToConsole("ent_fire branch_screen_up_right toggletest")
+	SendToConsole("ent_fire snd_button_c StartSound")
+end
+
+if name == "button_monitor_lower_left_2" then
+	SendToConsole("ent_fire branch_screen_left_lower toggletest")
+	SendToConsole("ent_fire snd_button_b StartSound")
+end
+
+if name == "button_monitor_lower_right_2" then
+	SendToConsole("ent_fire branch_screen_lower_right toggletest")
+	SendToConsole("ent_fire snd_button_d StartSound")
 end
 
 if name == "greenhouse_door_lock" then
@@ -444,8 +481,10 @@ if name == "greenhouse_door_lock" then
     DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
 end
 
-if name == "205_2653_door" or name == "205_2653_door2" or name == "205_8018_button_pusher_prop" then
-    SendToConsole("ent_fire debug_roof_elevator_call_relay trigger")
+--if name == "205_2653_door" or name == "205_2653_door2" or name == "205_8018_button_pusher_prop" then
+if name == "205_8018_button_pusher_prop" then
+    --SendToConsole("ent_fire debug_roof_elevator_call_relay trigger")
+    SendToConsole("ent_fire 205_8018_button_branch test")
 end
 
 if name == "205_8032_button_pusher_prop" then
@@ -480,8 +519,16 @@ if vlua.find(model, "models/props/c17/antenna01") then
     thisEntity:ApplyLocalAngularVelocityImpulse(Vector(0,0,-2000))
 end
 
+if name == "205_4130_alyx_radio_antenna" then
+	SendToConsole("ent_fire 205_4130_relay_start_radio trigger")
+	Storage:SaveBoolean("radio_antenna_raised", true)
+	Storage:SaveString("radio_station", "d")
+	print(Storage:LoadBoolean("radio_antenna_raised"))
+end
+
 if name == "979_518_button_pusher_prop" then
-    SendToConsole("ent_fire debug_choreo_start_relay trigger")
+    --SendToConsole("ent_fire debug_choreo_start_relay trigger")
+	SendToConsole("ent_fire_output 979_518_button_center_pusher onin")
 end
 
 if name == "light_switch_1" then

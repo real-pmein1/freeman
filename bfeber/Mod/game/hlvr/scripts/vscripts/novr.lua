@@ -751,6 +751,25 @@ if GlobalSys:CommandLineCheck("-novr") then
     Convars:RegisterCommand("useextra", function()
         local player = Entities:GetLocalPlayer()
 
+		------ PMEIN1 FIND PLAYER POS ----------
+		local playerEnt = Entities:GetLocalPlayer()
+		EmitSoundOnClient("HL2Player.Use", playerEnt)
+		local startVector = playerEnt:EyePosition()
+		local fullpos = string.sub(string.format("%s", startVector),26,-2)
+		local xpos_index = string.find(fullpos, " ")
+		local xpos = tonumber(string.sub(fullpos,0,xpos_index - 1))
+		local ypos_index = string.find(fullpos, " ", xpos_index + 1)
+		local ypos = tonumber(string.sub(fullpos,xpos_index + 1,ypos_index - 1))
+		local zpos = tonumber(string.sub(fullpos,ypos_index + 1,fullpos:len()))
+		--print(fullpos)
+		--print(xpos_index)
+		--print(ypos_index)
+		print("Current x position: " .. xpos)
+		print("Current y position: " .. ypos)
+		print("Current z position: " .. zpos)
+		local map = GetMapName()
+		---------------------------------------
+
         player:Attribute_SetIntValue("used_gravity_gloves", 0)
         player:Attribute_SetIntValue("use_released", 0)
 
@@ -785,11 +804,29 @@ if GlobalSys:CommandLineCheck("-novr") then
         if GetMapName() == "a1_intro_world" then
             if vlua.find(Entities:FindAllInSphere(Vector(648, -1757, -141), 10), player) then
                 ClimbLadder(-64)
-            elseif vlua.find(Entities:FindAllInSphere(Vector(530, -2331, -84), 20), player) then
-                ClimbLadderSound()
-                SendToConsole("fadein 0.2")
-                SendToConsole("setpos_exact 574 -2328 -130")
+            -- elseif vlua.find(Entities:FindAllInSphere(Vector(530, -2331, -84), 20), player) then
+                -- ClimbLadderSound()
+                -- SendToConsole("fadein 0.2")
+                -- SendToConsole("setpos_exact 574 -2328 -130")
             end
+			if Storage:LoadBoolean("radio_antenna_raised") == true then
+				if ((xpos > -260 and xpos < -211) and (ypos > 1970 and ypos < 2002)) then
+					SendToConsole("ent_fire 205_4130_alyx_radio enablereturntocompletion")
+					if Storage:LoadString("radio_station") == "d" then
+						SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0.23")
+						Storage:SaveString("radio_station", "a")
+					elseif Storage:LoadString("radio_station") == "a" then
+						SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0.53")
+						Storage:SaveString("radio_station", "b")
+					elseif Storage:LoadString("radio_station") == "b" then
+						SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0.83")
+						Storage:SaveString("radio_station", "c")
+					elseif Storage:LoadString("radio_station") == "c" then
+						SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0")
+						Storage:SaveString("radio_station", "d")
+					end
+				end
+			end
         elseif GetMapName() == "a1_intro_world_2" then
             if vlua.find(Entities:FindAllInSphere(Vector(-1268, 576, -63), 10), player) and Entities:FindByName(nil, "balcony_ladder"):GetSequence() == "idle_open" then
                 ClimbLadder(80)
@@ -990,6 +1027,25 @@ if GlobalSys:CommandLineCheck("-novr") then
 
     player_spawn_ev = ListenToGameEvent('player_activate', function(info)
         if not IsServer() then return end
+		
+		------ PMEIN1 FIND PLAYER POS ----------
+		local playerEnt = Entities:GetLocalPlayer()
+		EmitSoundOnClient("HL2Player.Use", playerEnt)
+		local startVector = playerEnt:EyePosition()
+		local fullpos = string.sub(string.format("%s", startVector),26,-2)
+		local xpos_index = string.find(fullpos, " ")
+		local xpos = tonumber(string.sub(fullpos,0,xpos_index - 1))
+		local ypos_index = string.find(fullpos, " ", xpos_index + 1)
+		local ypos = tonumber(string.sub(fullpos,xpos_index + 1,ypos_index - 1))
+		local zpos = tonumber(string.sub(fullpos,ypos_index + 1,fullpos:len()))
+		--print(fullpos)
+		--print(xpos_index)
+		--print(ypos_index)
+		print("Current x position: " .. xpos)
+		print("Current y position: " .. ypos)
+		print("Current z position: " .. zpos)
+		local map = GetMapName()
+		---------------------------------------
 
         local loading_save_file = false
         local ent = Entities:FindByClassname(ent, "player_speedmod")
@@ -1002,6 +1058,9 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("mouse_pitchyaw_sensitivity " .. MOUSE_SENSITIVITY)
         SendToConsole("fov_desired " .. FOV)
         SendToConsole("snd_remove_soundevent HL2Player.UseDeny")
+		
+		SendToConsole('ent_remove position_script')
+		SendToConsole('ent_create logic_script {"targetname" "position_script" "origin" "0 0 0" "vscripts" "player_pos.lua"')
 
         DoIncludeScript("version.lua", nil)
 
@@ -1012,6 +1071,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. PRIMARY_ATTACK .. " +use")
             SendToConsole("bind " .. CROUCH .. " \"\"")
             SendToConsole("bind PAUSE main_menu_exec")
+			SendToConsole("fov_desired 80")
             if not loading_save_file then
                 SendToConsole("ent_fire player_speedmod ModifySpeed 0")
                 SendToConsole("setpos 0 -6154 6.473839")
@@ -1083,6 +1143,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. UNEQUIP_WEARABLE .. " novr_unequip_wearable")
             -- NOTE: Put additional custom bindings under here. Example:
             -- SendToConsole("bind X quit")
+			SendToConsole("bind c ent_messages") -- DEV ONLY
             SendToConsole("sv_noclipaccelerate 1")
             SendToConsole("hl2_sprintspeed 140")
             SendToConsole("hl2_normspeed 140")
@@ -1115,7 +1176,10 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("ent_fire *_van_door_* DisablePickup")
             SendToConsole("ent_fire *_cage_door_* DisablePickup")
             SendToConsole("ent_fire firedoor DisablePickup")
-            SendToConsole("ent_remove player_flashlight")
+			if Entities:FindByName(nil, "player_flashlight") then
+				SendToConsole("ent_remove player_flashlight")
+				SendToConsole("inv_flashlight")
+			end
             SendToConsole("hl_headcrab_deliberate_miss_chance 0")
             SendToConsole("combine_grenade_timer 4")
             SendToConsole("sk_auto_reload_time 9999")
@@ -1137,6 +1201,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("sk_plr_dmg_smg1 5")
             SendToConsole("hlvr_physcannon_forward_offset -5")
             SendToConsole("physcannon_tracelength 0")
+            SendToConsole("fov_desired " .. FOV)
             -- TODO: Lower this when picking up very low mass objects
             SendToConsole("player_throwforce 500")
             -- Add locked door handle animation
@@ -1399,15 +1464,22 @@ if GlobalSys:CommandLineCheck("-novr") then
                     ent:RedirectOutput("OnTrigger", "ShowLadderTutorial", ent)
 
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="light_switch_1", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-541.6 1770.1 133.4", ["angles"]="0 0 0", ["modelscale"]=2})
-                    ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="light_switch_2", ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-903.2 1691.6 111", ["angles"]="0 0 0", ["modelscale"]=2})
+                    ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="light_switch_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-903.2 1691.6 111", ["angles"]="0 0 0", ["modelscale"]=2})
+					
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="call_button_prop_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-225.384766 1880.790405 227.168457", ["angles"]="-90 110 0", ["modelscale"]=2}) --CALL BUTTON
+					
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_upper_left_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-216.930176 1904.178223 240.043457", ["angles"]="0 0 0", ["modelscale"]=2}) --MONITORS
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_upper_right_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-202.988281 1867.927246 246.378967", ["angles"]="0 0 0", ["modelscale"]=2})
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_lower_left_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-217.191895 1904.148438 229.349243", ["angles"]="0 0 0", ["modelscale"]=2})
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_lower_right_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-202.965332 1867.935059 236.032959", ["angles"]="0 0 0", ["modelscale"]=2})
 
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_1", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1473.99 -853.165 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1393.17 -923.015 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_3", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1393.17 -952.015 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_4", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1396.98 -982.97 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
 
-                    SendToConsole("ent_fire 563_vent_door DisablePickup")
-                    SendToConsole("ent_fire 563_vent_phys_hinge SetOffset 0.1")
+                    --SendToConsole("ent_fire 563_vent_door DisablePickup")
+                    --SendToConsole("ent_fire 563_vent_phys_hinge SetOffset 0.1")
 
                     -- TODO: Remove when Map Edits are done
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["solid"]=6, ["renderamt"]=0, ["model"]="models/props/industrial_door_1_40_92_white_temp.vmdl", ["origin"]="640 -1770 -210", ["angles"]="0 -10 0", ["modelscale"]=0.75})

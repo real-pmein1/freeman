@@ -5,3 +5,19 @@ Added player_pos script for in-game position-based triggers
 Changed bind for console to ~
 Changed in-game field of view to 55 to stop fish-eye effect
 Removed bind for flashlight for auto-flashlight
+
+a1_intro_world
+==============
+
+Added a positioning script entity
+Added a save-state for the radio antenna
+Added usable monitor buttons in the Eli call area
+Changed Eli call button to only function on the button and not on the microphone
+Changed both of the elevators' button commands from a debug command to a button press
+Fixed the radio tuner on the balcony, sets to 3 pre-defined stations
+Fixed the second light switch
+Removed the auto-teleport on the end vent so it can be manually opened and traversed
+
+TO-DO:
+Make the camera usable
+Make the vent close once through it
