@@ -9,6 +9,8 @@ Removed bind for flashlight for auto-flashlight
 
 TO DO:
 Fix long/big tutorial messages
+Fix syringe placement in HUD
+Fix wearing gas mask
 
 a1_intro_world
 ==============
@@ -40,3 +42,8 @@ a2_quarantine_entrance
 ======================
 
 Fixed multitool tutorial messages overlap by increasing timer to 10 seconds
+
+a2_pistol
+=========
+
+No changes
