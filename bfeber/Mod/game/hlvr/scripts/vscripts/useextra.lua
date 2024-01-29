@@ -667,6 +667,7 @@ if map == "a2_headcrabs_tunnel" then
         SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
 
         SendToConsole("inv_flashlight")
+		_G.flashlight_on = "1"
     end
 end
 

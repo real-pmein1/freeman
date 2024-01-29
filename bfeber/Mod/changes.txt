@@ -2,9 +2,12 @@ startup
 =======
 
 Added player_pos script for in-game position-based triggers
+Added the automatic flashlight which can be either automatic or manual by assigning the FLASHLIGHT binding
 Changed bind for console to ~
 Changed in-game field of view to 60 to stop fish-eye effect but allow the showing of wearables
 Changed resin HUD counter to blue
+Changed flashlight create/destroy functions from local to global
+Fixed flashlight on/off sounds
 Removed bind for flashlight for auto-flashlight
 
 TO DO:
@@ -52,4 +55,9 @@ a2_hideout
 ==========
 
 Fixed hideout bell not being able to be pulled more than once
+
+a2_headcrabs_tunnel
+===================
+
+No changes
 
