@@ -571,8 +571,14 @@ end
 ---------- a1_intro_world_2 ----------
 
 if name == "russell_headset" then
-    SendToConsole("ent_fire debug_relay_put_on_headphones trigger")
-    SendToConsole("ent_fire 4962_car_door_left_front close")
+    --SendToConsole("ent_fire debug_relay_put_on_headphones trigger")
+	SendToConsole("ent_fire_output russell_headset onputonheadset")
+    --SendToConsole("ent_fire 4962_car_door_left_front close")
+end
+
+if name == "4962_car_door_left_front" and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
+	SendToConsole("ent_fire 4962_car_door_left_front close")
+	thisEntity:Attribute_SetIntValue("used", 1)
 end
 
 if name == "carousel" then
@@ -592,9 +598,10 @@ if vlua.find(name, "mailbox") and vlua.find(model, "door") then
 end
 
 if name == "russell_entry_window" and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
-    SendToConsole("fadein 0.2")
-    SendToConsole("setpos -1728 275 100")
-    SendToConsole("ent_fire russell_entry_window SetCompletionValue 1")
+    --SendToConsole("fadein 0.2")
+    --SendToConsole("setpos -1728 275 100")
+    --SendToConsole("ent_fire russell_entry_window SetCompletionValue 1")
+	SendToConsole("ent_fire russell_entry_window setreturntocompletionamount 1;ent_fire russell_entry_window setreturntocompletionstyle 2;ent_fire russell_entry_window enablereturntocompletion")
     thisEntity:Attribute_SetIntValue("used", 1)
 end
 

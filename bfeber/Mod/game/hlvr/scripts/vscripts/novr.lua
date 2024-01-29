@@ -1497,7 +1497,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                     SendToConsole("ent_create env_message { targetname text_gg message GRAVITYGLOVES }")
                     SendToConsole("ent_create env_message { targetname text_shoot message SHOOT }")
 
-                    SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
+                    --SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
 
                     SendToConsole("ent_fire car_door_rear DisablePickup")
                 end
@@ -1546,7 +1546,8 @@ if GlobalSys:CommandLineCheck("-novr") then
                     ent:RedirectOutput("OnDetectedBulletFire", "CheckTutorialPistolEmpty", ent)
 
                     ent = Entities:FindByName(nil, "hint_crouch_trigger")
-                    ent:RedirectOutput("OnStartTouch", "GetOutOfCrashedVan", ent)
+                    --ent:RedirectOutput("OnStartTouch", "GetOutOfCrashedVan", ent)
+                    ent:RedirectOutput("OnStartTouch", "ShowCrouchTutorial", ent)
 
                     ent = Entities:FindByName(nil, "relay_weapon_pistol_fakefire")
                     ent:RedirectOutput("OnTrigger", "RedirectPistol", ent)
@@ -2102,11 +2103,11 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("ent_fire point_clientui_world_panel IgnoreUserInput")
     end
 
-    function GetOutOfCrashedVan(a, b)
-        SendToConsole("fadein 0.2")
-        SendToConsole("setpos_exact -1408 2307 -114")
-        SendToConsole("ent_fire 4962_car_door_left_front open")
-    end
+    -- function GetOutOfCrashedVan(a, b)
+        -- SendToConsole("fadein 0.2")
+        -- SendToConsole("setpos_exact -1408 2307 -114")
+        -- SendToConsole("ent_fire 4962_car_door_left_front open")
+    -- end
 
     function RedirectPistol(a, b)
         ent = Entities:FindByName(nil, "weapon_pistol")

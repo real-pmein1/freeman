@@ -21,3 +21,13 @@ Removed the auto-teleport on the end vent so it can be manually opened and trave
 TO-DO:
 Make the camera usable
 Make the vent close once through it
+
+a1_intro_world_2
+================
+
+Added crouch tutorial message to the crashed van's exit
+Changed the headset pickup from a debug command to the correct output command
+Changed the crashed van to require crouching to exit it
+Changed the parked car to have its door correctly open
+Changed Russell's window to be correctly closed instead of partially open
+Changed the auto-teleport on Russell's window so it can be manually opened
