@@ -33,8 +33,11 @@ An updated functionality list will be added to in due course.
 Delete the game\hlvr\scripts folder, the launcher folder, and verify your files through Steam.
 
 ## FAQs
+Q) How does this mod improve bfeber's?  
+A) There are some quality of life changes in this mod that befeber hasn't implemented (yet), like the automatic flashlight, usable monitors and radio etc.  It aims to fix the few bugs in their mod too.
 
-To be updated...
+Q) Is HL: Alyx able to be played start to finish with this mod?  
+A) This mod only has changes and fixes up to and including Fairview Juntion (a2_train_yard) so far, but maps are being fixed every week.  The rest of the game should still be playble though but without any QoL/bug fixes (if any are needed).
 
 Q) Why is the mod called "Freeman"  
 A) Because the original mod featured the Half-Life 2 HEV HUD and weapons
@@ -48,7 +51,7 @@ To be updated...
 
 ## Third-party mod fixes
 
-To be updated...
+Fixed JJL722's flashlight mod to be automatic and play sound when turning on/off
 
 ## Known issues
 
