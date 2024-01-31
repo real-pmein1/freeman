@@ -39,7 +39,7 @@ A) There are some quality of life changes in this mod that befeber hasn't implem
 Q) Is HL: Alyx able to be played start to finish with this mod?  
 A) This mod only has changes and fixes up to and including Fairview Juntion (a2_train_yard) so far, but maps are being fixed every week.  The rest of the game should still be playble though but without any QoL/bug fixes (if any are needed).
 
-Q) Why is the mod called "Freeman"  
+Q) Why is the mod called "Freeman"?  
 A) Because the original mod featured the Half-Life 2 HEV HUD and weapons
 
 Q) This game shouldn't be played outside of VR  
