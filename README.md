@@ -25,7 +25,7 @@ An updated functionality list will be added to in due course.
 ## Installation/Running the Game
 
 + Download and extract the launcher to a folder of your choice
-+ Download and extract the mod files (soon) to the Half-Life Alyx root folder (where the `game` folder sits)
++ Download and extract the [mod files](https://github.com/real-pmein1/freeman/tree/main/bfeber/Mod) to the Half-Life Alyx root folder (where the `game` folder sits)
 + Run the launcher and set any additional launch options required, then press `PLAY`
 
 ## Uninstallation
