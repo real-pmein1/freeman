@@ -38,14 +38,15 @@ function MainThinkFunc()
 		elseif ( xpos > -1370.55 and xpos < -1366.44 ) and ( ypos > 2295 and ypos < 2343 ) and ( zpos > -100 and zpos < -90 ) then
 			SendToConsole("setpos_player 1 -1408 2307 -114")
 		end
-	-- elseif GetMapName() == "a1_intro_world" then
-		-- if ( xpos > 561.55 and xpos < 658.55 ) and ( ypos > -2353.41 and ypos < -2311.61 ) then
-			-- SendToConsole("setpos_player 1 -1727.60 303.17 94.03")
-		-- end
 	elseif GetMapName() == "a3_station_street" then
 		if ( xpos > 1436 and xpos < 1462 ) and ( ypos > -1370 and ypos < -1366 ) then
 			SendToConsole("setpos_player 1 1449.94 -1393.25 160.53")
 			SendToConsole("ent_fire 2860_window_wedge break")
+		end
+	elseif GetMapName() == "a3_hotel_interior_rooftop" then
+		if ( xpos > 753.8 and xpos < 765 ) and ( ypos > -1440 and ypos < -1407 ) then
+			SendToConsole("setpos_player 1 791.77 -1425.97 576.66")
+			SendToConsole("ent_fire zombieparty_window_slideconstraint setoffset 0")
 		end
 	end
 	

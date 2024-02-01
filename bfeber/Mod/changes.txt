@@ -3,6 +3,7 @@ startup
 
 Added player_pos script for in-game position-based triggers
 Added the automatic flashlight which can be either automatic or manual by assigning the FLASHLIGHT binding
+Added NOTARGET binding
 Changed bind for console to ~
 Changed in-game field of view to 60 to stop fish-eye effect but allow the showing of wearables
 Changed resin HUD counter to blue
@@ -89,3 +90,13 @@ a3_hotel_underground_pit
 ========================
 
 No changes
+
+a3_hotel_interior_rooftop
+=========================
+
+Added automatic teleport to the zombie party window
+Added flashlight switch on to the circuit breaker if using the automatic flashlight
+Changed the zombie party window to be openable
+
+TO-DO:
+Make the reviver puzzle work without the extra battery

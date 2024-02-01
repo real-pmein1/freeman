@@ -1017,8 +1017,9 @@ if class == "prop_dynamic" then
 end
 
 if map == "a3_hotel_interior_rooftop" and name == "window_sliding1" then
-    SendToConsole("fadein 0.2")
-    SendToConsole("setpos_exact 788 -1420 576")
+	SendToConsole("ent_fire zombieparty_window_slideconstraint setoffset 1")
+    -- SendToConsole("fadein 0.2")
+    -- SendToConsole("setpos_exact 788 -1420 576")
     SendToConsole("-use")
     thisEntity:SetThink(function()
         SendToConsole("+use")
@@ -1258,6 +1259,10 @@ end
 
 if name == "room1_lights_circuitbreaker_switch" then
     SendToConsole("ent_fire_output controlroom_circuitbreaker_relay ontrigger")
+	if player:Attribute_GetIntValue("auto_flashlight", 1) == 1 and _G.flashlight_on == "0" then
+		create_flashlight()
+		_G.flashlight_on = "1"
+	end
 end
 
 if name == "plug_console_starter_lever" then
