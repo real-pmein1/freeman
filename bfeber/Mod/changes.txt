@@ -79,3 +79,8 @@ Added usable buttons to the elevator inside the keycard area
 Added a break command to the hotel entry window's wedge in order to close the window on entry
 Changed the hotel entry window to an automatic teleport instead of needing to "use" the window
 Removed the incorrectly placed (and unneeded) elevator floor logic
+
+a3_hotel_lobby_basement
+=======================
+
+Removed old freeman mod piano code in favor of bfeber's

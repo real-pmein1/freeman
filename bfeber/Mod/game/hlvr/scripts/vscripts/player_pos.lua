@@ -50,11 +50,11 @@ function MainThinkFunc()
 	end
 	
 	-- HOTEL PIANO
-	if string.match(GetMapName(), "a3_hotel_lobby_basement") then
-		if ((xpos > 1205 and xpos < 1238) and (ypos > -1068 and ypos < -1001)) then
-			SendToConsole("ent_fire piano_played_first_time trigger")
-		end
-	end
+	-- if string.match(GetMapName(), "a3_hotel_lobby_basement") then
+		-- if ((xpos > 1205 and xpos < 1238) and (ypos > -1068 and ypos < -1001)) then
+			-- SendToConsole("ent_fire piano_played_first_time trigger")
+		-- end
+	-- end
 	
 	-- FLASHLIGHT
 	if playerEnt_pos:Attribute_GetIntValue("auto_flashlight", 1) == 1 then
