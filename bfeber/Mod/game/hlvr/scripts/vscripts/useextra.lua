@@ -682,6 +682,25 @@ if map == "a2_train_yard" then
 end
 
 
+---------- a3_station_street ----------
+
+if map == "a3_station_street" then
+    if name == "2_8127_elev_button_floor_1_call_button" then
+        SendToConsole("ent_fire_output 2_8127_elev_button_floor_1_call OnIn")
+		EmitSoundOnClient("Button_LobbyElevator.Success",Entities:GetLocalPlayer())
+    elseif name == "2_8127_elev_button_floor_2_call_button" then
+        SendToConsole("ent_fire_output 2_8127_elev_button_floor_2_call OnIn")
+		EmitSoundOnClient("Button_LobbyElevator.Success",Entities:GetLocalPlayer())
+    elseif name == "2_8127_elev_button_floor_1_elev_button" then
+        SendToConsole("ent_fire 2_8127_elev_button_test_floor_1 trigger")
+		EmitSoundOnClient("Button_LobbyElevator.Success",Entities:GetLocalPlayer())
+    elseif name == "2_8127_elev_button_floor_2_elev_button" then
+        SendToConsole("ent_fire 2_8127_elev_button_test_floor_2 trigger")
+		EmitSoundOnClient("Button_LobbyElevator.Success",Entities:GetLocalPlayer())
+    end
+end
+
+
 ---------- a3_hotel_lobby_basement ----------
 
 if map == "a3_hotel_lobby_basement" then
@@ -987,13 +1006,13 @@ if class == "prop_dynamic" then
             end, "HealthChargeSoundLoop", 0.7)
         end
     elseif model == "models/props/alyx_hideout/button_plate.vmdl" then
-        SendToConsole("ent_fire 2_8127_elev_button_test_floor_" .. player:Attribute_GetIntValue("next_elevator_floor", 2) .. " Trigger")
+        -- SendToConsole("ent_fire 2_8127_elev_button_test_floor_" .. player:Attribute_GetIntValue("next_elevator_floor", 2) .. " Trigger")
 
-        if player:Attribute_GetIntValue("next_elevator_floor", 2) == 2 then
-            player:Attribute_SetIntValue("next_elevator_floor", 1)
-        else
-            player:Attribute_SetIntValue("next_elevator_floor", 2)
-        end
+        -- if player:Attribute_GetIntValue("next_elevator_floor", 2) == 2 then
+            -- player:Attribute_SetIntValue("next_elevator_floor", 1)
+        -- else
+            -- player:Attribute_SetIntValue("next_elevator_floor", 2)
+        -- end
     end
 end
 
@@ -1006,10 +1025,10 @@ if map == "a3_hotel_interior_rooftop" and name == "window_sliding1" then
     end, "", 0)
 end
 
-if name == "2860_window_sliding1" then
-    SendToConsole("fadein 0.2")
-    SendToConsole("setpos_exact 1437 -1422 140")
-end
+-- if name == "2860_window_sliding1" then
+    -- SendToConsole("fadein 0.2")
+    -- SendToConsole("setpos_exact 1437 -1422 140")
+-- end
 
 if name == "2_11128_cshield_station_1" then
     if thisEntity:GetCycle() == 1 then

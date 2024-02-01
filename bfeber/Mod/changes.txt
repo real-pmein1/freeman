@@ -7,6 +7,7 @@ Changed bind for console to ~
 Changed in-game field of view to 60 to stop fish-eye effect but allow the showing of wearables
 Changed resin HUD counter to blue
 Changed flashlight create/destroy functions from local to global
+Changed sv_cheats to 1 for any map instead of just startup in case the game is started from the "map" command
 Fixed flashlight on/off sounds
 Removed bind for flashlight for auto-flashlight
 
@@ -70,3 +71,11 @@ a2_train_yard
 =============
 
 No changes
+
+a3_station_street
+=================
+
+Added usable buttons to the elevator inside the keycard area
+Added a break command to the hotel entry window's wedge in order to close the window on entry
+Changed the hotel entry window to an automatic teleport instead of needing to "use" the window
+Removed the incorrectly placed (and unneeded) elevator floor logic

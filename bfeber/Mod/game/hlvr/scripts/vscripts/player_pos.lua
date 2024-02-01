@@ -43,7 +43,7 @@ function MainThinkFunc()
 			-- SendToConsole("setpos_player 1 -1727.60 303.17 94.03")
 		-- end
 	elseif GetMapName() == "a3_station_street" then
-		if ( xpos > 1436 and xpos < 1457 ) and ( ypos > -1381 and ypos < -1369 ) then
+		if ( xpos > 1436 and xpos < 1462 ) and ( ypos > -1370 and ypos < -1366 ) then
 			SendToConsole("setpos_player 1 1449.94 -1393.25 160.53")
 			SendToConsole("ent_fire 2860_window_wedge break")
 		end

@@ -885,9 +885,9 @@ if GlobalSys:CommandLineCheck("-novr") then
         elseif GetMapName() == "a2_headcrabs_tunnel" and vlua.find(Entities:FindAllInSphere(Vector(354, -251, -62), 18), player) then
             ClimbLadder(22)
         elseif GetMapName() == "a3_station_street" then
-            if vlua.find(Entities:FindAllInSphere(Vector(934, 1883, -135), 20), player) then
-                SendToConsole("ent_fire_output 2_8127_elev_button_floor_1_call OnIn")
-            end
+            --if vlua.find(Entities:FindAllInSphere(Vector(934, 1883, -135), 20), player) then
+                --SendToConsole("ent_fire_output 2_8127_elev_button_floor_1_call OnIn")
+            --end
         elseif GetMapName() == "a3_hotel_lobby_basement" then
             if vlua.find(Entities:FindAllInSphere(Vector(1059, -1475, 200), 20), player) then
                 if player:Attribute_GetIntValue("EnabledHotelLobbyPower", 0) == 1 then
@@ -1073,9 +1073,11 @@ if GlobalSys:CommandLineCheck("-novr") then
 		end
 
         DoIncludeScript("version.lua", nil)
+		
+        SendToConsole("sv_cheats 1")
 
         if GetMapName() == "startup" then
-            SendToConsole("sv_cheats 1")
+            --SendToConsole("sv_cheats 1")
             SendToConsole("hidehud 96")
             SendToConsole("mouse_disableinput 1")
             SendToConsole("bind " .. PRIMARY_ATTACK .. " +use")
@@ -1723,6 +1725,12 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                             ent = Entities:FindByName(nil, "door")
                             DoEntFireByInstanceHandle(ent, "SetOpenDirection", "" .. 2, 0, nil, nil)
+							
+							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_1_call_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="905.444336 1883.500000 -152.125000", ["angles"]="90.000000 270.000000 0.000000", ["modelscale"]=2})
+							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_2_call_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="905.444336 1883.500000 112.006470", ["angles"]="90.000000 270.000000 0.000000", ["modelscale"]=2})
+							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_1_elev_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="891.588257 1889.000000 -148.850000", ["angles"]="90.000000 90.000000 0.000000", ["modelscale"]=2, ["parentname"]="2_8127_elev_base_ent"})
+							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_2_elev_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="891.588257 1889.000000 -143.300000", ["angles"]="90.000000 90.000000 0.000000", ["modelscale"]=2, ["parentname"]="2_8127_elev_base_ent"})	
+							
                         end
                     elseif GetMapName() == "a3_hotel_lobby_basement" then
                         Entities:FindByName(nil, "power_stake_2_start"):Attribute_SetIntValue("used", 1)
