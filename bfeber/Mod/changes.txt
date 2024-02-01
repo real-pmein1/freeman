@@ -84,3 +84,8 @@ a3_hotel_lobby_basement
 =======================
 
 Removed old freeman mod piano code in favor of bfeber's
+
+a3_hotel_underground_pit
+========================
+
+No changes
