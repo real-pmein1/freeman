@@ -1257,6 +1257,10 @@ if class == "item_hlvr_combine_console_tank" then
     end
 end
 
+if class == "item_hlvr_weapon_tripmine" then
+	SendToConsole("ent_fire !picker deactivatemine")
+end
+
 if name == "room1_lights_circuitbreaker_switch" then
     SendToConsole("ent_fire_output controlroom_circuitbreaker_relay ontrigger")
 	if player:Attribute_GetIntValue("auto_flashlight", 1) == 1 and _G.flashlight_on == "0" then

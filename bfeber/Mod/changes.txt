@@ -4,11 +4,13 @@ startup
 Added player_pos script for in-game position-based triggers
 Added the automatic flashlight which can be either automatic or manual by assigning the FLASHLIGHT binding
 Added NOTARGET binding
+Added tripmine "use" to deactivate (as well as using the multitool)
 Changed bind for console to ~
 Changed in-game field of view to 60 to stop fish-eye effect but allow the showing of wearables
 Changed resin HUD counter to blue
 Changed flashlight create/destroy functions from local to global
 Changed sv_cheats to 1 for any map instead of just startup in case the game is started from the "map" command
+Changed all tripmines to have active ports for deactivation
 Fixed flashlight on/off sounds
 Removed bind for flashlight for auto-flashlight
 
@@ -16,6 +18,7 @@ TO DO:
 Fix long/big tutorial messages
 Fix syringe placement in HUD
 Fix wearing gas mask
+Fix trip mine port when deactivating with the multitool
 
 a1_intro_world
 ==============
@@ -100,3 +103,11 @@ Changed the zombie party window to be openable
 
 TO-DO:
 Make the reviver puzzle work without the extra battery
+
+a3_hotel_street
+===============
+
+No changes
+
+TO-DO:
+Add power buttons to the washing machines
