@@ -5,6 +5,7 @@ Added player_pos script for in-game position-based triggers
 Added the automatic flashlight which can be either automatic or manual by assigning the FLASHLIGHT binding
 Added NOTARGET binding
 Added tripmine "use" to deactivate (as well as using the multitool)
+Added new bindings for raise/lower platform (currently only used in a3_c17_processing_plant)
 Changed bind for console to ~
 Changed in-game field of view to 60 to stop fish-eye effect but allow the showing of wearables
 Changed resin HUD counter to blue
@@ -111,3 +112,16 @@ No changes
 
 TO-DO:
 Add power buttons to the washing machines
+
+a3_c17_processing_plant
+=======================
+
+Added missing ladder climb in the courtyard
+Added ability to raise and lower the scissor lift platform instead of it auto-rising/lowering
+Added ability to raise and lower the pallet platform by looking up/down whilst holding "use"
+Added auto turn right at the top of the long ladder just before the platform jumps into the distillery
+Fixed tripmines to be able to be disarmed
+Fixed (temporarily) the second toner path in the courtyard shack by adding "use" to the closed toner port
+
+TO-DO:
+Fix the down button on the scissor lift

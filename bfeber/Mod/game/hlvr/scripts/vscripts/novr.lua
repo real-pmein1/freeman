@@ -930,6 +930,8 @@ if GlobalSys:CommandLineCheck("-novr") then
 
             if vlua.find(Entities:FindAllInSphere(Vector(-80, -2215, 760), 15), player) and Entities:FindByName(nil, "factory_int_up_barnacle_npc_1"):GetHealth() <= 0 then
                 ClimbLadder(890)
+				SendToConsole("unbind .")
+				SendToConsole("unbind ,")
             end
 
             if vlua.find(Entities:FindAllInSphere(Vector(-237,-2856,392), 15), player) then
@@ -954,8 +956,13 @@ if GlobalSys:CommandLineCheck("-novr") then
                 ClimbLadder(180)
             end
 
+            if vlua.find(Entities:FindAllInSphere(Vector(-1460, -2740, 127), 15), player) then
+                ClimbLadder(180)
+            end
+
             if vlua.find(Entities:FindAllInSphere(Vector(-1393, -2493, 113), 10), player) then
-                ClimbLadder(425, Vector(0, 0, -1))
+                -- ClimbLadder(425, Vector(0, 0, -1))
+				ClimbLadderRight(425, Vector(0, 0, -1), 180)
             end
 
             if vlua.find(Entities:FindAllInSphere(Vector(-1420, -2482, 472), 30), player) then
@@ -1021,6 +1028,22 @@ if GlobalSys:CommandLineCheck("-novr") then
     Convars:RegisterCommand("useextra_release", function()
         local player = Entities:GetLocalPlayer()
         player:Attribute_SetIntValue("use_released", 1)
+    end, "", 0)
+	
+    Convars:RegisterCommand("+raise_platform", function()
+        SendToConsole("ent_fire_output lift_button_up onin")
+    end, "", 0)
+	
+    Convars:RegisterCommand("-raise_platform", function()
+        SendToConsole("ent_fire_output lift_button_up onout")
+    end, "", 0)
+	
+    Convars:RegisterCommand("+lower_platform", function()
+        SendToConsole("ent_fire_output lift_button_down onin")
+    end, "", 0)
+	
+    Convars:RegisterCommand("-lower_platform", function()
+        SendToConsole("ent_fire_output lift_button_down onout")
     end, "", 0)
 
     if player_spawn_ev ~= nil then
@@ -1801,7 +1824,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                             -- ent:SetOrigin(Vector(1657.083, 595.287, 400))
                         -- end
                     elseif GetMapName() == "a3_c17_processing_plant" then
-                        SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+                        --SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
 
                         if not loading_save_file then
                             -- Default Junction Rotations
@@ -1816,13 +1839,13 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                             SendToConsole("ent_fire vent_door DisablePickup")
 
-                            ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-896, -3768, 348), 10)
-                            if ent then
-                                ent:Kill()
-                            end
+                            -- ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-896, -3768, 348), 10)
+                            -- if ent then
+                                -- ent:Kill()
+                            -- end
 
-                            ent = Entities:FindByClassnameNearest("trigger_once", Vector(-1456, -3960, 224), 10)
-                            ent:RedirectOutput("OnTrigger", "SetupMineRoom", ent)
+                            -- ent = Entities:FindByClassnameNearest("trigger_once", Vector(-1456, -3960, 224), 10)
+                            -- ent:RedirectOutput("OnTrigger", "SetupMineRoom", ent)
 
                             ent = Entities:FindByName(nil, "shack_path_6_port_1_enable")
                             ent:RedirectOutput("OnTrigger", "EnableShackToner", ent)
@@ -1926,7 +1949,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                             SendToConsole("ent_fire 589_toner_port_5 Disable")
                             SendToConsole("ent_fire @prop_phys_portaloo_door DisablePickup")
 
-                            SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+                            --SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
                         elseif GetMapName() == "a4_c17_tanker_yard" then
                             SendToConsole("ent_fire elev_hurt_player_* Kill")
 
@@ -2253,6 +2276,39 @@ if GlobalSys:CommandLineCheck("-novr") then
                 return 0
             end
         end, "ClimbUp", 0)
+    end
+
+    function ClimbLadderRight(height, push_direction, rotation)
+        local ent = Entities:GetLocalPlayer()
+        if ent:Attribute_GetIntValue("disable_unstuck", 0) == 1 then
+            return
+        end
+        ent:Attribute_SetIntValue("disable_unstuck", 1)
+        local ticks = 0
+        ent:SetThink(function()
+            if ent:GetOrigin().z > height then
+                if push_direction == nil then
+                    ent:SetVelocity(Vector(ent:GetForwardVector().x, ent:GetForwardVector().y, 0):Normalized() * 150)
+                else
+                    ent:SetVelocity(Vector(push_direction.z, push_direction.y, push_direction.z) * 150)
+                end
+                SendToConsole("+iv_duck;-iv_duck")
+                ent:Attribute_SetIntValue("disable_unstuck", 0)
+            else
+                ent:SetVelocity(Vector(0, 0, 0))
+                ent:SetOrigin(ent:GetOrigin() + Vector(0, 0, 2.1))
+                ticks = ticks + 1
+                if ticks == 25 then
+                    SendToConsole("snd_sos_start_soundevent Step_Player.Ladder_Single")
+                    ticks = 0
+                end
+                return 0
+            end
+			if rotation then
+				SendToConsole("fadein 0.1")
+				ent:SetAngles(0, rotation, 0)
+			end
+        end, "ClimbUpRight", 0)
     end
 
     function ClimbLadderSound()

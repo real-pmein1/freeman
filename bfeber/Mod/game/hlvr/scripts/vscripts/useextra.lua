@@ -59,6 +59,10 @@ if map == "a3_distillery" then
     end
 end
 
+-- if class == "prop_animinteractable" and (name ~= "pallet_lever" or name ~= "pallet_lever_unpowered" or name ~= "pallet_lever_vertical") then
+	-- SendToConsole("ent_fire !picker enablereturntocompletion;ent_fire !picker setreturntocompletionamount 1")
+-- end
+
 if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and name ~= "larry_ladder" and name ~= "@pod_shell" and name ~= "589_panel_switch" and name ~= "tc_door_control" and (class == "item_health_station_charger" or (class == "prop_animinteractable" and (not vlua.find(name, "elev_anim_door") or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 1 and thisEntity:GetVelocity() == Vector(0, 0, 0))) and not vlua.find(name, "5628_2901_barricade_door")) or (class == "item_hlvr_combine_console_rack" and IsCombineConsoleLocked() == false)) and not (map == "a4_c17_parking_garage" and name == "door_reset" and player:Attribute_GetIntValue("circuit_" .. map .. "_toner_junction_5_completed", 0) == 0) and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
     if vlua.find(name, "slide_train_door") and Entities:FindByClassnameNearest("phys_constraint", thisEntity:GetCenter(), 20) then
         return
@@ -181,7 +185,9 @@ if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and nam
 
     thisEntity:SetThink(function()
         if not is_console then
-            DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
+			if not name == "pallet_lever_unpowered" then --or not name == "pallet_lever" or not name == "pallet_lever_vertical" then
+				DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
+			end
         end
 
         if name == "12712_shotgun_wheel" then
@@ -785,6 +791,84 @@ if name == "vent_door" then
     end
 end
 
+if map == "a3_c17_processing_plant" then
+	if name == "lift_button_box" then
+		SendToConsole("bind " .. RAISE_PLATFORM .. " +raise_platform")
+		SendToConsole("bind " .. LOWER_PLATFORM .. " +lower_platform")
+	end
+	if name == "door_factory_interior" then
+		SendToConsole("unbind .")
+		SendToConsole("unbind ,")
+	end
+	if name == "shack_path_1_port_1" then
+		SendToConsole("ent_fire shack_path_1_port_1 onplugrotated")
+		SendToConsole("ent_fire_output shack_path_1 onpoweron")
+		SendToConsole("ent_fire_output shack_path_2 onpoweron")
+		SendToConsole("ent_fire_output shack_path_3 onpoweron")
+		SendToConsole("ent_fire_output shack_path_4 onpoweron")
+		SendToConsole("ent_fire_output shack_path_5 onpoweron")
+	end
+end
+
+if name == "pallet_lever_unpowered" then
+    if thisEntity:GetMoveParent() then
+        DoEntFireByInstanceHandle(thisEntity, "ClearParent", "", 0, nil, nil)
+    else
+        local viewmodel = Entities:FindByClassname(nil, "viewmodel")
+        local look_delta = player:EyeAngles()
+		SendToConsole("ent_fire pallet_lever_unpowered enablereturntocompletion")
+        player:SetThink(function()
+			static_look = 0
+            if player:Attribute_GetIntValue("use_released", 0) == 0 then
+                local x = ((look_delta.x - player:EyeAngles().x)/10) * -1
+                look_delta = player:EyeAngles()
+				static_look = static_look + x
+				thisEntity:Attribute_SetFloatValue(static_look2, thisEntity:Attribute_GetFloatValue(static_look2, 0.500000) + static_look)
+				SendToConsole("ent_fire !picker setreturntocompletionamount " .. thisEntity:Attribute_GetFloatValue(static_look2, 0.500000))
+                return 0
+            end
+        end, "Interacting", 0)
+    end
+elseif name == "pallet_lever_vertical" then
+    if thisEntity:GetMoveParent() then
+        DoEntFireByInstanceHandle(thisEntity, "ClearParent", "", 0, nil, nil)
+    else
+        local viewmodel = Entities:FindByClassname(nil, "viewmodel")
+        local look_delta = player:EyeAngles()
+		SendToConsole("ent_fire pallet_lever_vertical enablereturntocompletion")
+        player:SetThink(function()
+			static_look = 0
+            if player:Attribute_GetIntValue("use_released", 0) == 0 then
+                local x = ((look_delta.x - player:EyeAngles().x)/10) * -1
+                look_delta = player:EyeAngles()
+				static_look = static_look + x
+				thisEntity:Attribute_SetFloatValue(static_look2, thisEntity:Attribute_GetFloatValue(static_look2, 0.500000) + static_look)
+				SendToConsole("ent_fire !picker setreturntocompletionamount " .. thisEntity:Attribute_GetFloatValue(static_look2, 0.500000))
+                return 0
+            end
+        end, "Interacting", 0)
+    end
+elseif name == "pallet_lever" then
+    if thisEntity:GetMoveParent() then
+        DoEntFireByInstanceHandle(thisEntity, "ClearParent", "", 0, nil, nil)
+    else
+        local viewmodel = Entities:FindByClassname(nil, "viewmodel")
+        local look_delta = player:EyeAngles()
+		SendToConsole("ent_fire pallet_lever enablereturntocompletion")
+        player:SetThink(function()
+			static_look = 0
+            if player:Attribute_GetIntValue("use_released", 0) == 0 then
+                local x = ((look_delta.x - player:EyeAngles().x)/10) * -1
+                look_delta = player:EyeAngles()
+				static_look = static_look + x
+				thisEntity:Attribute_SetFloatValue(static_look2, thisEntity:Attribute_GetFloatValue(static_look2, 0.500000) + static_look)
+				SendToConsole("ent_fire !picker setreturntocompletionamount " .. thisEntity:Attribute_GetFloatValue(static_look2, 0.500000))
+                return 0
+            end
+        end, "Interacting", 0)
+    end
+end
+
 
 ---------- a3_distillery ----------
 
@@ -1282,13 +1366,15 @@ if name == "plug_console_starter_lever" then
 end
 
 if name == "lift_button_box" then
-    if thisEntity:Attribute_GetIntValue("used", 0) == 1 then
-        SendToConsole("ent_fire_output lift_button_down onin")
-        thisEntity:Attribute_SetIntValue("used", 0)
-    else
-        SendToConsole("ent_fire_output lift_button_up onin")
-        thisEntity:Attribute_SetIntValue("used", 1)
-    end
+	if RAISE_PLATFORM == "" then
+		if thisEntity:Attribute_GetIntValue("used", 0) == 1 then
+			SendToConsole("ent_fire_output lift_button_down onin")
+			thisEntity:Attribute_SetIntValue("used", 0)
+		else
+			SendToConsole("ent_fire_output lift_button_up onin")
+			thisEntity:Attribute_SetIntValue("used", 1)
+		end
+	end
 end
 
 if name == "pallet_lever_vertical" then
