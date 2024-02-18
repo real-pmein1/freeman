@@ -1,4 +1,4 @@
-startup
+General
 =======
 
 Added player_pos script for in-game position-based triggers
@@ -12,7 +12,9 @@ Changed resin HUD counter to blue
 Changed flashlight create/destroy functions from local to global
 Changed sv_cheats to 1 for any map instead of just startup in case the game is started from the "map" command
 Changed all tripmines to have active ports for deactivation
+Changed hand over mouth to stop coughing to a toggle instead of key-hold
 Fixed flashlight on/off sounds
+Fixed Valve bug where the Vodka carry count doesn't play the correct speech lines in a4_c17_zoo
 Removed bind for flashlight for auto-flashlight
 
 TO DO:
@@ -125,3 +127,30 @@ Fixed (temporarily) the second toner path in the courtyard shack by adding "use"
 
 TO-DO:
 Fix the down button on the scissor lift
+
+a3_distillery
+=============
+
+Added missing ladder climb to the ladder just before Larry
+Added new console command to notarget Jeff and added to NOTARGET binding
+Added new temporary Jeff breakout trigger (due to the toner puzzle not working)
+Added missing ladder climb in the antlion plug area
+Added Vodka carry count for a4_c17_zoo
+Changed the last ladder to be able to be climbed from nearer to it
+Fixed the first freezer door to open on hook release
+Fixed the Jeff into roll-up door so it breaks the Xen crust with three "uses"
+Fixed the second freezer door so it can be opened and closed correctly
+Fixed the second freezer door so the hook can be moved independently of the door
+Fixed the roll-up door and its crank wheel so it turns whilst holding "use"
+Fixed the cellar ladder drop by removing the climb down whilst Jeff is alerted
+Fixed the cabinet doors not opening
+Fixed the crank battery "fix" (reverted it as it's unneccessary)
+Fixed the trash compactor lever so it opens and closes the compactor door correctly
+Fixed the trash compactor button so it only works when pressing instead of when the player is nearby
+Fixed the plug levers and cranks so they move and turn correctly
+
+TO DO:
+Add Vodka removal count if bottle(s) dropped from pockets
+Fix the second freezer door's returntocompletion system
+Fix the cabinet doors opening speed
+Fix the tc lever not dropping fully when the tc is finished

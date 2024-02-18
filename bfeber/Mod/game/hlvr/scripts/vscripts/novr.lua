@@ -144,7 +144,31 @@ if GlobalSys:CommandLineCheck("-novr") then
         player:Attribute_SetIntValue("disable_unstuck", 0)
     end, nil)
 
-    Convars:RegisterCommand("usemultitool", function()
+    Convars:RegisterCommand("notarget_jeff", function()
+		local player = Entities:GetLocalPlayer()
+		if player:Attribute_GetIntValue("notarget", 0) == 0 then
+			player:Attribute_SetIntValue("notarget", 1)
+			SendToConsole("ent_fire @blind_zombie setdeafstate 1;ent_fire @blind_zombie ignoreplayer 1;ent_fire @blind_zombie setsuppressmovement 1;hl_blind_zombie_attack_chance 0;hl_blind_zombie_cough_kill 0;hl_blind_zombie_sniff_time 0")
+			print("notarget Jeff ON")
+		else
+			player:Attribute_SetIntValue("notarget", 0)
+			SendToConsole("ent_fire @blind_zombie setdeafstate 0;ent_fire @blind_zombie ignoreplayer 0;ent_fire @blind_zombie setsuppressmovement 0;hl_blind_zombie_attack_chance 1;hl_blind_zombie_cough_kill 1;hl_blind_zombie_sniff_time 1")
+			print("notarget Jeff OFF")
+		end
+    end, "", 0)
+
+    Convars:RegisterCommand("covermouth_toggle", function()
+		local player = Entities:GetLocalPlayer()
+		if player:Attribute_GetIntValue("covering_mouth_toggle", 0) == 0 then
+            SendToConsole("ent_fire !player suppresscough 1;ent_fire_output @player_proxy OnPlayerCoverMouth;ent_fire lefthand Enable;novr_cover_mouth")
+			player:Attribute_SetIntValue("covering_mouth_toggle", 1)
+		else
+            SendToConsole("ent_fire !player suppresscough 0;ent_fire_output @player_proxy OnPlayerUncoverMouth;ent_fire lefthand Disable;novr_uncover_mouth")
+			player:Attribute_SetIntValue("covering_mouth_toggle", 0)
+		end
+    end, "", 0)
+	
+	Convars:RegisterCommand("usemultitool", function()
         local viewmodel = Entities:FindByClassname(nil, "viewmodel")
         local player = Entities:GetLocalPlayer()
 
@@ -769,6 +793,15 @@ if GlobalSys:CommandLineCheck("-novr") then
 		print("Current z position: " .. zpos)
 		local map = GetMapName()
 		---------------------------------------
+		
+		---- PMEIN1 SHOW PLAYER INVENTORY -----
+		-- local playerEnt = Entities:GetLocalPlayer()
+		-- local player_stats = {}
+		-- playerEnt:GatherCriteria(player_stats)
+		-- for k,l in pairs(player_stats) do
+			-- print(k .. " " .. l)
+		-- end
+		---------------------------------------
 
         player:Attribute_SetIntValue("used_gravity_gloves", 0)
         player:Attribute_SetIntValue("use_released", 0)
@@ -971,6 +1004,10 @@ if GlobalSys:CommandLineCheck("-novr") then
                 SendToConsole("setpos_exact -1392 -2471 53")
             end
         elseif GetMapName() == "a3_distillery" then
+            if vlua.find(Entities:FindAllInSphere(Vector(140, -210, 426), 20), player) then
+                ClimbLadder(440)
+            end
+			
             if vlua.find(Entities:FindAllInSphere(Vector(20, -496, 211), 10), player) then
                 ClimbLadder(462)
             end
@@ -983,13 +1020,13 @@ if GlobalSys:CommandLineCheck("-novr") then
                 end
             end
 
-            if vlua.find(Entities:FindAllInSphere(Vector(515, 1595, 578), 10), player) then
+            if vlua.find(Entities:FindAllInSphere(Vector(520, 1595, 578), 20), player) then
                 ClimbLadder(690)
             end
 
-            if vlua.find(Entities:FindAllInSphere(Vector(925, 1102, 578), 10), player) then
-                SendToConsole("ent_fire_output 11578_2635_380_button_center_pusher OnIn")
-            end
+            -- if vlua.find(Entities:FindAllInSphere(Vector(925, 1102, 578), 10), player) then
+                -- SendToConsole("ent_fire_output 11578_2635_380_button_center_pusher OnIn")
+            -- end
         elseif GetMapName() == "a4_c17_tanker_yard" then
             if vlua.find(Entities:FindAllInSphere(Vector(6980, 2591, 13), 10), player) then
                 ClimbLadder(260)
@@ -1156,7 +1193,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. INTERACT .. " +useextra")
             SendToConsole("bind " .. JUMP .. " jumpfixed")
             SendToConsole("bind " .. NOCLIP .. " toggle_noclip")
-            SendToConsole("bind " .. NOTARGET .. " notarget")
+            SendToConsole("bind " .. NOTARGET .. " \"notarget;notarget_jeff\"")
             SendToConsole("bind " .. QUICK_SAVE .. " \"save quick;snd_sos_start_soundevent Instructor.StartLesson;ent_fire text_quicksave showmessage\"")
             SendToConsole("bind " .. QUICK_LOAD .. " \"vr_enable_fake_vr 0;vr_enable_fake_vr 0;load quick\"")
             SendToConsole("bind " .. MAIN_MENU .. " \"map startup\"")
@@ -1166,7 +1203,8 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. GRENADE .. " throwgrenade")
             SendToConsole("bind " .. RELOAD .. " +reload")
             SendToConsole("bind " .. QUICK_SWAP .. " \"lastinv;viewmodel_update\"")
-            SendToConsole("bind " .. COVER_MOUTH .. " +covermouth")
+            --SendToConsole("bind " .. COVER_MOUTH .. " +covermouth")
+            SendToConsole("bind " .. COVER_MOUTH .. " covermouth_toggle")
             SendToConsole("bind " .. MOVE_FORWARD .. " +forwardfixed")
             SendToConsole("bind " .. MOVE_BACK .. " +backfixed")
             SendToConsole("bind " .. MOVE_LEFT .. " +leftfixed")
@@ -1753,7 +1791,7 @@ if GlobalSys:CommandLineCheck("-novr") then
 							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_1_call_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="905.444336 1883.500000 -152.125000", ["angles"]="90.000000 270.000000 0.000000", ["modelscale"]=2})
 							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_2_call_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="905.444336 1883.500000 112.006470", ["angles"]="90.000000 270.000000 0.000000", ["modelscale"]=2})
 							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_1_elev_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="891.588257 1889.000000 -148.850000", ["angles"]="90.000000 90.000000 0.000000", ["modelscale"]=2, ["parentname"]="2_8127_elev_base_ent"})
-							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_2_elev_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="891.588257 1889.000000 -143.300000", ["angles"]="90.000000 90.000000 0.000000", ["modelscale"]=2, ["parentname"]="2_8127_elev_base_ent"})	
+							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_2_elev_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="891.588257 1889.000000 -143.300000", ["angles"]="90.000000 90.000000 0.000000", ["modelscale"]=2, ["parentname"]="2_8127_elev_base_ent"})
 							
                         end
                     elseif GetMapName() == "a3_hotel_lobby_basement" then
@@ -1910,6 +1948,8 @@ if GlobalSys:CommandLineCheck("-novr") then
                             if ent then
                                 DoEntFireByInstanceHandle(ent, "Kill", "", 0, nil, nil)
                             end
+						
+							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="tc_door_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="940.344482 1100.082153 557.023071", ["angles"]="-90.000000 81.092407 0.000000", ["modelscale"]=2, ["parentname"]="11578_2635_380_button_center_pusher"})
 
                             -- TODO: Fix error model for this plank
                             -- ent = SpawnEntityFromTableSynchronous("prop_dynamic_override", {["solid"]=6, ["modelscale"]=0.9, ["model"]="models/rural/barn_loose_boards_03.vmdl", ["origin"]="196 40 546.5", ["angles"]="3 0 0"})
@@ -2326,8 +2366,8 @@ if GlobalSys:CommandLineCheck("-novr") then
     function FixJeffBatteryPuzzle()
         SendToConsole("ent_fire @barnacle_battery kill")
         SendToConsole("ent_create item_hlvr_prop_battery { origin \"959 1970 427\" }")
-        SendToConsole("ent_fire @crank_battery kill")
-        SendToConsole("ent_create item_hlvr_prop_battery { origin \"1325 2245 435\" }")
+        -- SendToConsole("ent_fire @crank_battery kill")
+        -- SendToConsole("ent_create item_hlvr_prop_battery { origin \"1325 2245 435\" }")
         SendToConsole("ent_fire @relay_installcrank Trigger")
     end
 

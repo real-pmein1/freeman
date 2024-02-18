@@ -106,17 +106,7 @@ function MainThinkFunc()
 					distillery_elev_called_count = 53
 				end
 			end
-			--if ( xpos > 349 and xpos < 392 ) and ( ypos > 610 and ypos < 684 ) then
-				--if distillery_elev_called == 2 then
-					--SendToConsole("ent_fire barricade_begin_exit_relay trigger")
-					--distillery_elev_called = 3
-				--end
-			--elseif ( xpos > 368 and xpos < 402 ) and ( ypos > 714 and ypos < 843 ) then
-				--if distillery_elev_called == 3 then
-					--SendToConsole("ent_fire relay_koolaid_setup trigger")
-					--distillery_elev_called = 4
-				--end
-			if ( xpos > 278 and xpos < 430 ) and ( ypos > 1175 and ypos < 1423 ) then
+			if ( xpos > 278 and xpos < 430 ) and ( ypos > 1175 and ypos < 1423 ) and ( zpos > 250 and zpos < 400 ) then
 				if _G.flashlight_on == "0" then
 					create_flashlight()
 					_G.flashlight_on = "1"

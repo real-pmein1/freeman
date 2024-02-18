@@ -234,6 +234,11 @@ function WristPockets_PickUpValuableItem(playerEnt, itemEnt)
 			if itemModel == "models/props/distillery/bottle_vodka.vmdl" then
 				keepItemInstance = false
 				keepAcrossMaps = true
+				if playerEnt:LoadNumber("holding_vodka", 0) == 1 then
+					playerEnt:SaveNumber("holding_vodka_multi", 1)
+				elseif playerEnt:LoadNumber("holding_vodka", 0) == 0 then
+					playerEnt:SaveNumber("holding_vodka", 1)
+				end
 			end
 			-- set new instance for health station vials, reviver hearts and batteries
 			if itemId == 5 or itemId == 3 or itemId == 6 then
