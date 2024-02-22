@@ -22,6 +22,7 @@ Fix long/big tutorial messages
 Fix syringe placement in HUD
 Fix wearing gas mask
 Fix trip mine port when deactivating with the multitool
+Fix the health stations not opening
 
 a1_intro_world
 ==============
@@ -141,6 +142,7 @@ Fixed the first freezer door to open on hook release
 Fixed the Jeff into roll-up door so it breaks the Xen crust with three "uses"
 Fixed the second freezer door so it can be opened and closed correctly
 Fixed the second freezer door so the hook can be moved independently of the door
+Fixed Jeff's freezer breakout
 Fixed the roll-up door and its crank wheel so it turns whilst holding "use"
 Fixed the cellar ladder drop by removing the climb down whilst Jeff is alerted
 Fixed the cabinet doors not opening
@@ -154,3 +156,17 @@ Add Vodka removal count if bottle(s) dropped from pockets
 Fix the second freezer door's returntocompletion system
 Fix the cabinet doors opening speed
 Fix the tc lever not dropping fully when the tc is finished
+
+a4_c17_zoo
+==========
+
+Changed the enclosure hole crouch teleport from 'room to room' to 'room to tunnel' and to require crouching
+Fixed the first door lever's movement when used
+Fixed the rollup door
+Fixed the health trap toner port to open and close correctly
+Fixed toner ports 2 and 3 to close when powered on
+Fixed the Combine forcefield lever's movement
+
+TO DO:
+Hide the health trap pathing when complete
+Fix the headcrab emerging too early

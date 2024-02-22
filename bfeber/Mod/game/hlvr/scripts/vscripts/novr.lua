@@ -1981,12 +1981,12 @@ if GlobalSys:CommandLineCheck("-novr") then
                             ent = Entities:FindByName(nil, "relay_power_receive")
                             ent:RedirectOutput("OnTrigger", "MakeLeverUsable", ent)
 
-                            ent = Entities:FindByClassnameNearest("trigger_multiple", Vector(5380, -1848, -117), 10)
-                            ent:RedirectOutput("OnStartTouch", "CrouchThroughZooHole", ent)
+                            -- ent = Entities:FindByClassnameNearest("trigger_multiple", Vector(5380, -1848, -117), 10)
+                            -- ent:RedirectOutput("OnStartTouch", "CrouchThroughZooHole", ent)
 
-                            SendToConsole("ent_fire port_health_trap Disable")
-                            SendToConsole("ent_fire health_trap_locked_door Unlock")
-                            SendToConsole("ent_fire 589_toner_port_5 Disable")
+                            -- SendToConsole("ent_fire port_health_trap Disable")
+                            -- SendToConsole("ent_fire health_trap_locked_door Unlock")
+                            -- SendToConsole("ent_fire 589_toner_port_5 Disable")
                             SendToConsole("ent_fire @prop_phys_portaloo_door DisablePickup")
 
                             --SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
@@ -2272,8 +2272,8 @@ if GlobalSys:CommandLineCheck("-novr") then
     end
 
     function CrouchThroughZooHole(a, b)
-        SendToConsole("fadein 0.2")
-        SendToConsole("setpos 5393 -1960 -125")
+        --SendToConsole("fadein 0.2")
+        --SendToConsole("setpos 5393 -1960 -125")
 
         local ent = Entities:FindByClassnameNearest("prop_physics", Vector(5126, -1957, -53), 10)
         DoEntFireByInstanceHandle(ent, "DisablePickup", "", 0, nil, nil)

@@ -48,6 +48,11 @@ function MainThinkFunc()
 			SendToConsole("setpos_player 1 791.77 -1425.97 576.66")
 			SendToConsole("ent_fire zombieparty_window_slideconstraint setoffset 0")
 		end
+	elseif GetMapName() == "a4_c17_zoo" then
+		if ( xpos > 5377 and xpos < 5414 ) and ( ypos > -1870 and ypos < -1868 ) and ( zpos > -90 and zpos < -80 ) then
+			SendToConsole("fadein 0.1")
+			SendToConsole("setpos 5396.55 -1889.78 -115")
+		end
 	end
 	
 	-- HOTEL PIANO

@@ -64,7 +64,7 @@ end
 -- end
 
 if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and name ~= "larry_ladder" and name ~= "@pod_shell" and name ~= "589_panel_switch" and name ~= "tc_door_control" and (class == "item_health_station_charger" or (class == "prop_animinteractable" and (not vlua.find(name, "elev_anim_door") or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 1 and thisEntity:GetVelocity() == Vector(0, 0, 0))) and not vlua.find(name, "5628_2901_barricade_door")) or (class == "item_hlvr_combine_console_rack" and IsCombineConsoleLocked() == false)) and not (map == "a4_c17_parking_garage" and name == "door_reset" and player:Attribute_GetIntValue("circuit_" .. map .. "_toner_junction_5_completed", 0) == 0) and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
-    if not vlua.find(name, "intro_rollup_door") then
+    if not vlua.find(name, "intro_rollup_door") and not (map == "a4_c17_zoo" and vlua.find(name, "door_reset")) then
 		if vlua.find(name, "slide_train_door") and Entities:FindByClassnameNearest("phys_constraint", thisEntity:GetCenter(), 20) then
 			return
 		end
@@ -296,7 +296,7 @@ if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and nam
 		end, "AnimateCompletionValue", 0)
 	end
 --elseif (name == "barricade_door_hook" and player:Attribute_GetIntValue("locked_jeff_in_freezer", 0) == 0) or (name == "589_panel_switch" and Entities:FindByName(nil, "589_path_11"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or name == "5628_2901_barricade_door_hook" or name == "tc_door_control" or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 0 and thisEntity:GetVelocity() == Vector(0, 0, 0)) then
-elseif (name == "589_panel_switch" and Entities:FindByName(nil, "589_path_11"):Attribute_GetIntValue("toner_path_powered", 0) == 1)  or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 0 and thisEntity:GetVelocity() == Vector(0, 0, 0)) then
+elseif (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 0 and thisEntity:GetVelocity() == Vector(0, 0, 0)) then
     if thisEntity:Attribute_GetIntValue("used", 0) == 1 then
         if name == "barricade_door_hook" then
             thisEntity:StopThink("AnimateCompletionValue")
@@ -984,10 +984,7 @@ if map == "a3_distillery" then
 	end
 	
 	if name == "barricade_door_hook" and player:Attribute_GetIntValue("barricade_door_locked", 0) == 1 then
-		SendToConsole("ent_fire b_barricade_door_closed setvalue 0")
-		SendToConsole("ent_fire b_barricade_door_hook_closed setvalue 0")
-		SendToConsole("ent_fire barricade_door_hook setcompletionvalue 0")
-		SendToConsole("ent_fire barricade_door setcompletionvalue 0")
+		SendToConsole("ent_fire_output barricade_door_listener onmixed")
 		player:Attribute_SetIntValue("barricade_door_locked", 0)
 		player:Attribute_SetIntValue("barricade_door_hook_down", 0)
 	elseif name == "barricade_door_hook" and player:Attribute_GetIntValue("barricade_door_hook_down", 0) == 0 then
@@ -1120,10 +1117,48 @@ if map == "a3_distillery" then
     end
 end
 
+
 ---------- a4_c17_zoo ----------
 
-if map == "a4_c17_zoo" and model == "models/props/industrial_door_1_40_92_white_temp.vmdl" and thisEntity:GetOrigin() == Vector(7218, 2044, -128) then
-    player:Attribute_SetIntValue("circuit_" .. map .. "_junction_health_trap_2_completed", 1)
+if map == "a4_c17_zoo" then
+	if model == "models/props/industrial_door_1_40_92_white_temp.vmdl" and thisEntity:GetOrigin() == Vector(7218, 2044, -128) then
+		player:Attribute_SetIntValue("circuit_" .. map .. "_junction_health_trap_2_completed", 1)
+	end
+	
+	if name == "door_reset" then
+		SendToConsole("ent_fire door_reset enablereturntocompletion")
+		local count = 0 + thisEntity:GetCycle()
+		thisEntity:SetThink(function()
+			DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. 0 + count, 0, nil, nil)
+			count = count + 0.01
+			if count >= 1 then
+				thisEntity:FireOutput("OnCompletionA_Forward", nil, nil, nil, 0)
+				return nil
+			else
+				return 0
+			end
+		end, "AnimateCompletionValue", 0)
+	end
+	
+	if name == "twohander" then
+		SendToConsole("ent_fire twohander enablereturntocompletion")
+		SendToConsole("ent_fire twohander setreturntocompletionamount 1")
+	end
+	
+	if name == "589_panel_switch" then
+		SendToConsole("ent_fire 589_panel_switchs enablereturntocompletion")
+		local count = 0 + thisEntity:GetCycle()
+		thisEntity:SetThink(function()
+			DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. 0 + count, 0, nil, nil)
+			count = count + 0.01
+			if count >= 1 then
+				thisEntity:FireOutput("OnCompletionA_Backward", nil, nil, nil, 0)
+				return nil
+			else
+				return 0
+			end
+		end, "AnimateCompletionValue", 0)
+	end
 end
 
 
