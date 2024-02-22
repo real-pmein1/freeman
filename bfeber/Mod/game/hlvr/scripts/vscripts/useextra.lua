@@ -145,6 +145,19 @@ if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and nam
 						return 0
 					end
 				end, "Interacting", 0)
+			elseif map == "a4_c17_tanker_yard" and name == "bridge_crank" then
+				thisEntity:FireOutput("OnInteractStart", nil, nil, nil, 0)
+				completion_amount = -0.0001
+				player:SetThink(function()
+					if player:Attribute_GetIntValue("use_released", 0) == 1 then
+						thisEntity:FireOutput("OnInteractStop", nil, nil, nil, 0)
+					else
+						SendToConsole("ent_fire bridge_crank EnableReturnToCompletion")
+						completion_amount = completion_amount + 0.02
+						SendToConsole("ent_fire bridge_crank setreturntocompletionamount " .. completion_amount)
+						return 0
+					end
+				end, "Interacting", 0)
 			elseif name == "console_selector_interact" then
 				local ent = Entities:FindByName(nil, "console_opener_prop_handle_interact")
 				ent:Attribute_SetIntValue("used", 0)
@@ -169,6 +182,18 @@ if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and nam
 			elseif not vlua.find(name, "elev_anim_door") and not vlua.find(name, "tractor_beam_console_lever") then
 				thisEntity:Attribute_SetIntValue("used", 1)
 			end
+		elseif map == "a4_c17_tanker_yard" and name == "plug_console_starter_lever" then
+			completion_amount = -0.0001
+			player:SetThink(function()
+				if player:Attribute_GetIntValue("use_released", 0) == 1 then
+					SendToConsole("ent_fire plug_console_starter_lever setreturntocompletionamount 0")
+				else
+					SendToConsole("ent_fire plug_console_starter_lever EnableReturnToCompletion")
+					completion_amount = completion_amount + 0.01
+					SendToConsole("ent_fire plug_console_starter_lever setreturntocompletionamount " .. completion_amount)
+					return 0
+				end
+			end, "Interacting", 0)
 		end
 
 		if class == "item_health_station_charger" or class == "item_hlvr_combine_console_rack" then
@@ -1218,13 +1243,13 @@ if name == "18918_5316_button_pusher_prop" then
     SendToConsole("phys_pushscale 0")
 end
 
-if name == "bridge_crank" then
-    SendToConsole("ent_fire driven_bridge SetPlaybackRate 1 1")
-    SendToConsole("ent_fire drawbridge_brush Enable")
-    local ent = Entities:FindByName(nil, "bridge_crank")
-    ent:FireOutput("OnInteractStart", nil, nil, nil, 0)
-    ent:FireOutput("OnInteractStop", nil, nil, nil, 2.8)
-end
+-- if name == "bridge_crank" then
+    -- SendToConsole("ent_fire driven_bridge SetPlaybackRate 1 1")
+    -- SendToConsole("ent_fire drawbridge_brush Enable")
+    -- local ent = Entities:FindByName(nil, "bridge_crank")
+    -- ent:FireOutput("OnInteractStart", nil, nil, nil, 0)
+    -- ent:FireOutput("OnInteractStop", nil, nil, nil, 2.8)
+-- end
 
 if name == "3_8223_mesh_combine_switch_box" then
     if thisEntity:GetSequence() == "open_idle" then

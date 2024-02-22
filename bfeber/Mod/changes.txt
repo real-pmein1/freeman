@@ -170,3 +170,9 @@ Fixed the Combine forcefield lever's movement
 TO DO:
 Hide the health trap pathing when complete
 Fix the headcrab emerging too early
+
+a4_c17_tanker_yard
+==================
+
+Fixed the portacabin "elevator"'s lever so it lowers whilst holding "use"
+Fixed the bridge crank so it turns whilst holding "use"
