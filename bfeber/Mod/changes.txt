@@ -200,3 +200,11 @@ a5_vault
 ========
 
 No changes
+
+a5_ending
+=========
+
+Fixed not being able to use each candler separately
+
+TO DO:
+Enable credits escape

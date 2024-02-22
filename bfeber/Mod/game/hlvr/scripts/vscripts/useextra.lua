@@ -1257,7 +1257,13 @@ if name == "prop_crowbar" then
     thisEntity:Kill()
 end
 
-if name == "l_candler" or name == "r_candler" then
+if name == "l_candler" and player:Attribute_GetIntValue("candler_1_done", 0) == 0 then
+	player:Attribute_SetIntValue("candler_1_done", 1)
+	SendToConsole("ent_fire left_hand_posed_and_energized_relay trigger")
+elseif name == "r_candler" and player:Attribute_GetIntValue("candler_1_done", 0) == 0 then
+	player:Attribute_SetIntValue("candler_1_done", 1)
+	SendToConsole("ent_fire right_hand_posed_and_energized_relay trigger")
+elseif name == "l_candler" or name == "r_candler" and player:Attribute_GetIntValue("candler_1_done", 0) == 1 then
     player:Attribute_SetIntValue("disable_unstuck", 1)
     SendToConsole("ent_fire innervault_energize_event_relay Kill")
     SendToConsole("ent_fire_output g_release_hand1 OnHandPosed")
