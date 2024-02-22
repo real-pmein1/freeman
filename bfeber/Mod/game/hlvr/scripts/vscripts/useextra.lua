@@ -64,7 +64,9 @@ end
 -- end
 
 if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and name ~= "larry_ladder" and name ~= "@pod_shell" and name ~= "589_panel_switch" and name ~= "tc_door_control" and (class == "item_health_station_charger" or (class == "prop_animinteractable" and (not vlua.find(name, "elev_anim_door") or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 1 and thisEntity:GetVelocity() == Vector(0, 0, 0))) and not vlua.find(name, "5628_2901_barricade_door")) or (class == "item_hlvr_combine_console_rack" and IsCombineConsoleLocked() == false)) and not (map == "a4_c17_parking_garage" and name == "door_reset" and player:Attribute_GetIntValue("circuit_" .. map .. "_toner_junction_5_completed", 0) == 0) and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
-    if not vlua.find(name, "intro_rollup_door") and not (map == "a4_c17_zoo" and vlua.find(name, "door_reset")) then
+    if name:find("^tractor_beam_console_lever_" ) ~= nil then
+		SendToConsole("ent_fire " .. name .. " enablereturntocompletion;ent_fire " .. name .. " setreturntocompletionamount 1")
+	elseif not vlua.find(name, "intro_rollup_door") and not (map == "a4_c17_zoo" and vlua.find(name, "door_reset")) then
 		if vlua.find(name, "slide_train_door") and Entities:FindByClassnameNearest("phys_constraint", thisEntity:GetCenter(), 20) then
 			return
 		end
@@ -81,7 +83,39 @@ if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and nam
 
 		local count = 0
 		if class == "prop_animinteractable" and model == "models/props_subway/scenes/desk_lever.vmdl" then
-			thisEntity:FireOutput("OnCompletionB", nil, nil, nil, 0)
+			if map == "a4_c17_water_tower" then
+				completion_amount = 0.5
+				if thisEntity:GetName() == "" then
+					if player:Attribute_GetIntValue("lever_number", 0) == 0 then
+						thisEntity:SetEntityName("Lever1")
+						player:Attribute_SetIntValue("lever_number", 1)
+					elseif player:Attribute_GetIntValue("lever_number", 0) == 1 then
+						thisEntity:SetEntityName("Lever2")
+					end
+				end
+				player:SetThink(function()
+					SendToConsole("ent_fire " .. thisEntity:GetName() .. " EnableReturnToCompletion")
+					if player:Attribute_GetIntValue("use_released", 0) == 1 then
+						SendToConsole("ent_fire " .. thisEntity:GetName() .. " setreturntocompletionamount 0.5")
+						if thisEntity:Attribute_GetIntValue("lever_direction", 0) == 0 then
+							thisEntity:Attribute_SetIntValue("lever_direction", 1)
+						else
+							thisEntity:Attribute_SetIntValue("lever_direction", 0)
+						end
+					else
+						if thisEntity:Attribute_GetIntValue("lever_direction", 0) == 0 then
+							completion_amount = completion_amount - 0.01
+							SendToConsole("ent_fire " .. thisEntity:GetName() .. " setreturntocompletionamount " .. completion_amount)
+						else
+							completion_amount = completion_amount + 0.01
+							SendToConsole("ent_fire " .. thisEntity:GetName() .. " setreturntocompletionamount " .. completion_amount)
+						end
+						return 0
+					end
+				end, "Interacting", 0)
+			else
+				thisEntity:FireOutput("OnCompletionB", nil, nil, nil, 0)
+			end
 		elseif name ~= "plug_console_starter_lever" then
 			if name == "track_switch_lever" then
 				count = 0.35
@@ -224,7 +258,7 @@ if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and nam
 
 		local is_console = class == "prop_animinteractable" and model == "models/props_combine/combine_consoles/vr_console_rack_1.vmdl"
 
-		if name == "" then
+		if name == "" and not (class == "prop_animinteractable" and model == "models/props_subway/scenes/desk_lever.vmdl") then
 			thisEntity:SetEntityName("" .. thisEntity:GetEntityIndex())
 		end
 
@@ -840,10 +874,6 @@ if name == "vent_door" then
 end
 
 if map == "a3_c17_processing_plant" then
-	if name == "lift_button_box" then
-		SendToConsole("bind " .. RAISE_PLATFORM .. " +raise_platform")
-		SendToConsole("bind " .. LOWER_PLATFORM .. " +lower_platform")
-	end
 	if name == "door_factory_interior" then
 		SendToConsole("unbind .")
 		SendToConsole("unbind ,")
@@ -1623,7 +1653,13 @@ if name == "lift_button_box" then
 			SendToConsole("ent_fire_output lift_button_up onin")
 			thisEntity:Attribute_SetIntValue("used", 1)
 		end
+	else
+		SendToConsole("bind " .. RAISE_PLATFORM .. " +raise_platform")
+		SendToConsole("bind " .. LOWER_PLATFORM .. " +lower_platform")
 	end
+else
+	SendToConsole("unbind " .. RAISE_PLATFORM)
+	SendToConsole("unbind " .. LOWER_PLATFORM)
 end
 
 if name == "pallet_lever_vertical" then

@@ -5,7 +5,7 @@ Added player_pos script for in-game position-based triggers
 Added the automatic flashlight which can be either automatic or manual by assigning the FLASHLIGHT binding
 Added NOTARGET binding
 Added tripmine "use" to deactivate (as well as using the multitool)
-Added new bindings for raise/lower platform (currently only used in a3_c17_processing_plant)
+Added new bindings for raise/lower platform in a3_c17_processing_plant and a4_c17_water_tower
 Changed bind for console to ~
 Changed in-game field of view to 60 to stop fish-eye effect but allow the showing of wearables
 Changed resin HUD counter to blue
@@ -176,3 +176,10 @@ a4_c17_tanker_yard
 
 Fixed the portacabin "elevator"'s lever so it lowers whilst holding "use"
 Fixed the bridge crank so it turns whilst holding "use"
+
+a4_c17_water_tower
+==================
+
+Fixed the levers to raise and lower the hanging pallets
+Fixed the button box to move the hanging pipe
+Fixed the Vault docking control levers' delay when using them
