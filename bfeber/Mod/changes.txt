@@ -15,6 +15,7 @@ Changed all tripmines to have active ports for deactivation
 Changed hand over mouth to stop coughing to a toggle instead of key-hold
 Fixed flashlight on/off sounds
 Fixed Valve bug where the Vodka carry count doesn't play the correct speech lines in a4_c17_zoo
+Fixed the health stations not opening
 Removed bind for flashlight for auto-flashlight
 
 TO DO:
@@ -22,7 +23,6 @@ Fix long/big tutorial messages
 Fix syringe placement in HUD
 Fix wearing gas mask
 Fix trip mine port when deactivating with the multitool
-Fix the health stations not opening
 
 a1_intro_world
 ==============
@@ -183,3 +183,15 @@ a4_c17_water_tower
 Fixed the levers to raise and lower the hanging pallets
 Fixed the button box to move the hanging pipe
 Fixed the Vault docking control levers' delay when using them
+
+a4_c17_parking_garage
+=====================
+
+Fixed the ladder drop in the toner puzzle area
+Fixed the toner lever not moving
+Fixed the roller door not opening
+
+TO DO:
+Close the toner ports
+Close the falling cabinet door
+Check strider elevator button colors

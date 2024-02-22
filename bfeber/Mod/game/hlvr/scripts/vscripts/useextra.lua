@@ -64,9 +64,9 @@ end
 -- end
 
 if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and name ~= "larry_ladder" and name ~= "@pod_shell" and name ~= "589_panel_switch" and name ~= "tc_door_control" and (class == "item_health_station_charger" or (class == "prop_animinteractable" and (not vlua.find(name, "elev_anim_door") or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 1 and thisEntity:GetVelocity() == Vector(0, 0, 0))) and not vlua.find(name, "5628_2901_barricade_door")) or (class == "item_hlvr_combine_console_rack" and IsCombineConsoleLocked() == false)) and not (map == "a4_c17_parking_garage" and name == "door_reset" and player:Attribute_GetIntValue("circuit_" .. map .. "_toner_junction_5_completed", 0) == 0) and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
-    if name:find("^tractor_beam_console_lever_" ) ~= nil then
+	if name:find("^tractor_beam_console_lever_" ) ~= nil then
 		SendToConsole("ent_fire " .. name .. " enablereturntocompletion;ent_fire " .. name .. " setreturntocompletionamount 1")
-	elseif not vlua.find(name, "intro_rollup_door") and not (map == "a4_c17_zoo" and vlua.find(name, "door_reset")) then
+	elseif not vlua.find(name, "intro_rollup_door") and not ((map == "a4_c17_zoo" or map == "a4_c17_parking_garage") and vlua.find(name, "door_reset")) then
 		if vlua.find(name, "slide_train_door") and Entities:FindByClassnameNearest("phys_constraint", thisEntity:GetCenter(), 20) then
 			return
 		end
@@ -1219,8 +1219,35 @@ end
 
 ---------- a4_c17_parking_garage ----------
 
-if name == "toner_sliding_ladder" then
-    ClimbLadder(160)
+if map == "a4_c17_parking_garage" then
+	if name == "toner_sliding_ladder" then
+		if thisEntity:Attribute_GetIntValue("ladder_down", 0) == 0 then
+			SendToConsole("ent_fire toner_sliding_ladder unlock")
+			thisEntity:Attribute_SetIntValue("ladder_down", 1)
+		else
+			ClimbLadder(160)
+		end
+	end
+	
+	if name == "door_reset" then
+		SendToConsole("ent_fire door_reset enablereturntocompletion")
+		local count = 0 + thisEntity:GetCycle()
+		thisEntity:SetThink(function()
+			DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. 0 + count, 0, nil, nil)
+			count = count + 0.01
+			if count >= 1 then
+				thisEntity:FireOutput("OnCompletionA_Forward", nil, nil, nil, 0)
+				return nil
+			else
+				return 0
+			end
+		end, "AnimateCompletionValue", 0)
+	end
+	
+	if name == "twohander" then
+		SendToConsole("ent_fire twohander enablereturntocompletion")
+		SendToConsole("ent_fire twohander setreturntocompletionamount 1")
+	end
 end
 
 
@@ -1248,18 +1275,24 @@ if name == "l_candler" or name == "r_candler" then
 end
 
 if name == "combine_gun_mechanical" then
-    SendToConsole("bind J novr_leavecombinegun")
-	if thisEntity:Attribute_GetIntValue("used", 0) == 0 then
-		local ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="230 230 230", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=5, ["x"]=-1, ["y"]=0.6})
-		DoEntFireByInstanceHandle(ent, "SetText", "Press [J] to get out", 0, nil, nil)
-		DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
+    -- SendToConsole("bind J novr_leavecombinegun")
+	if thisEntity:Attribute_GetIntValue("in_use", 0) == 0 then
+		if thisEntity:Attribute_GetIntValue("used", 0) == 0 then
+			-- local ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="230 230 230", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=5, ["x"]=-1, ["y"]=0.6})
+			-- DoEntFireByInstanceHandle(ent, "SetText", "Press [J] to get out", 0, nil, nil)
+			-- DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
 
-		ent = Entities:FindByName(nil, "combine_gun_interact") -- parent gun entity
-		ent:Attribute_SetIntValue("ready", 1)
-		ent:SaveQAngle("OrigAngle", ent:GetAngles())
+			ent = Entities:FindByName(nil, "combine_gun_interact") -- parent gun entity
+			ent:Attribute_SetIntValue("ready", 1)
+			ent:SaveQAngle("OrigAngle", ent:GetAngles())
+		end
+		EquipCombineGunMechanical(player)
+		thisEntity:Attribute_SetIntValue("used", 1)
+		thisEntity:Attribute_SetIntValue("in_use", 1)
+	else
+		SendToConsole("novr_leavecombinegun")
+		thisEntity:Attribute_SetIntValue("in_use", 0)
 	end
-	EquipCombineGunMechanical(player)
-    thisEntity:Attribute_SetIntValue("used", 1)
 end
 
 -- Call elevator button
@@ -1303,6 +1336,21 @@ if class == "item_combine_tank_locker" then
             ent = Entities:FindByClassname(ent, "item_hlvr_combine_console_tank")
         end
     end
+end
+
+if class == "item_health_station_charger" then
+	local thisEntity = Entities:FindByClassnameNearest("item_health_station_charger", thisEntity:GetOrigin(), 20)
+	local count = 0 + thisEntity:GetCycle()
+	thisEntity:SetThink(function()
+		DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. 0 + count, 0, nil, nil)
+		count = count + 0.01
+		if count >= 1 then
+			thisEntity:FireOutput("OnCompletionA_Forward", nil, nil, nil, 0)
+			return nil
+		else
+			return 0
+		end
+	end, "AnimateCompletionValue", 0)
 end
 
 if class == "item_healthcharger_reservoir" then
