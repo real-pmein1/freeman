@@ -842,24 +842,6 @@ if GlobalSys:CommandLineCheck("-novr") then
                 -- SendToConsole("fadein 0.2")
                 -- SendToConsole("setpos_exact 574 -2328 -130")
             end
-			if Storage:LoadBoolean("radio_antenna_raised") == true then
-				if ((xpos > -260 and xpos < -211) and (ypos > 1970 and ypos < 2002)) then
-					SendToConsole("ent_fire 205_4130_alyx_radio enablereturntocompletion")
-					if Storage:LoadString("radio_station") == "d" then
-						SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0.23")
-						Storage:SaveString("radio_station", "a")
-					elseif Storage:LoadString("radio_station") == "a" then
-						SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0.53")
-						Storage:SaveString("radio_station", "b")
-					elseif Storage:LoadString("radio_station") == "b" then
-						SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0.83")
-						Storage:SaveString("radio_station", "c")
-					elseif Storage:LoadString("radio_station") == "c" then
-						SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount 0")
-						Storage:SaveString("radio_station", "d")
-					end
-				end
-			end
         elseif GetMapName() == "a1_intro_world_2" then
             if vlua.find(Entities:FindAllInSphere(Vector(-1268, 576, -63), 10), player) and Entities:FindByName(nil, "balcony_ladder"):GetSequence() == "idle_open" then
                 ClimbLadder(80)
@@ -1506,6 +1488,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             end
 
             if GetMapName() == "a1_intro_world" then
+				_G.tuner_amount = 0.2
                 if not loading_save_file then
                     SendToConsole("ent_fire player_speedmod ModifySpeed 0")
                     SendToConsole("mouse_disableinput 1")
@@ -1541,6 +1524,8 @@ if GlobalSys:CommandLineCheck("-novr") then
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="light_switch_1", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-541.6 1770.1 133.4", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="light_switch_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-903.2 1691.6 111", ["angles"]="0 0 0", ["modelscale"]=2})
 					
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="radio_tuner", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-223.492493 1990.992065 184.304428", ["angles"]="0.000000 217.598724 0.000000", ["modelscale"]=2}) --FAKE RADIO TUNER
+					
 					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="call_button_prop_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-225.384766 1880.790405 227.168457", ["angles"]="-90 110 0", ["modelscale"]=2}) --CALL BUTTON
 					
 					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_upper_left_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-216.930176 1904.178223 240.043457", ["angles"]="0 0 0", ["modelscale"]=2}) --MONITORS
@@ -1572,6 +1557,9 @@ if GlobalSys:CommandLineCheck("-novr") then
                     SendToConsole("ent_create env_message { targetname text_gg message GRAVITYGLOVES }")
                     SendToConsole("ent_create env_message { targetname text_shoot message SHOOT }")
 
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="monitor_switch", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-1820.253174 118.795120 122.034073", ["angles"]="-45.201099 205.106995 -88.618401", ["modelscale"]=2})
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="lightstand_switch", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_3_switch.vmdl", ["origin"]="-1621.750000 112.999878 128.000000", ["angles"]="0.000000 180.000000 180.000000", ["modelscale"]=2})
+					
                     -- SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
 
                     SendToConsole("ent_fire car_door_rear DisablePickup")

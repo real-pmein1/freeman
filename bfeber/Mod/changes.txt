@@ -18,7 +18,7 @@ Changed all tripmines to have active ports for deactivation
 Changed hand over mouth to stop coughing to a toggle instead of key-hold
 Fixed flashlight on/off sounds
 Fixed Valve bug where the Vodka carry count doesn't play the correct speech lines in a4_c17_zoo
-Fixed the health stations not opening
+Fixed a bug causing all animated objects to not work
 Removed bind for flashlight for auto-flashlight
 
 TO DO:
@@ -35,7 +35,7 @@ Added a save-state for the radio antenna
 Added usable monitor buttons in the Eli call area
 Changed Eli call button to only function on the button and not on the microphone
 Changed both of the elevators' button commands from a debug command to a button press
-Fixed the radio tuner on the balcony, sets to 3 pre-defined stations
+Fixed fully the radio tuner on the balcony with variable dial
 Fixed the second light switch
 Removed the auto-teleport on the end vent so it can be manually opened and traversed
 
@@ -47,6 +47,8 @@ a1_intro_world_2
 ================
 
 Added crouch tutorial message to the crashed van's exit
+Added missing lightstand switch in Russell's hideout entrance
+Added missing monitor switch on Russell's hideout PC
 Changed the headset pickup from a debug command to the correct output command
 Changed the crashed van to require crouching to exit it
 Changed the parked car to have its door correctly open

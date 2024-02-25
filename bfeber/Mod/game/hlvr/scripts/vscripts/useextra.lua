@@ -264,7 +264,7 @@ if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and nam
 
 		thisEntity:SetThink(function()
 			if not is_console then
-				if not name == "pallet_lever_unpowered" then --or not name == "pallet_lever" or not name == "pallet_lever_vertical" then
+				if name ~= "pallet_lever_unpowered" then --or not name == "pallet_lever" or not name == "pallet_lever_vertical" then
 					DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
 				end
 			end
@@ -382,6 +382,28 @@ elseif (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("
             return 0
         end
     end, "AnimateCompletionValue", 0)
+elseif (vlua.find(name, "radio_tuner")) then
+	-- thisEntity:FireOutput("OnInteractStart", nil, nil, nil, 0)
+	completion_amount = _G.tuner_amount
+	player:SetThink(function()
+		if player:Attribute_GetIntValue("use_released", 0) == 1 then
+			if thisEntity:Attribute_GetIntValue("tuner_direction", 0) == 0 then
+				thisEntity:Attribute_SetIntValue("tuner_direction", 1)
+			else
+				thisEntity:Attribute_SetIntValue("tuner_direction", 0)
+			end
+		else
+			SendToConsole("ent_fire 205_4130_alyx_radio EnableReturnToCompletion")
+			if thisEntity:Attribute_GetIntValue("tuner_direction", 0) == 0 then
+				completion_amount = completion_amount + 0.001
+			else
+				completion_amount = completion_amount - 0.001
+			end
+			_G.tuner_amount = completion_amount
+			SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount " .. completion_amount)
+			return 0
+		end
+	end, "Interacting", 0)
 end
 
 if vlua.find(model, "doorhandle") then
@@ -607,13 +629,6 @@ if vlua.find(model, "models/props/c17/antenna01") then
     thisEntity:ApplyLocalAngularVelocityImpulse(Vector(0,0,-2000))
 end
 
-if name == "205_4130_alyx_radio_antenna" then
-	SendToConsole("ent_fire 205_4130_relay_start_radio trigger")
-	Storage:SaveBoolean("radio_antenna_raised", true)
-	Storage:SaveString("radio_station", "d")
-	print(Storage:LoadBoolean("radio_antenna_raised"))
-end
-
 if name == "979_518_button_pusher_prop" then
     --SendToConsole("ent_fire debug_choreo_start_relay trigger")
 	SendToConsole("ent_fire_output 979_518_button_center_pusher onin")
@@ -720,6 +735,26 @@ if name == "glove_dispenser_brush" and thisEntity:Attribute_GetIntValue("used", 
     SendToConsole("hudhearts_startupdateloop")
     SendToConsole("wristpockets_startupdateloop")
     Entities:GetLocalPlayer():Attribute_SetIntValue("gravity_gloves", 1)
+end
+
+if name == "monitor_switch" then
+	if thisEntity:Attribute_GetIntValue("switch_on", 0) == 0 then
+		SendToConsole("ent_fire_output 621_6822_switch_on_handpose onhandposed")
+		thisEntity:Attribute_SetIntValue("switch_on", 1)
+	else
+		SendToConsole("ent_fire_output 621_6822_switch_off_handpose onhandposed")
+		thisEntity:Attribute_SetIntValue("switch_on", 0)
+	end
+end
+
+if name == "lightstand_switch" then
+	if thisEntity:Attribute_GetIntValue("switch_on", 0) == 0 then
+		SendToConsole("ent_fire_output 621_6492_switch_off_handpose onhandposed")
+		thisEntity:Attribute_SetIntValue("switch_on", 1)
+	else
+		SendToConsole("ent_fire_output 621_6492_switch_on_handpose onhandposed")
+		thisEntity:Attribute_SetIntValue("switch_on", 0)
+	end
 end
 
 
