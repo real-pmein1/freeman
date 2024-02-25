@@ -1,3 +1,5 @@
+Using bfeber's mod commit db89ef8
+
 General
 =======
 
@@ -6,6 +8,7 @@ Added the automatic flashlight which can be either automatic or manual by assign
 Added NOTARGET binding
 Added tripmine "use" to deactivate (as well as using the multitool)
 Added new bindings for raise/lower platform in a3_c17_processing_plant and a4_c17_water_tower
+Added all bfeber commits to db89ef8 and commented out battery/reviver retrieval until tested
 Changed bind for console to ~
 Changed in-game field of view to 60 to stop fish-eye effect but allow the showing of wearables
 Changed resin HUD counter to blue

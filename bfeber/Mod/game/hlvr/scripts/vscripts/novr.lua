@@ -911,16 +911,16 @@ if GlobalSys:CommandLineCheck("-novr") then
 
             if vlua.find(Entities:FindAllInSphere(Vector(-702, -1024, -238), 20), player) then
                 local ent = Entities:FindByName(nil, "bell")
-                --DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
+                -- DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
 				SendToConsole("ent_fire bell setreturntocompletionstyle 0")
 				SendToConsole("ent_fire bell enablereturntocompletion;ent_fire bell setreturntocompletionamount 1;ent_fire bell setreturntocompletionamount 0 1")
             end
         elseif GetMapName() == "a2_headcrabs_tunnel" and vlua.find(Entities:FindAllInSphere(Vector(354, -251, -62), 18), player) then
             ClimbLadder(22)
         elseif GetMapName() == "a3_station_street" then
-            --if vlua.find(Entities:FindAllInSphere(Vector(934, 1883, -135), 20), player) then
-                --SendToConsole("ent_fire_output 2_8127_elev_button_floor_1_call OnIn")
-            --end
+            -- if vlua.find(Entities:FindAllInSphere(Vector(934, 1883, -135), 20), player) then
+                -- SendToConsole("ent_fire_output 2_8127_elev_button_floor_1_call OnIn")
+            -- end
         elseif GetMapName() == "a3_hotel_lobby_basement" then
             if vlua.find(Entities:FindAllInSphere(Vector(1059, -1475, 200), 20), player) then
                 if player:Attribute_GetIntValue("EnabledHotelLobbyPower", 0) == 1 then
@@ -1137,7 +1137,7 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("sv_cheats 1")
 
         if GetMapName() == "startup" then
-            --SendToConsole("sv_cheats 1")
+            -- SendToConsole("sv_cheats 1")
             SendToConsole("hidehud 96")
             SendToConsole("mouse_disableinput 1")
             SendToConsole("bind " .. PRIMARY_ATTACK .. " +use")
@@ -1203,7 +1203,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. GRENADE .. " throwgrenade")
             SendToConsole("bind " .. RELOAD .. " +reload")
             SendToConsole("bind " .. QUICK_SWAP .. " \"lastinv;viewmodel_update\"")
-            --SendToConsole("bind " .. COVER_MOUTH .. " +covermouth")
+            -- SendToConsole("bind " .. COVER_MOUTH .. " +covermouth")
             SendToConsole("bind " .. COVER_MOUTH .. " covermouth_toggle")
             SendToConsole("bind " .. MOVE_FORWARD .. " +forwardfixed")
             SendToConsole("bind " .. MOVE_BACK .. " +backfixed")
@@ -1553,8 +1553,8 @@ if GlobalSys:CommandLineCheck("-novr") then
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_3", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1393.17 -952.015 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_4", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1396.98 -982.97 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
 
-                    --SendToConsole("ent_fire 563_vent_door DisablePickup")
-                    --SendToConsole("ent_fire 563_vent_phys_hinge SetOffset 0.1")
+                    -- SendToConsole("ent_fire 563_vent_door DisablePickup")
+                    -- SendToConsole("ent_fire 563_vent_phys_hinge SetOffset 0.1")
 
                     -- TODO: Remove when Map Edits are done
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["solid"]=6, ["renderamt"]=0, ["model"]="models/props/industrial_door_1_40_92_white_temp.vmdl", ["origin"]="640 -1770 -210", ["angles"]="0 -10 0", ["modelscale"]=0.75})
@@ -1572,7 +1572,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                     SendToConsole("ent_create env_message { targetname text_gg message GRAVITYGLOVES }")
                     SendToConsole("ent_create env_message { targetname text_shoot message SHOOT }")
 
-                    --SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
+                    -- SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
 
                     SendToConsole("ent_fire car_door_rear DisablePickup")
                 end
@@ -1621,7 +1621,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                     ent:RedirectOutput("OnDetectedBulletFire", "CheckTutorialPistolEmpty", ent)
 
                     ent = Entities:FindByName(nil, "hint_crouch_trigger")
-                    --ent:RedirectOutput("OnStartTouch", "GetOutOfCrashedVan", ent)
+                    -- ent:RedirectOutput("OnStartTouch", "GetOutOfCrashedVan", ent)
                     ent:RedirectOutput("OnStartTouch", "ShowCrouchTutorial", ent)
 
                     ent = Entities:FindByName(nil, "relay_weapon_pistol_fakefire")
@@ -1862,7 +1862,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                             -- ent:SetOrigin(Vector(1657.083, 595.287, 400))
                         -- end
                     elseif GetMapName() == "a3_c17_processing_plant" then
-                        --SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+                        -- SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
 
                         if not loading_save_file then
                             -- Default Junction Rotations
@@ -1989,7 +1989,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                             -- SendToConsole("ent_fire 589_toner_port_5 Disable")
                             SendToConsole("ent_fire @prop_phys_portaloo_door DisablePickup")
 
-                            --SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+                            -- SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
                         elseif GetMapName() == "a4_c17_tanker_yard" then
                             SendToConsole("ent_fire elev_hurt_player_* Kill")
 
@@ -2272,8 +2272,8 @@ if GlobalSys:CommandLineCheck("-novr") then
     end
 
     function CrouchThroughZooHole(a, b)
-        --SendToConsole("fadein 0.2")
-        --SendToConsole("setpos 5393 -1960 -125")
+        -- SendToConsole("fadein 0.2")
+        -- SendToConsole("setpos 5393 -1960 -125")
 
         local ent = Entities:FindByClassnameNearest("prop_physics", Vector(5126, -1957, -53), 10)
         DoEntFireByInstanceHandle(ent, "DisablePickup", "", 0, nil, nil)
@@ -2431,8 +2431,7 @@ if GlobalSys:CommandLineCheck("-novr") then
         Entities:GetLocalPlayer():SetThink(function()
             SendToConsole("ent_fire text_multitool_use ShowMessage")
             SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-        --end, "MultiToolTutorial", 5)
-        end, "MultiToolTutorial", 10)
+        end, "MultiToolTutorial", 5)
     end
 
     function ShowBreakBoardsTutorial()

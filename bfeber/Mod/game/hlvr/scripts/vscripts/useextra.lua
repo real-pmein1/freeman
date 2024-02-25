@@ -354,7 +354,7 @@ if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and nam
 			end
 		end, "AnimateCompletionValue", 0)
 	end
---elseif (name == "barricade_door_hook" and player:Attribute_GetIntValue("locked_jeff_in_freezer", 0) == 0) or (name == "589_panel_switch" and Entities:FindByName(nil, "589_path_11"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or name == "5628_2901_barricade_door_hook" or name == "tc_door_control" or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 0 and thisEntity:GetVelocity() == Vector(0, 0, 0)) then
+-- elseif (name == "barricade_door_hook" and player:Attribute_GetIntValue("locked_jeff_in_freezer", 0) == 0) or (name == "589_panel_switch" and Entities:FindByName(nil, "589_path_11"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or name == "5628_2901_barricade_door_hook" or name == "tc_door_control" or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 0 and thisEntity:GetVelocity() == Vector(0, 0, 0)) then
 elseif (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 0 and thisEntity:GetVelocity() == Vector(0, 0, 0)) then
     if thisEntity:Attribute_GetIntValue("used", 0) == 1 then
         if name == "barricade_door_hook" then
@@ -539,7 +539,7 @@ end
 
 ---------- a1_intro_world ----------
 
---if name == "microphone" or name == "call_button_prop" or model == "maps/a1_intro_world/entities/unnamed_205_2961_1020.vmdl" then
+-- if name == "microphone" or name == "call_button_prop" or model == "maps/a1_intro_world/entities/unnamed_205_2961_1020.vmdl" then
 if name == "call_button_prop_2" then
     SendToConsole("ent_fire_output call_button onin")
 end
@@ -1937,6 +1937,24 @@ elseif class == "item_hlvr_prop_battery" or class == "item_hlvr_health_station_v
             else
                 WristPockets_PickUpValuableItem(player, thisEntity)
             end
+        -- elseif class == "item_hlvr_prop_battery" or class == "prop_reviver_heart" then
+            -- do not pick up batteries if already mounted in combine machines
+            -- local entcombineconsole = Entities:FindByClassnameNearest("prop_animinteractable", thisEntity:GetOrigin(), 70) 
+            -- if entcombineconsole ~= nil then
+                -- if not string.match(entcombineconsole:GetModelName(), "vr_console_rack_1") then
+                    -- WristPockets_PickUpValuableItem(player, thisEntity)
+                -- end
+            -- else
+                -- battery post
+                -- local entcombinepost = Entities:FindByClassnameNearest("prop_dynamic", thisEntity:GetOrigin(), 40) 
+                -- if entcombinepost ~= nil then
+                    -- if not string.match(entcombinepost:GetModelName(), "combine_battery_post") and not string.match(entcombinepost:GetModelName(), "combine_battery_large") then
+                        -- WristPockets_PickUpValuableItem(player, thisEntity)
+                    -- end
+                -- else
+                    -- WristPockets_PickUpValuableItem(player, thisEntity)
+                -- end
+            -- end
         else
             WristPockets_PickUpValuableItem(player, thisEntity)
         end
