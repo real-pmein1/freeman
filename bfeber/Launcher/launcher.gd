@@ -86,7 +86,9 @@ func _ready() -> void:
 		# Launch Game
 		custom_launch_options.text = custom_launch_options.text.replace("-fullscreen", "")
 		custom_launch_options.text = custom_launch_options.text.replace("-nowindow", "")
-		OS.shell_open("steam://run/546560// -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 " + custom_launch_options.text + " -window")
+		#OS.shell_open("steam://run/546560// -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 " + custom_launch_options.text + " -window")
+		OS.execute_with_pipe('cmd', ['/C', 'cd /D "' + installation_path + '\\game\\bin\\win64\\" && hlvr.exe -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 ' + custom_launch_options.text + ' -window'])
+		installation_path
 		game_menu = GAME_MENU_SCENE.instantiate()
 		game_menu.launcher = self
 		add_child(game_menu)
@@ -104,13 +106,14 @@ func _ready() -> void:
 	if OS.get_cmdline_args().has("-debug"):
 		launcher_ready.emit()
 	else:
+		launcher_ready.emit()
 		# Request newest launcher version
-		var newest_version := "https://api.github.com/repos/gb2dev/HLA-NoVR-Launcher/releases/latest"
-		var error_launcher = http_request_launcher_version.request(newest_version)
-		if error_launcher != OK:
-			accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error_launcher
-			accept_dialog.show()
-			launcher_ready.emit()
+		#var newest_version := "https://api.github.com/repos/gb2dev/HLA-NoVR-Launcher/releases/latest"
+		#var error_launcher = http_request_launcher_version.request(newest_version)
+		#if error_launcher != OK:
+			#accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error_launcher
+			#accept_dialog.show()
+			#launcher_ready.emit()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -258,6 +261,8 @@ func setup_config() -> void:
 
 
 func _on_button_play_pressed() -> void:
+	mod_ready_to_play.emit()
+	return
 	if not verify_installation_path(installation_path):
 		background_video.paused = true
 		file_dialog_installation.show()
