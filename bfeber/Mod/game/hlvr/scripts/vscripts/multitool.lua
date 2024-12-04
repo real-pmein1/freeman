@@ -545,17 +545,6 @@ function PowerTonerPath(junction, junction_name, junction_input)
                         end, "TonerComplete", 3)
                     end
                 end
-				if toner_path_powered_name == "freezer_toner_path_8" then
-					destroy_flashlight()
-					if Entities:FindByName(nil, "flashlight_fixed") then SendToConsole("ent_remove flashlight_fixed") end
-					_G.flashlight_on = "0"
-				end
-				print(toner_path_powered_name)
-				if map == "a4_c17_zoo" then
-					if toner_path_powered_name == "path_2" then
-						SendToConsole("ent_fire 589_toner_port_2 disable")
-					end
-				end
             end
         end
     end
@@ -630,8 +619,7 @@ function ToggleTonerJunction()
                 toner_path_name = "589_" .. toner_path_name
             end
 
-            -- if toner_path_name == "toner_path_1" and map ~= "a3_hotel_street" or (toner_path_name == "freezer_toner_path_1") or (toner_path_name == "freezer_toner_path_7" and player:Attribute_GetIntValue("circuit_" .. map .. "_freezer_toner_junction_1_completed", 0) == 1) or toner_path_name == "5325_4704_train_gate_path_start" or toner_path_name == "shack_path_6" or toner_path_name == "shack_path_1" or toner_path_name == "path_health_trap_1" or toner_path_name == "589_path_1" or (toner_path_name == "589_path_4" and Entities:FindByName(nil, "589_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_7" and Entities:FindByName(nil, "589_path_6"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_a" and Entities:FindByName(nil, "589_path_9"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_11" and Entities:FindByName(nil, "589_path_12"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (map == "a4_c17_parking_garage" and (toner_path_name == "toner_path_3" and Entities:FindByName(nil, "toner_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1 or toner_path_name == "toner_path_7" and Entities:FindByName(nil, "toner_path_5"):Attribute_GetIntValue("toner_path_powered", 0) == 1)) or toner_path_name == "1489_4074_path_demux_0" then
-            if toner_path_name == "toner_path_1" and map ~= "a3_hotel_street" or (toner_path_name == "freezer_toner_path_1") or (toner_path_name == "freezer_toner_path_7" and player:Attribute_GetIntValue("circuit_" .. map .. "_freezer_toner_junction_1_completed", 0) == 1) or toner_path_name == "5325_4704_train_gate_path_start" or toner_path_name == "shack_path_6" or toner_path_name == "shack_path_1" or toner_path_name == "path_health_trap_1" or toner_path_name == "589_path_1" or (toner_path_name == "589_path_4" and Entities:FindByName(nil, "589_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_7" and Entities:FindByName(nil, "589_path_6"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_a" and Entities:FindByName(nil, "589_path_9"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (map == "a4_c17_parking_garage" and (toner_path_name == "toner_path_3" and Entities:FindByName(nil, "toner_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1 or toner_path_name == "toner_path_7" and Entities:FindByName(nil, "toner_path_5"):Attribute_GetIntValue("toner_path_powered", 0) == 1)) or toner_path_name == "1489_4074_path_demux_0" then
+            if toner_path_name == "toner_path_1" and map ~= "a3_hotel_street" or (toner_path_name == "freezer_toner_path_1") or (toner_path_name == "freezer_toner_path_7" and player:Attribute_GetIntValue("circuit_" .. map .. "_freezer_toner_junction_1_completed", 0) == 1) or toner_path_name == "5325_4704_train_gate_path_start" or toner_path_name == "shack_path_6" or toner_path_name == "shack_path_1" or toner_path_name == "path_health_trap_1" or toner_path_name == "589_path_1" or (toner_path_name == "589_path_4" and Entities:FindByName(nil, "589_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_7" and Entities:FindByName(nil, "589_path_6"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_a" and Entities:FindByName(nil, "589_path_9"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_11" and Entities:FindByName(nil, "589_path_12"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (map == "a4_c17_parking_garage" and (toner_path_name == "toner_path_3" and Entities:FindByName(nil, "toner_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1 or toner_path_name == "toner_path_7" and Entities:FindByName(nil, "toner_path_5"):Attribute_GetIntValue("toner_path_powered", 0) == 1)) or toner_path_name == "1489_4074_path_demux_0" then
                 Entities:FindByName(nil, toner_path_name):Attribute_SetIntValue("toner_path_powered", 1)
             end
 
@@ -654,18 +642,7 @@ if class == "info_hlvr_toner_port" and (thisEntity:Attribute_GetIntValue("used",
 
     if name == "freezer_toner_outlet_1" then
         thisEntity:Attribute_SetIntValue("disabled", 0)
-		thisEntity:Attribute_SetIntValue("used", 1)
-		SendToConsole("ent_fire freezer_toner_outlet_1 disable")
-		_G.distillery_elev_called = 2
     end
-
-    if name == "freezer_toner_outlet_2" then
-		SendToConsole("ent_fire freezer_toner_outlet_2 disable")
-    end
-
-    if name == "port_health_trap" then
-		SendToConsole("ent_fire port_health_trap disable")
-	end
 
     if thisEntity:Attribute_GetIntValue("redraw_toner", 0) == 0 then
         if map == "a4_c17_parking_garage" then
@@ -701,7 +678,6 @@ if class == "info_hlvr_toner_port" and (thisEntity:Attribute_GetIntValue("used",
             end
 
             if toner_path_name == "toner_path_1" and map ~= "a3_hotel_street" or toner_path_name == "freezer_toner_path_1" or (toner_path_name == "freezer_toner_path_7" and player:Attribute_GetIntValue("circuit_" .. map .. "_freezer_toner_junction_1_completed", 0) == 1) or toner_path_name == "5325_4704_train_gate_path_start" or toner_path_name == "shack_path_6" or toner_path_name == "shack_path_1" or toner_path_name == "path_health_trap_1" or toner_path_name == "589_path_1" or (toner_path_name == "589_path_4" and Entities:FindByName(nil, "589_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_7" and Entities:FindByName(nil, "589_path_6"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_a" and Entities:FindByName(nil, "589_path_9"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_11" and Entities:FindByName(nil, "589_path_12"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (map == "a4_c17_parking_garage" and (toner_path_name == "toner_path_3" and Entities:FindByName(nil, "toner_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1 or toner_path_name == "toner_path_7" and Entities:FindByName(nil, "toner_path_5"):Attribute_GetIntValue("toner_path_powered", 0) == 1)) or toner_path_name == "1489_4074_path_demux_0" then
-            -- if toner_path_name == "toner_path_1" and map ~= "a3_hotel_street" or toner_path_name == "freezer_toner_path_1" or (toner_path_name == "freezer_toner_path_7" and player:Attribute_GetIntValue("circuit_" .. map .. "_freezer_toner_junction_1_completed", 0) == 1) or toner_path_name == "5325_4704_train_gate_path_start" or toner_path_name == "shack_path_6" or toner_path_name == "shack_path_1" or toner_path_name == "path_health_trap_1" or toner_path_name == "589_path_1" or (toner_path_name == "589_path_4" and Entities:FindByName(nil, "589_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_7" and Entities:FindByName(nil, "589_path_6"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (toner_path_name == "589_path_a" and Entities:FindByName(nil, "589_path_9"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or (map == "a4_c17_parking_garage" and (toner_path_name == "toner_path_3" and Entities:FindByName(nil, "toner_path_2"):Attribute_GetIntValue("toner_path_powered", 0) == 1 or toner_path_name == "toner_path_7" and Entities:FindByName(nil, "toner_path_5"):Attribute_GetIntValue("toner_path_powered", 0) == 1)) or toner_path_name == "1489_4074_path_demux_0" then
                 Entities:FindByName(nil, toner_path_name):Attribute_SetIntValue("toner_path_powered", 1)
                 SendToConsole("ent_fire_output " .. toner_path_name .. " OnPowerOn")
             end
@@ -757,107 +733,4 @@ if model == "models/props_combine/combine_doors/combine_door_sm01.vmdl" or model
 end
 
 -- Combine Fabricator
-if class == "prop_hlvr_crafting_station_console" then
-    local function AnimTagListener(sTagName, nStatus)
-        if sTagName == 'Bootup Done' and nStatus == 2 then
-            thisEntity:Attribute_SetIntValue("crafting_station_ready", 1)
-        elseif sTagName == 'Crafting Done' and nStatus == 2 then
-            if Convars:GetStr("chosen_upgrade") == "pistol_upgrade_aimdownsights" then
-                player:Attribute_SetIntValue("pistol_upgrade_aimdownsights", 1)
-                SendToConsole("give weapon_pistol")
-                SendToConsole("viewmodel_update")
-                SendToConsole("ent_fire text_pistol_upgrade_aimdownsights ShowMessage")
-                SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-            elseif Convars:GetStr("chosen_upgrade") == "pistol_upgrade_burstfire" then
-                player:Attribute_SetIntValue("pistol_upgrade_burstfire", 1)
-                SendToConsole("give weapon_pistol")
-                SendToConsole("viewmodel_update")
-                SendToConsole("ent_fire text_pistol_upgrade_burstfire ShowMessage")
-                SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-            elseif Convars:GetStr("chosen_upgrade") == "pistol_upgrade_hopper" then
-                player:Attribute_SetIntValue("pistol_upgrade_hopper", 1)
-                SendToConsole("give weapon_pistol")
-                SendToConsole("viewmodel_update")
-
-                -- TODO: Implement weapon upgrade and remove message
-                local ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="230 230 230", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=10, ["x"]=-1, ["y"]=0.6})
-                DoEntFireByInstanceHandle(ent, "SetText", "This weapon upgrade animation is not implemented", 0, nil, nil)
-                DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
-            elseif Convars:GetStr("chosen_upgrade") == "pistol_upgrade_lasersight" then
-                player:Attribute_SetIntValue("pistol_upgrade_lasersight", 1)
-                SendToConsole("give weapon_pistol")
-                SendToConsole("viewmodel_update")
-                SendToConsole("pistol_use_new_accuracy 1")
-
-                -- TODO: Implement weapon upgrade and remove message
-                local ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="230 230 230", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=10, ["x"]=-1, ["y"]=0.6})
-                DoEntFireByInstanceHandle(ent, "SetText", "This weapon upgrade does not have a model yet", 0, nil, nil)
-                DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
-            elseif Convars:GetStr("chosen_upgrade") == "shotgun_upgrade_grenadelauncher" then
-                player:Attribute_SetIntValue("shotgun_upgrade_grenadelauncher", 1)
-                SendToConsole("give weapon_shotgun")
-                SendToConsole("viewmodel_update")
-                SendToConsole("ent_fire text_shotgun_upgrade_grenadelauncher ShowMessage")
-                SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-            elseif Convars:GetStr("chosen_upgrade") == "shotgun_upgrade_doubleshot" then
-                player:Attribute_SetIntValue("shotgun_upgrade_doubleshot", 1)
-                SendToConsole("give weapon_shotgun")
-                SendToConsole("viewmodel_update")
-                SendToConsole("ent_fire text_shotgun_upgrade_doubleshot ShowMessage")
-                SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-            elseif Convars:GetStr("chosen_upgrade") == "shotgun_upgrade_lasersight" then
-                player:Attribute_SetIntValue("shotgun_upgrade_lasersight", 1)
-                SendToConsole("give weapon_shotgun")
-                SendToConsole("viewmodel_update")
-
-                -- TODO: Implement weapon upgrade and remove message
-                local ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="230 230 230", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=10, ["x"]=-1, ["y"]=0.6})
-                DoEntFireByInstanceHandle(ent, "SetText", "This weapon upgrade does not have a model yet", 0, nil, nil)
-                DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
-            elseif Convars:GetStr("chosen_upgrade") == "shotgun_upgrade_hopper" then
-                player:Attribute_SetIntValue("shotgun_upgrade_hopper", 1)
-                SendToConsole("give weapon_shotgun")
-                SendToConsole("viewmodel_update")
-
-                -- TODO: Implement weapon upgrade and remove message
-                local ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="230 230 230", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=10, ["x"]=-1, ["y"]=0.6})
-                DoEntFireByInstanceHandle(ent, "SetText", "This weapon upgrade animation is not implemented", 0, nil, nil)
-                DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
-            elseif Convars:GetStr("chosen_upgrade") == "smg_upgrade_aimdownsights" then
-                player:Attribute_SetIntValue("smg_upgrade_aimdownsights", 1)
-                SendToConsole("give weapon_ar2")
-                SendToConsole("viewmodel_update")
-                SendToConsole("ent_fire text_smg_upgrade_aimdownsights ShowMessage")
-                SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-            elseif Convars:GetStr("chosen_upgrade") == "smg_upgrade_lasersight" then
-                player:Attribute_SetIntValue("smg_upgrade_lasersight", 1)
-                SendToConsole("give weapon_ar2")
-                SendToConsole("viewmodel_update")
-
-                -- TODO: Implement weapon upgrade and remove message
-                local ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="230 230 230", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=10, ["x"]=-1, ["y"]=0.6})
-                DoEntFireByInstanceHandle(ent, "SetText", "This weapon upgrade does not have a model yet", 0, nil, nil)
-                DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
-            elseif Convars:GetStr("chosen_upgrade") == "smg_upgrade_casing" then
-                player:Attribute_SetIntValue("smg_upgrade_casing", 1)
-                SendToConsole("give weapon_ar2")
-                SendToConsole("viewmodel_update")
-
-                -- TODO: Implement weapon upgrade and remove message
-                local ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="230 230 230", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=10, ["x"]=-1, ["y"]=0.6})
-                DoEntFireByInstanceHandle(ent, "SetText", "This weapon upgrade animation is not implemented", 0, nil, nil)
-                DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
-            end
-
-            SendToConsole("ent_fire point_clientui_world_panel Enable")
-            SendToConsole("ent_fire weapon_in_fabricator Kill")
-            thisEntity:SetGraphParameterBool("bCrafting", false)
-            Convars:SetStr("chosen_upgrade", "")
-            Convars:SetStr("weapon_in_crafting_station", "")
-        elseif sTagName == 'Trays Retracted' and nStatus == 2 then
-            thisEntity:Attribute_SetIntValue("cancel_cooldown_done", 1)
-        end
-    end
-
-    thisEntity:RegisterAnimTagListener(AnimTagListener)
-end
+DoEntFireByInstanceHandle(thisEntity, "RunScriptFile", "crafting_station", 0, nil, nil)

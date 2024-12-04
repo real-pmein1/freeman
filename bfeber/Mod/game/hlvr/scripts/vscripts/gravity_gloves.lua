@@ -34,12 +34,22 @@ local ignore_props = {
     "models/props/construction/pallet_jack_1.vmdl",
     "models/props_junk/wood_crate001a.vmdl",
     "models/props/desk_1_drawer_middle.vmdl",
+    "models/industrial/padlock001a.vmdl",
+    "models/industrial/padlock001b.vmdl",
+    "models/industrial/padlock001c.vmdl",
+    "models/industrial/padlock001d.vmdl",
+    "models/props/barrel_plastic_1_open.vmdl",
+    "models/props/interior_furniture/interior_kitchen_cabinet_002_door_a.vmdl",
+    "models/props/interior_furniture/interior_kitchen_cabinet_002_door_b.vmdl",
+    "models/props/interior_furniture/interior_kitchen_cabinet_003_door_a.vmdl",
+    "models/props/interior_furniture/interior_kitchen_cabinet_003_door_b.vmdl",
 }
 
 if player:Attribute_GetIntValue("used_gravity_gloves", 0) == 1 then
     return
 end
 
+local name = thisEntity:GetName()
 local class = thisEntity:GetClassname()
 local player = Entities:GetLocalPlayer()
 local startVector = thisEntity:GetCenter()
@@ -56,7 +66,7 @@ if traceTable.enthit ~= player then
     return
 end
 
-if thisEntity:GetName() == "peeled_corridor_objects" or class == "prop_reviver_heart" or vlua.find(ignore_props, thisEntity:GetModelName()) == nil and player:Attribute_GetIntValue("gravity_gloves", 0) == 1 and (class == "prop_physics" or class == "item_hlvr_health_station_vial" or class == "item_hlvr_grenade_frag" or class == "item_item_crate" or class == "item_healthvial" or class == "item_hlvr_crafting_currency_small" or class == "item_hlvr_crafting_currency_large" or class == "item_hlvr_clip_shotgun_single" or class == "item_hlvr_clip_shotgun_multiple" or class == "item_hlvr_clip_rapidfire" or class == "item_hlvr_clip_energygun_multiple" or class == "item_hlvr_clip_energygun" or class == "item_hlvr_grenade_xen" or class == "item_hlvr_prop_battery" or class == "item_hlvr_combine_console_tank" or class == "item_hlvr_weapon_energygun") and (thisEntity:GetMass() <= 15 or vlua.find(thisEntity:GetModelName(), "bottle") or class == "item_hlvr_prop_battery" or thisEntity:GetModelName() == "models/interaction/anim_interact/hand_crank_wheel/hand_crank_wheel.vmdl") then
+if name == "peeled_corridor_objects" or class == "prop_reviver_heart" or vlua.find(ignore_props, thisEntity:GetModelName()) == nil and player:Attribute_GetIntValue("gravity_gloves", 0) == 1 and (class == "prop_physics" or class == "item_hlvr_health_station_vial" or class == "item_hlvr_grenade_frag" or class == "item_item_crate" or class == "item_healthvial" or class == "item_hlvr_crafting_currency_small" or class == "item_hlvr_crafting_currency_large" or class == "item_hlvr_clip_shotgun_single" or class == "item_hlvr_clip_shotgun_multiple" or class == "item_hlvr_clip_rapidfire" or class == "item_hlvr_clip_energygun_multiple" or class == "item_hlvr_clip_energygun" or class == "item_hlvr_grenade_xen" or class == "item_hlvr_prop_battery" or class == "item_hlvr_combine_console_tank" or class == "item_hlvr_weapon_energygun") and (thisEntity:GetMass() <= 15 or vlua.find(thisEntity:GetModelName(), "bottle") or class == "item_hlvr_prop_battery" or thisEntity:GetModelName() == "models/interaction/anim_interact/hand_crank_wheel/hand_crank_wheel.vmdl") then
     -- prevent gravity gloving installed combine console tank
     if class == "item_hlvr_combine_console_tank" and Entities:FindByClassnameWithin(nil, "baseanimating", thisEntity:GetCenter(), 3) then
         return
@@ -76,29 +86,37 @@ if thisEntity:GetName() == "peeled_corridor_objects" or class == "prop_reviver_h
             end
         end
     end
-    -- CHECK!
+
     -- do not pick up batteries if already mounted in combine machines
-    -- if class == "item_hlvr_prop_battery" or class == "prop_reviver_heart" then 
+    if class == "item_hlvr_prop_battery" or class == "prop_reviver_heart" then 
         -- console
-        -- local entcombineconsole = Entities:FindByClassnameNearest("prop_animinteractable", thisEntity:GetOrigin(), 40) 
-        -- if entcombineconsole ~= nil then
-            -- if string.match(entcombineconsole:GetModelName(), "vr_console_rack_1") then
-                -- return
-            -- end
-        -- end
+        local entcombineconsole = Entities:FindByClassnameNearest("prop_animinteractable", thisEntity:GetOrigin(), 40) 
+        if entcombineconsole ~= nil then
+            if string.match(entcombineconsole:GetModelName(), "vr_console_rack_1") then
+                return
+            end
+        end
         -- battery post
-        -- local entcombinepost = Entities:FindByClassnameNearest("prop_dynamic", thisEntity:GetOrigin(), 40) 
-        -- if entcombinepost ~= nil then
-            -- if string.match(entcombinepost:GetModelName(), "combine_battery_post") or string.match(entcombinepost:GetModelName(), "combine_battery_large") then
-                -- return
-            -- end
-        -- end
-    -- end
+        local entcombinepost = Entities:FindByClassnameNearest("prop_dynamic", thisEntity:GetOrigin(), 40) 
+        if entcombinepost ~= nil then
+            if string.match(entcombinepost:GetModelName(), "combine_battery_post") or string.match(entcombinepost:GetModelName(), "combine_battery_large") then
+                return
+            end
+        end
+    end
 
     local parent = thisEntity:GetMoveParent()
     if parent then
         local parentClass = parent:GetClassname()
         if parentClass == "prop_ragdoll" or parentClass == "npc_zombie" or parentClass == "npc_combine_s" then
+            if parentClass == "prop_ragdoll" and (class == "item_hlvr_clip_energygun" or class == "item_hlvr_clip_generic_pistol") then
+                local item_pickup_params = { ["userid"]=player:GetUserID(), ["item"]=class, ["item_name"]=name }
+                item_pickup_params.wasparentedto = parentClass
+                FireGameEvent("item_pickup", item_pickup_params)
+            end
+            local grabbity_glove_pull_params = { ["userid"]=player:GetUserID(), ["item"]=class, ["item_name"]=name }
+            grabbity_glove_pull_params.wasparentedto = parentClass
+            FireGameEvent("grabbity_glove_pull", grabbity_glove_pull_params)
             local pos = thisEntity:GetOrigin()
             thisEntity:Kill()
             thisEntity = SpawnEntityFromTableSynchronous(class, {["origin"]="" .. pos.x .. " " .. pos.y .. " " .. pos.z})
@@ -107,6 +125,8 @@ if thisEntity:GetName() == "peeled_corridor_objects" or class == "prop_reviver_h
 
     local grabbity_glove_catch_params = { ["userid"]=player:GetUserID() }
     FireGameEvent("grabbity_glove_catch", grabbity_glove_catch_params)
+    local grabbity_glove_pull_params = { ["userid"]=player:GetUserID(), ["item"]=class, ["item_name"]=name }
+    FireGameEvent("grabbity_glove_pull", grabbity_glove_pull_params)
     player:StopThink("GGTutorial")
     local direction = eyePos - thisEntity:GetAbsOrigin()
     thisEntity:ApplyAbsVelocityImpulse(Vector(direction.x * 2, direction.y * 2, direction.z * (115 / direction.z + 1.9)))
@@ -117,20 +137,28 @@ if thisEntity:GetName() == "peeled_corridor_objects" or class == "prop_reviver_h
     thisEntity:SetThink(function()
         local ents = Entities:FindAllInSphere(Entities:GetLocalPlayer():EyePosition(), 60)
         if vlua.find(ents, thisEntity) then
-            if not WristPockets_PickUpValuableItem(player, thisEntity) and thisEntity:GetMass() ~= 1 then
-                DoEntFireByInstanceHandle(thisEntity, "Use", "", 0, player, player)
-            end
-            if class == "item_hlvr_grenade_frag" then
+            if class == "item_hlvr_grenade_frag" or class == "item_hlvr_grenade_xen" then
+                if thisEntity:Attribute_GetIntValue("picked_up", 0) == 1 then
+                    WristPockets_PickUpValuableItem(player, thisEntity)
+                    return nil
+                end
                 SendToConsole("+use")
                 thisEntity:SetThink(function()
                     SendToConsole("-use")
                     DoEntFireByInstanceHandle(thisEntity, "RunScriptFile", "useextra", 0.02, player, player)
                 end, "", 0.02)
                 if vlua.find(thisEntity:GetSequence(), "vr_grenade_arm_") then
+                    print("[GameMenu] give_achievement SKILL_GGENEMY_GRENADE_MID_FLIGHT")
                     DoEntFireByInstanceHandle(thisEntity, "SetTimer", "3", 0, nil, nil)
                 end
+            else
+                if not WristPockets_PickUpValuableItem(player, thisEntity) then
+                    if class == "prop_physics" and thisEntity:Attribute_GetIntValue("picked_up", 0) == 0 or thisEntity:GetMass() ~= 1 then
+                        DoEntFireByInstanceHandle(thisEntity, "Use", "", 0, player, player)
+                        return nil
+                    end
+                end
             end
-            return nil
         end
 
         if count < 5 then

@@ -1,0 +1,94 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	HideInTools = false
+	IsPlayable = true
+	IsTemplate = false
+	maps = [  ]
+	map_extensions = 
+	[
+		{
+			parent_map = "a1_intro_world"
+			extension_map = "a1_intro_world_novr"
+		},
+		{
+			parent_map = "a1_intro_world_2"
+			extension_map = "a1_intro_world_2_novr"
+		},
+		{
+			parent_map = "a2_quarantine_entrance"
+			extension_map = "a2_quarantine_entrance_novr"
+		},
+		{
+			parent_map = "a2_pistol"
+			extension_map = "a2_pistol_novr"
+		},
+		{
+			parent_map = "a2_hideout"
+			extension_map = "a2_hideout_novr"
+		},
+		{
+			parent_map = "a2_headcrabs_tunnel"
+			extension_map = "a2_headcrabs_tunnel_novr"
+		},
+		{
+			parent_map = "a2_drainage"
+			extension_map = "a2_drainage_novr"
+		},
+		{
+			parent_map = "a2_train_yard"
+			extension_map = "a2_train_yard_novr"
+		},
+		{
+			parent_map = "a3_station_street"
+			extension_map = "a3_station_street_novr"
+		},
+		{
+			parent_map = "a3_hotel_lobby_basement"
+			extension_map = "a3_hotel_lobby_basement_novr"
+		},
+		{
+			parent_map = "a3_hotel_underground_pit"
+			extension_map = "a3_hotel_underground_pit_novr"
+		},
+		{
+			parent_map = "a3_hotel_interior_rooftop"
+			extension_map = "a3_hotel_interior_rooftop_novr"
+		},
+		{
+			parent_map = "a3_hotel_street"
+			extension_map = "a3_hotel_street_novr"
+		},
+		{
+			parent_map = "a3_c17_processing_plant"
+			extension_map = "a3_c17_processing_plant_novr"
+		},
+		{
+			parent_map = "a3_distillery"
+			extension_map = "a3_distillery_novr"
+		},
+		{
+			parent_map = "a4_c17_zoo"
+			extension_map = "a4_c17_zoo_novr"
+		},
+		{
+			parent_map = "a4_c17_tanker_yard"
+			extension_map = "a4_c17_tanker_yard_novr"
+		},
+		{
+			parent_map = "a4_c17_water_tower"
+			extension_map = "a4_c17_water_tower_novr"
+		},
+		{
+			parent_map = "a4_c17_parking_garage"
+			extension_map = "a4_c17_parking_garage_novr"
+		},
+		{
+			parent_map = "a5_vault"
+			extension_map = "a5_vault_novr"
+		},
+		{
+			extension_map = "a5_ending_novr"
+			parent_map = "a5_ending"
+		},
+	]
+}

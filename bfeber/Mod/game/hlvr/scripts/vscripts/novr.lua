@@ -21,8 +21,8 @@ if GlobalSys:CommandLineCheck("-novr") then
         "models/props_junk/wood_crate004.vmdl",
         "models/props/interior_furniture/interior_shelving_001_b.vmdl",
         "models/props/interior_chairs/interior_chair_001.vmdl",
+        "models/props_junk/trashbin02_open.vmdl",
     }
-
     DoIncludeScript("bindings.lua", nil)
     DoIncludeScript("flashlight.lua", nil)
     DoIncludeScript("jumpfix.lua", nil)
@@ -47,10 +47,12 @@ if GlobalSys:CommandLineCheck("-novr") then
             player:SetThink(function()
                 PlayerDied()
             end, "UnpauseOnDeath2", 0.02)
-        elseif player:Attribute_GetIntValue("syringe_tutorial_shown", 0) == 1 then
-            SendToConsole("ent_fire text_syringe ShowMessage")
-            SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-            player:Attribute_SetIntValue("syringe_tutorial_shown", 2)
+        elseif player:Attribute_GetIntValue("syringe_tutorial_shown_damage", 0) == 0 then
+            if GetMapName() ~= "a1_intro_world_2" then
+                SendToConsole("ent_fire text_syringe ShowMessage")
+                SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
+                player:Attribute_SetIntValue("syringe_tutorial_shown_damage", 1)
+            end
         end
 
         -- Kill on fall damage
@@ -107,21 +109,48 @@ if GlobalSys:CommandLineCheck("-novr") then
     end
 
     pickup_ev = ListenToGameEvent('physgun_pickup', function(info)
+        SendToConsole("novr_resetads")
         local player = Entities:GetLocalPlayer()
         local ent = EntIndexToHScript(info.entindex)
         if ent then
+            if ent:GetClassname() == "item_hlvr_grenade_frag" or ent:GetClassname() == "item_hlvr_grenade_xen" or ent:GetClassname() == "item_hlvr_combine_console_tank" or ent:GetClassname() == "item_healthvial" then
+                ent:Attribute_SetIntValue("picked_up", 1)
+                ent:SetThink(function()
+                    SendToConsole("r_drawviewmodel 0")
+                    if ent:GetMass() == 1 then
+                        return 0
+                    end
+
+                    -- Item dropped
+                    DoEntFireByInstanceHandle(ent, "RunScriptFile", "drop_object", 0, nil, nil)
+                end, "CheckGrenadeDrop", 0.02)
+            end
             local child = ent:GetChildren()[1]
             if child and child:GetClassname() == "prop_dynamic" then
                 child:SetEntityName("held_prop_dynamic_override")
             end
-            if ent:GetClassname() ~= "item_hlvr_grenade_frag" and ent:GetClassname() ~= "item_hlvr_combine_console_tank" then
+            if ent:GetClassname() ~= "item_healthvial" and ent:GetClassname() ~= "item_hlvr_grenade_frag" and ent:GetClassname() ~= "item_hlvr_grenade_xen" and ent:GetClassname() ~= "item_hlvr_combine_console_tank" and ent:GetClassname() ~= "item_healthvial" then
                 ent:Attribute_SetIntValue("picked_up", 1)
+                ent:SetThink(function()
+                    local ent2 = Entities:FindByName(nil, "hat_construction_viewmodel")
+                    local ent3 = Entities:FindByName(nil, "respirator_viewmodel")
+                    if ent2 == nil and ent3 == nil then
+                        return
+                    end
+
+                    if ent:GetModelName() ~= "models/interaction/anim_interact/hand_crank_wheel/hand_crank_wheel.vmdl" then
+                        SendToConsole("r_drawviewmodel 0")
+                    end
+                end, "DoesEntStillExist", 0.02)
             end
             player:Attribute_SetIntValue("picked_up", 1)
             player:SetThink(function()
                 player:Attribute_SetIntValue("picked_up", 0)
             end, "ResetPickedUp", 0.02)
-            DoEntFireByInstanceHandle(ent, "AddOutput", "OnPhysgunDrop>!self>RunScriptCode>thisEntity:Attribute_SetIntValue(\"picked_up\", 0)>0.02>1", 0, nil, nil)
+            if ent:GetModelName() == "models/props/barrel_plastic_1.vmdl" then
+                SendToConsole("hlvr_physcannon_forward_offset 5")
+            end
+            DoEntFireByInstanceHandle(ent, "AddOutput", "OnPhysgunDrop>!self>RunScriptFile>drop_object>0.02>1", 0, nil, nil)
             DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
         end
     end, nil)
@@ -144,31 +173,7 @@ if GlobalSys:CommandLineCheck("-novr") then
         player:Attribute_SetIntValue("disable_unstuck", 0)
     end, nil)
 
-    Convars:RegisterCommand("notarget_jeff", function()
-		local player = Entities:GetLocalPlayer()
-		if player:Attribute_GetIntValue("notarget", 0) == 0 then
-			player:Attribute_SetIntValue("notarget", 1)
-			SendToConsole("ent_fire @blind_zombie setdeafstate 1;ent_fire @blind_zombie ignoreplayer 1;ent_fire @blind_zombie setsuppressmovement 1;hl_blind_zombie_attack_chance 0;hl_blind_zombie_cough_kill 0;hl_blind_zombie_sniff_time 0")
-			print("notarget Jeff ON")
-		else
-			player:Attribute_SetIntValue("notarget", 0)
-			SendToConsole("ent_fire @blind_zombie setdeafstate 0;ent_fire @blind_zombie ignoreplayer 0;ent_fire @blind_zombie setsuppressmovement 0;hl_blind_zombie_attack_chance 1;hl_blind_zombie_cough_kill 1;hl_blind_zombie_sniff_time 1")
-			print("notarget Jeff OFF")
-		end
-    end, "", 0)
-
-    Convars:RegisterCommand("covermouth_toggle", function()
-		local player = Entities:GetLocalPlayer()
-		if player:Attribute_GetIntValue("covering_mouth_toggle", 0) == 0 then
-            SendToConsole("ent_fire !player suppresscough 1;ent_fire_output @player_proxy OnPlayerCoverMouth;ent_fire lefthand Enable;novr_cover_mouth")
-			player:Attribute_SetIntValue("covering_mouth_toggle", 1)
-		else
-            SendToConsole("ent_fire !player suppresscough 0;ent_fire_output @player_proxy OnPlayerUncoverMouth;ent_fire lefthand Disable;novr_uncover_mouth")
-			player:Attribute_SetIntValue("covering_mouth_toggle", 0)
-		end
-    end, "", 0)
-	
-	Convars:RegisterCommand("usemultitool", function()
+    Convars:RegisterCommand("usemultitool", function()
         local viewmodel = Entities:FindByClassname(nil, "viewmodel")
         local player = Entities:GetLocalPlayer()
 
@@ -233,40 +238,41 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                         ent:Attribute_SetIntValue("used", 1)
                         DoEntFireByInstanceHandle(ent, "BeginHack", "", 0, nil, nil)
-                        
-                        if not vlua.find(name, "cshield") and not vlua.find(name, "switch_box") then
-                            if parent:GetModelName() == "models/props_combine/combine_lockers/combine_locker_doors.vmdl" then
-                                player:SetThink(function()
-                                    if GetMapName() == "a2_quarantine_entrance" then
-                                        SendToConsole("ent_fire text_hacking_puzzle_trace ShowMessage")
-                                        SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-                                    end
 
-                                    ent = Entities:FindByClassname(nil, "prop_hlvr_holo_hacking_sphere_trace")
-                                    SendToConsole("fadein 0.2")
-                                    DoEntFireByInstanceHandle(ent, "Use", "", 0, player, player)
-                                    local angles = player:GetAngles()
-                                    player:SetAngles(angles.x, angles.y + 180, angles.z)
-                                    player:SetThink(function()
-                                        SendToConsole("+iv_use;-iv_use")
-                                    end, "HideOrb1", 0.02)
-                                    player:SetThink(function()
-                                        player:SetAngles(angles.x, angles.y, angles.z)
-                                    end, "HideOrb2", 0.04)
-                                    player:SetThink(function()
-                                        if player:GetVelocity().z == 0 then
-                                            SendToConsole("ent_fire player_speedmod ModifySpeed 0")
-                                            return nil
-                                        end
-                                        return 0
-                                    end, "StopPlayerOnLand", 0)
-                                    print("[GameMenu] hacking_puzzle_trace")
-                                end, "HackingPuzzleTrace", 2.5)
-                            else
-                                DoEntFireByInstanceHandle(ent, "EndHack", "", 1.8, nil, nil)
-                                ent:FireOutput("OnHackSuccess", nil, nil, nil, 1.8)
-                                ent:FireOutput("OnPuzzleSuccess", nil, nil, nil, 1.8)
-                            end
+                        if not vlua.find(name, "cshield") and not vlua.find(name, "switch_box") then
+                            -- TODO: Re-enable hacking minigame when it's less buggy
+                            -- if parent:GetModelName() == "models/props_combine/combine_lockers/combine_locker_doors.vmdl" then
+                            --     player:SetThink(function()
+                            --         if GetMapName() == "a2_quarantine_entrance" then
+                            --             SendToConsole("ent_fire text_hacking_puzzle_trace ShowMessage")
+                            --             SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
+                            --         end
+
+                            --         ent = Entities:FindByClassname(nil, "prop_hlvr_holo_hacking_sphere_trace")
+                            --         SendToConsole("fadein 0.2")
+                            --         DoEntFireByInstanceHandle(ent, "Use", "", 0, player, player)
+                            --         local angles = player:GetAngles()
+                            --         player:SetAngles(angles.x, angles.y + 180, angles.z)
+                            --         player:SetThink(function()
+                            --             SendToConsole("+iv_use;-iv_use")
+                            --         end, "HideOrb1", 0.02)
+                            --         player:SetThink(function()
+                            --             player:SetAngles(angles.x, angles.y, angles.z)
+                            --         end, "HideOrb2", 0.04)
+                            --         player:SetThink(function()
+                            --             if player:GetVelocity().z == 0 then
+                            --                 SendToConsole("ent_fire player_speedmod ModifySpeed 0")
+                            --                 return nil
+                            --             end
+                            --             return 0
+                            --         end, "StopPlayerOnLand", 0)
+                            --         print("[GameMenu] hacking_puzzle_trace")
+                            --     end, "HackingPuzzleTrace", 2.5)
+                            -- else
+                            DoEntFireByInstanceHandle(ent, "EndHack", "", 1.8, nil, nil)
+                            ent:FireOutput("OnHackSuccess", nil, nil, nil, 1.8)
+                            ent:FireOutput("OnPuzzleSuccess", nil, nil, nil, 1.8)
+                            -- end
                         end
                         return
                     end
@@ -315,6 +321,24 @@ if GlobalSys:CommandLineCheck("-novr") then
             Entities:GetLocalPlayer():SetThink(function()
                 SendToConsole("ent_fire npc_barnacle SetRelationship \"player D_HT 99\"")
             end, "HostileBarnacles", 0.2)
+        else
+            ent = Entities:FindByName(nil, "respirator_viewmodel")
+            if ent then
+                local respirator = SpawnEntityFromTableSynchronous("prop_physics", {["model"]="models/props/hazmat/respirator_01a.vmdl"})
+                respirator:SetOrigin(Entities:GetLocalPlayer():EyePosition())
+                local angles = Entities:GetLocalPlayer():EyeAngles()
+                respirator:SetAngles(angles.x, angles.y, angles.z)
+
+                SendToConsole("snd_sos_start_soundevent Player.Gasmask_Remove")
+                SendToConsole("ent_fire !player suppresscough 0;ent_fire_output @player_proxy OnPlayerUncoverMouth")
+                SendToConsole("alias -covermouth \"ent_fire !player suppresscough 0;ent_fire_output @player_proxy OnPlayerUncoverMouth;ent_fire lefthand Disable;novr_uncover_mouth\"")
+                SendToConsole("alias +covermouth \"ent_fire !player suppresscough 1;ent_fire_output @player_proxy OnPlayerCoverMouth;ent_fire lefthand Enable;novr_cover_mouth\"")
+                ent:Kill()
+
+                Entities:GetLocalPlayer():SetThink(function()
+                    SendToConsole("ent_fire npc_barnacle SetRelationship \"player D_HT 99\"")
+                end, "HostileBarnacles", 0.2)
+            end
         end
     end, "", 0)
 
@@ -347,9 +371,11 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("ent_fire player_speedmod ModifySpeed 1")
     end, "", 0)
 
-    Convars:RegisterConvar("chosen_upgrade", "", "", 0)
+    Convars:RegisterConvar("novr_chosen_weapon_upgrade", "", "", 0)
 
-    Convars:RegisterConvar("weapon_in_crafting_station", "", "", 0)
+    Convars:RegisterConvar("novr_weapon_in_crafting_station", "", "", 0)
+
+    Convars:RegisterConvar("novr_viewmodel_offset_y_additional", "", "", 0)
 
     Convars:RegisterCommand("unstuck", function()
         local player = Entities:GetLocalPlayer()
@@ -387,6 +413,7 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                     if unstuck_count >= 1 then
                         player:SetOrigin(unstuck_table[1])
+                        SendToConsole("fadein 0.2")
                         unstuck_count = 0
                     else
                         unstuck_count = unstuck_count + 1
@@ -411,16 +438,20 @@ if GlobalSys:CommandLineCheck("-novr") then
     Convars:RegisterCommand("novr_energygun_grant_upgrade", function(name, value)
         -- Reflex Sight
         if value == "0" then
-            Convars:SetStr("chosen_upgrade", "pistol_upgrade_aimdownsights")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "pistol_upgrade_aimdownsights")
+            print("[GameMenu] give_achievement TRAINING_FIRST_PISTOL_UPGRADE")
         -- Burst Fire
         elseif value == "1" then
-            Convars:SetStr("chosen_upgrade", "pistol_upgrade_burstfire")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "pistol_upgrade_burstfire")
+            print("[GameMenu] give_achievement TRAINING_FIRST_PISTOL_UPGRADE")
         -- Bullet Reservoir
         elseif value == "2" then
-            Convars:SetStr("chosen_upgrade", "pistol_upgrade_hopper")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "pistol_upgrade_hopper")
+            print("[GameMenu] give_achievement TRAINING_FIRST_PISTOL_UPGRADE")
         -- Laser Sight
         elseif value == "3" then
-            Convars:SetStr("chosen_upgrade", "pistol_upgrade_lasersight")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "pistol_upgrade_lasersight")
+            print("[GameMenu] give_achievement TRAINING_FIRST_PISTOL_UPGRADE")
         else
             return
         end
@@ -431,16 +462,16 @@ if GlobalSys:CommandLineCheck("-novr") then
     Convars:RegisterCommand("novr_shotgun_grant_upgrade", function(name, value)
         -- Laser Sight
         if value == "0" then
-            Convars:SetStr("chosen_upgrade", "shotgun_upgrade_lasersight")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "shotgun_upgrade_lasersight")
         -- Double Shot
         elseif value == "1" then
-            Convars:SetStr("chosen_upgrade", "shotgun_upgrade_doubleshot")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "shotgun_upgrade_doubleshot")
         -- Autoloader
         elseif value == "2" then
-            Convars:SetStr("chosen_upgrade", "shotgun_upgrade_hopper")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "shotgun_upgrade_hopper")
         -- Grenade Launcher
         elseif value == "3" then
-            Convars:SetStr("chosen_upgrade", "shotgun_upgrade_grenadelauncher")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "shotgun_upgrade_grenadelauncher")
         else
             return
         end
@@ -451,13 +482,13 @@ if GlobalSys:CommandLineCheck("-novr") then
     Convars:RegisterCommand("novr_rapidfire_grant_upgrade", function(name, value)
         -- Reflex Sight
         if value == "0" then
-            Convars:SetStr("chosen_upgrade", "smg_upgrade_aimdownsights")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "smg_upgrade_aimdownsights")
         -- Laser Sight
         elseif value == "1" then
-            Convars:SetStr("chosen_upgrade", "smg_upgrade_lasersight")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "smg_upgrade_lasersight")
         -- Extended Magazine
         elseif value == "2" then
-            Convars:SetStr("chosen_upgrade", "smg_upgrade_casing")
+            Convars:SetStr("novr_chosen_weapon_upgrade", "smg_upgrade_casing")
         else
             return
         end
@@ -469,7 +500,11 @@ if GlobalSys:CommandLineCheck("-novr") then
         local t = {}
         Entities:GetLocalPlayer():GatherCriteria(t)
 
-        if Convars:GetStr("weapon_in_crafting_station") == "pistol" then
+        for k, v in pairs(Entities:FindAllByName("weapon_in_fabricator_idle")) do
+            v:SetEntityName("weapon_in_fabricator")
+        end
+
+        if Convars:GetStr("novr_weapon_in_crafting_station") == "pistol" then
             -- Reflex Sight
             if value == "1" and t.current_crafting_currency >= 10 then
                 SendToConsole("novr_energygun_grant_upgrade 0")
@@ -491,7 +526,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                 SendToConsole("hlvr_addresources 0 0 0 -35")
                 return
             end
-        elseif Convars:GetStr("weapon_in_crafting_station") == "shotgun" then
+        elseif Convars:GetStr("novr_weapon_in_crafting_station") == "shotgun" then
             -- Laser Sight
             if value == "1" and t.current_crafting_currency >= 10 then
                 SendToConsole("novr_shotgun_grant_upgrade 0")
@@ -513,7 +548,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                 SendToConsole("hlvr_addresources 0 0 0 -40")
                 return
             end
-        elseif Convars:GetStr("weapon_in_crafting_station") == "smg" then
+        elseif Convars:GetStr("novr_weapon_in_crafting_station") == "smg" then
             -- Reflex Sight
             if value == "1" and t.current_crafting_currency >= 15 then
                 SendToConsole("novr_rapidfire_grant_upgrade 0")
@@ -539,39 +574,64 @@ if GlobalSys:CommandLineCheck("-novr") then
     end, "", 0)
 
     Convars:RegisterCommand("novr_crafting_station_cancel_upgrade", function()
-        Convars:SetStr("chosen_upgrade", "cancel")
+        Convars:SetStr("novr_chosen_weapon_upgrade", "cancel")
+        SendToConsole("ent_fire weapon_in_fabricator_idle Kill")
         SendToConsole("ent_fire weapon_in_fabricator Kill")
         SendToConsole("ent_fire upgrade_ui kill")
         -- TODO: Give weapon back, but don't fill magazine
-        if Convars:GetStr("weapon_in_crafting_station") == "pistol" then
+        if Convars:GetStr("novr_weapon_in_crafting_station") == "pistol" then
             SendToConsole("give weapon_pistol")
-        elseif Convars:GetStr("weapon_in_crafting_station") == "shotgun" then
+        elseif Convars:GetStr("novr_weapon_in_crafting_station") == "shotgun" then
             SendToConsole("give weapon_shotgun")
-        elseif Convars:GetStr("weapon_in_crafting_station") == "smg" then
+        elseif Convars:GetStr("novr_weapon_in_crafting_station") == "smg" then
             SendToConsole("give weapon_ar2")
         end
-        Convars:SetStr("weapon_in_crafting_station", "")
+        Convars:SetStr("novr_weapon_in_crafting_station", "")
         SendToConsole("viewmodel_update")
         SendToConsole("ent_fire prop_hlvr_crafting_station_console RunScriptFile useextra")
     end, "", 0)
 
     Convars:RegisterCommand("throwgrenade", function(name, launcher)
         local player = Entities:GetLocalPlayer()
-        local playerhasxengrenade = WristPockets_PlayerHasXenGrenade()
-        if not WristPockets_PlayerHasGrenade() and not playerhasxengrenade then
+        local player_holding_grenade = false
+        local ents = Entities:FindAllByClassname("item_hlvr_grenade_frag")
+        for k, v in pairs(ents) do
+            if v:GetMass() == 1 then
+                v:Kill()
+                player_holding_grenade = true
+            end
+        end
+        local player_holding_xen_grenade = false
+        ents = Entities:FindAllByClassname("item_hlvr_grenade_xen")
+        for k, v in pairs(ents) do
+            if v:GetMass() == 1 then
+                v:Kill()
+                player_holding_grenade = true
+                player_holding_xen_grenade = true
+            end
+        end
+
+        local player_has_xen_grenade = WristPockets_PlayerHasXenGrenade()
+        if not player_holding_grenade and not WristPockets_PlayerHasGrenade() and not player_has_xen_grenade then
             SendToConsole("snd_sos_start_soundevent PlayerTeleport.Fail")
             return
         end
         local pos = player:EyePosition()
         local class = "item_hlvr_grenade_frag"
         -- Remove xen grenade or frag grenade from wristpocket slots
-        if playerhasxengrenade then
-            class = "item_hlvr_grenade_xen"
-            WristPockets_UseXenGrenade()
+        if player_holding_grenade then
+            if player_holding_xen_grenade then
+                class = "item_hlvr_grenade_xen"
+            end
         else
-            WristPockets_UseGrenade()
+            if player_has_xen_grenade then
+                class = "item_hlvr_grenade_xen"
+                WristPockets_UseXenGrenade()
+            else
+                WristPockets_UseGrenade()
+            end
         end
-        
+
         local ent = SpawnEntityFromTableSynchronous(class, {["targetname"]="player_grenade", ["origin"]=pos.x .. " " .. pos.y .. " " .. pos.z})
         ent:SetOwner(player)
         if class == "item_hlvr_grenade_frag" then
@@ -597,6 +657,9 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("impulse 200")
             player:SetThink(function()
                 SendToConsole("impulse 200")
+                if not is_on_map_or_later("a5_vault") then
+                    SendToConsole("r_drawviewmodel 1")
+                end
             end, "FinishGrenadeThrow", 0.1)
         end
         DoEntFireByInstanceHandle(ent, "ArmGrenade", "", 0, nil, nil)
@@ -607,10 +670,36 @@ if GlobalSys:CommandLineCheck("-novr") then
     Convars:RegisterConvar("fov_ads_zoom", "", "", 0)
     cvar_setf("fov_ads_zoom", FOV)
 
+
+    Convars:RegisterCommand("+novr_zoom", function()
+        if cvar_getf("fov_ads_zoom") > FOV_ADS_ZOOM then
+            Entities:GetLocalPlayer():Attribute_SetIntValue("is_zoomed", 1)
+            SendToConsole("+zoom")
+        end
+    end, "", 0)
+
+
+    Convars:RegisterCommand("-novr_zoom", function()
+        Entities:GetLocalPlayer():Attribute_SetIntValue("is_zoomed", 0)
+        SendToConsole("-zoom")
+    end, "", 0)
+
+
+    Convars:RegisterCommand("novr_resetads", function()
+        if cvar_getf("fov_ads_zoom") <= FOV_ADS_ZOOM then
+            SendToConsole("+customattack2;-customattack2")
+        end
+    end, "", 0)
+
+
     -- Custom attack 2
     Convars:RegisterCommand("+customattack2", function()
         local viewmodel = Entities:FindByClassname(nil, "viewmodel")
         local player = Entities:GetLocalPlayer()
+
+        if player ~= nil and player:Attribute_GetIntValue("is_zoomed", 0) == 1 then
+            return
+        end
 
         -- Reset viewmodel after auto weapon switch
         if viewmodel and cvar_getf("fov_ads_zoom") == FOV_ADS_ZOOM and not string.match(viewmodel:GetModelName(), "_ads.vmdl") then
@@ -629,34 +718,47 @@ if GlobalSys:CommandLineCheck("-novr") then
                     SendToConsole("+attack2")
                 end
             elseif string.match(viewmodel:GetModelName(), "v_pistol") then
-                if player:Attribute_GetIntValue("pistol_upgrade_aimdownsights", 0) == 1 then
+                if player:Attribute_GetIntValue("pistol_upgrade_aimdownsights", 0) == 1 and player:Attribute_GetIntValue("ads_ready", 1) == 1 then
                     if cvar_getf("fov_ads_zoom") > FOV_ADS_ZOOM then
+                        local ents = Entities:FindAllInSphere(player:GetCenter(), 80)
+                        for k, v in pairs(ents) do
+                            if v:Attribute_GetIntValue("picked_up", 0) == 1 then
+                                return
+                            end
+                        end
+
                         cvar_setf("viewmodel_offset_y", 0)
                         cvar_setf("viewmodel_offset_z", -0.04)
                         SendToConsole("ent_fire ads_zoom zoom")
+                        player:Attribute_SetIntValue("ads_ready", 0)
                         ViewmodelAnimation_HIPtoADS()
                         player:SetThink(function()
                             cvar_setf("fov_ads_zoom", FOV_ADS_ZOOM)
                             cvar_setf("viewmodel_offset_x", -0.005)
-                        end, "ZoomActivate", 0.5)
+                            player:Attribute_SetIntValue("ads_ready", 1)
+                        end, "ZoomActivate", 0.4)
                         SendToConsole("hud_draw_fixed_reticle 0")
                         SendToConsole("crosshair 0")
+                        SendToConsole("pistol_use_new_accuracy 1")
                     else
                         cvar_setf("fov_ads_zoom", FOV)
                         SendToConsole("ent_fire ads_zoom_out zoom")
+                        player:Attribute_SetIntValue("ads_ready", 0)
                         cvar_setf("viewmodel_offset_x", 0)
                         cvar_setf("viewmodel_offset_y", 0)
                         cvar_setf("viewmodel_offset_z", 0)
                         ViewmodelAnimation_ADStoHIP()
                         if player:Attribute_GetIntValue("pistol_upgrade_lasersight", 0) == 0 then
                             SendToConsole("hud_draw_fixed_reticle 1")
+                            SendToConsole("pistol_use_new_accuracy 0")
                         else
                             SendToConsole("crosshair 1")
                         end
                         player:SetThink(function()
                             SendToConsole("ent_fire ads_zoom unzoom")
                             SendToConsole("ent_fire ads_zoom_out unzoom")
-                        end, "ZoomDeactivate", 0.5)
+                            player:Attribute_SetIntValue("ads_ready", 1)
+                        end, "ZoomDeactivate", 0.3)
                     end
                 end
             elseif string.match(viewmodel:GetModelName(), "v_smg1") then
@@ -775,34 +877,6 @@ if GlobalSys:CommandLineCheck("-novr") then
     Convars:RegisterCommand("useextra", function()
         local player = Entities:GetLocalPlayer()
 
-		------ PMEIN1 FIND PLAYER POS ----------
-		local playerEnt = Entities:GetLocalPlayer()
-		EmitSoundOnClient("HL2Player.Use", playerEnt)
-		local startVector = playerEnt:EyePosition()
-		local fullpos = string.sub(string.format("%s", startVector),26,-2)
-		local xpos_index = string.find(fullpos, " ")
-		local xpos = tonumber(string.sub(fullpos,0,xpos_index - 1))
-		local ypos_index = string.find(fullpos, " ", xpos_index + 1)
-		local ypos = tonumber(string.sub(fullpos,xpos_index + 1,ypos_index - 1))
-		local zpos = tonumber(string.sub(fullpos,ypos_index + 1,fullpos:len()))
-		--print(fullpos)
-		--print(xpos_index)
-		--print(ypos_index)
-		print("Current x position: " .. xpos)
-		print("Current y position: " .. ypos)
-		print("Current z position: " .. zpos)
-		local map = GetMapName()
-		---------------------------------------
-		
-		---- PMEIN1 SHOW PLAYER INVENTORY -----
-		-- local playerEnt = Entities:GetLocalPlayer()
-		-- local player_stats = {}
-		-- playerEnt:GatherCriteria(player_stats)
-		-- for k,l in pairs(player_stats) do
-			-- print(k .. " " .. l)
-		-- end
-		---------------------------------------
-
         player:Attribute_SetIntValue("used_gravity_gloves", 0)
         player:Attribute_SetIntValue("use_released", 0)
 
@@ -816,6 +890,19 @@ if GlobalSys:CommandLineCheck("-novr") then
         }
         TraceLine(eyetrace)
         if eyetrace.hit then
+            local ent = Entities:FindByClassnameNearest("prop_handpose", eyetrace.pos, 20)
+            if ent then
+                ent = Entities:FindAllByClassname("point_soundevent")
+                for k, v in pairs(ent) do
+                    if vlua.find(v:GetName(), "snd_car_horn") and VectorDistanceSq(eyetrace.pos, v:GetCenter()) < 3000 then
+                        DoEntFireByInstanceHandle(v, "StartSound", "", 0, nil, nil)
+                        v:SetThink(function()
+                            DoEntFireByInstanceHandle(v, "StopSound", "", 0, nil, nil)
+                        end, "StopSound", 1)
+                    end
+                end
+            end
+
             local minDistanceEnt
             local minDistance
             for k, v in pairs(Entities:FindAllInSphere(eyetrace.pos, 10)) do
@@ -835,12 +922,18 @@ if GlobalSys:CommandLineCheck("-novr") then
 
         -- Ladders and position based interactions
         if GetMapName() == "a1_intro_world" then
-            if vlua.find(Entities:FindAllInSphere(Vector(648, -1757, -141), 10), player) then
+            if vlua.find(Entities:FindAllInSphere(Vector(-958, 1735, 118), 10), player) then
+                DoEntFireByInstanceHandle(Entities:FindByName(nil, "205_8032_button_pusher_prop"), "RunScriptFile", "useextra", 0, nil, nil)
+            elseif vlua.find(Entities:FindAllInSphere(Vector(648, -1757, -141), 10), player) then
                 ClimbLadder(-64)
-            -- elseif vlua.find(Entities:FindAllInSphere(Vector(530, -2331, -84), 20), player) then
-                -- ClimbLadderSound()
-                -- SendToConsole("fadein 0.2")
-                -- SendToConsole("setpos_exact 574 -2328 -130")
+            elseif vlua.find(Entities:FindAllInSphere(Vector(530, -2331, -84), 25), player) then
+                ClimbLadderSound()
+                SendToConsole("fadein 0.2")
+                SendToConsole("setpos_exact 574 -2328 -130")
+            elseif vlua.find(Entities:FindAllInSphere(Vector(606, -2339, -217), 20), player) then
+                if 135 < player:GetAngles().y or player:GetAngles().y < -135 then
+                    DoEntFireByInstanceHandle(Entities:FindByName(nil, "979_518_button_pusher_prop"), "RunScriptFile", "useextra", 0, nil, nil)
+                end
             end
         elseif GetMapName() == "a1_intro_world_2" then
             if vlua.find(Entities:FindAllInSphere(Vector(-1268, 576, -63), 10), player) and Entities:FindByName(nil, "balcony_ladder"):GetSequence() == "idle_open" then
@@ -893,16 +986,15 @@ if GlobalSys:CommandLineCheck("-novr") then
 
             if vlua.find(Entities:FindAllInSphere(Vector(-702, -1024, -238), 20), player) then
                 local ent = Entities:FindByName(nil, "bell")
-                -- DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
-				SendToConsole("ent_fire bell setreturntocompletionstyle 0")
-				SendToConsole("ent_fire bell enablereturntocompletion;ent_fire bell setreturntocompletionamount 1;ent_fire bell setreturntocompletionamount 0 1")
+                DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
             end
         elseif GetMapName() == "a2_headcrabs_tunnel" and vlua.find(Entities:FindAllInSphere(Vector(354, -251, -62), 18), player) then
             ClimbLadder(22)
         elseif GetMapName() == "a3_station_street" then
-            -- if vlua.find(Entities:FindAllInSphere(Vector(934, 1883, -135), 20), player) then
-                -- SendToConsole("ent_fire_output 2_8127_elev_button_floor_1_call OnIn")
-            -- end
+            if vlua.find(Entities:FindAllInSphere(Vector(934, 1883, -135), 20), player) then
+                SendToConsole("ent_fire_output 2_8127_elev_button_floor_1_call OnIn")
+                SendToConsole("snd_sos_start_soundevent Button_Basic.Press")
+            end
         elseif GetMapName() == "a3_hotel_lobby_basement" then
             if vlua.find(Entities:FindAllInSphere(Vector(1059, -1475, 200), 20), player) then
                 if player:Attribute_GetIntValue("EnabledHotelLobbyPower", 0) == 1 then
@@ -911,14 +1003,21 @@ if GlobalSys:CommandLineCheck("-novr") then
                     SendToConsole("ent_fire elev_button_floor_1 Press")
                 end
             elseif vlua.find(Entities:FindAllInSphere(Vector(976, -1487, 208), 15), player) then
-                ClimbLadder(272, Vector(0, 0.8, 0.8))
+                ClimbLadder(280)
             end
         elseif GetMapName() == "a3_hotel_underground_pit" then
             if vlua.find(Entities:FindAllInSphere(Vector(2239, -1017, 528), 15), player) then
                 ClimbLadder(570)
             end
         elseif GetMapName() == "a3_hotel_interior_rooftop" then
-            if vlua.find(Entities:FindAllInSphere(Vector(2381, -1841, 448), 10), player) then
+            if vlua.find(Entities:FindAllInSphere(Vector(763.5, -1424, 578), 50), player) then
+                if player:Attribute_GetIntValue("entered_hotel_rooftop_window", 0) == 0 then
+                    SendToConsole("fadein 0.2")
+                    SendToConsole("setpos 788 -1420 576")
+                    CheckForGnome(nil, nil)
+                    player:Attribute_SetIntValue("entered_hotel_rooftop_window", 1)
+                end
+            elseif vlua.find(Entities:FindAllInSphere(Vector(2381, -1841, 448), 10), player) then
                 ClimbLadder(560)
             elseif vlua.find(Entities:FindAllInSphere(Vector(2335, -1832, 757), 20), player) then
                 ClimbLadder(840, Vector(0, 0, 0))
@@ -945,8 +1044,6 @@ if GlobalSys:CommandLineCheck("-novr") then
 
             if vlua.find(Entities:FindAllInSphere(Vector(-80, -2215, 760), 15), player) and Entities:FindByName(nil, "factory_int_up_barnacle_npc_1"):GetHealth() <= 0 then
                 ClimbLadder(890)
-				SendToConsole("unbind .")
-				SendToConsole("unbind ,")
             end
 
             if vlua.find(Entities:FindAllInSphere(Vector(-237,-2856,392), 15), player) then
@@ -971,13 +1068,8 @@ if GlobalSys:CommandLineCheck("-novr") then
                 ClimbLadder(180)
             end
 
-            if vlua.find(Entities:FindAllInSphere(Vector(-1460, -2740, 127), 15), player) then
-                ClimbLadder(180)
-            end
-
             if vlua.find(Entities:FindAllInSphere(Vector(-1393, -2493, 113), 10), player) then
-                -- ClimbLadder(425, Vector(0, 0, -1))
-				ClimbLadderRight(425, Vector(0, 0, -1), 180)
+                ClimbLadder(425, Vector(0, 0, -1))
             end
 
             if vlua.find(Entities:FindAllInSphere(Vector(-1420, -2482, 472), 30), player) then
@@ -986,10 +1078,6 @@ if GlobalSys:CommandLineCheck("-novr") then
                 SendToConsole("setpos_exact -1392 -2471 53")
             end
         elseif GetMapName() == "a3_distillery" then
-            if vlua.find(Entities:FindAllInSphere(Vector(140, -210, 426), 20), player) then
-                ClimbLadder(440)
-            end
-			
             if vlua.find(Entities:FindAllInSphere(Vector(20, -496, 211), 10), player) then
                 ClimbLadder(462)
             end
@@ -1002,16 +1090,16 @@ if GlobalSys:CommandLineCheck("-novr") then
                 end
             end
 
-            if vlua.find(Entities:FindAllInSphere(Vector(520, 1595, 578), 20), player) then
+            if vlua.find(Entities:FindAllInSphere(Vector(515, 1595, 578), 10), player) then
                 ClimbLadder(690)
             end
 
-            -- if vlua.find(Entities:FindAllInSphere(Vector(925, 1102, 578), 10), player) then
-                -- SendToConsole("ent_fire_output 11578_2635_380_button_center_pusher OnIn")
-            -- end
+            if vlua.find(Entities:FindAllInSphere(Vector(925, 1102, 578), 10), player) then
+                SendToConsole("ent_fire_output 11578_2635_380_button_center_pusher OnIn")
+            end
         elseif GetMapName() == "a4_c17_tanker_yard" then
             if vlua.find(Entities:FindAllInSphere(Vector(6980, 2591, 13), 10), player) then
-                ClimbLadder(260)
+                ClimbLadder(270)
             elseif vlua.find(Entities:FindAllInSphere(Vector(6618, 2938, 334), 10), player) then
                 ClimbLadder(402)
             elseif vlua.find(Entities:FindAllInSphere(Vector(6069, 3902, 416), 10), player) then
@@ -1039,7 +1127,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             end
         elseif GetMapName() == "a5_vault" then
             if vlua.find(Entities:FindAllInSphere(Vector(-445, 2900, -515), 10), player) then
-                ClimbLadder(-450, Vector(0, 0, 1))
+                ClimbLadder(-440, Vector(0, 0, 0.5))
             end
         end
     end, "", 0)
@@ -1048,22 +1136,6 @@ if GlobalSys:CommandLineCheck("-novr") then
         local player = Entities:GetLocalPlayer()
         player:Attribute_SetIntValue("use_released", 1)
     end, "", 0)
-	
-    Convars:RegisterCommand("+raise_platform", function()
-        SendToConsole("ent_fire_output lift_button_up onin")
-    end, "", 0)
-	
-    Convars:RegisterCommand("-raise_platform", function()
-        SendToConsole("ent_fire_output lift_button_up onout")
-    end, "", 0)
-	
-    Convars:RegisterCommand("+lower_platform", function()
-        SendToConsole("ent_fire_output lift_button_down onin")
-    end, "", 0)
-	
-    Convars:RegisterCommand("-lower_platform", function()
-        SendToConsole("ent_fire_output lift_button_down onout")
-    end, "", 0)
 
     if player_spawn_ev ~= nil then
         StopListeningToGameEvent(player_spawn_ev)
@@ -1071,25 +1143,6 @@ if GlobalSys:CommandLineCheck("-novr") then
 
     player_spawn_ev = ListenToGameEvent('player_activate', function(info)
         if not IsServer() then return end
-		
-		------ PMEIN1 FIND PLAYER POS ----------
-		local playerEnt = Entities:GetLocalPlayer()
-		EmitSoundOnClient("HL2Player.Use", playerEnt)
-		local startVector = playerEnt:EyePosition()
-		local fullpos = string.sub(string.format("%s", startVector),26,-2)
-		local xpos_index = string.find(fullpos, " ")
-		local xpos = tonumber(string.sub(fullpos,0,xpos_index - 1))
-		local ypos_index = string.find(fullpos, " ", xpos_index + 1)
-		local ypos = tonumber(string.sub(fullpos,xpos_index + 1,ypos_index - 1))
-		local zpos = tonumber(string.sub(fullpos,ypos_index + 1,fullpos:len()))
-		--print(fullpos)
-		--print(xpos_index)
-		--print(ypos_index)
-		print("Current x position: " .. xpos)
-		print("Current y position: " .. ypos)
-		print("Current z position: " .. zpos)
-		local map = GetMapName()
-		---------------------------------------
 
         local loading_save_file = false
         local ent = Entities:FindByClassname(ent, "player_speedmod")
@@ -1102,30 +1155,17 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("mouse_pitchyaw_sensitivity " .. MOUSE_SENSITIVITY)
         SendToConsole("fov_desired " .. FOV)
         SendToConsole("snd_remove_soundevent HL2Player.UseDeny")
-		
-		SendToConsole('ent_remove position_script')
-		SendToConsole('ent_create logic_script {"targetname" "position_script" "origin" "0 0 0" "vscripts" "player_pos.lua"')
-		
-		if FLASHLIGHT == "" then
-		    print("AUTO FLASHLIGHT ENABLED")
-			playerEnt:Attribute_SetIntValue("auto_flashlight", 1)
-		else
-		    print("AUTO FLASHLIGHT DISABLED")
-			playerEnt:Attribute_SetIntValue("auto_flashlight", 0)
-		end
 
         DoIncludeScript("version.lua", nil)
-		
-        SendToConsole("sv_cheats 1")
 
         if GetMapName() == "startup" then
-            -- SendToConsole("sv_cheats 1")
+            SendToConsole("sv_cheats 1")
+            SendToConsole("addon_enable novr")
             SendToConsole("hidehud 96")
             SendToConsole("mouse_disableinput 1")
             SendToConsole("bind " .. PRIMARY_ATTACK .. " +use")
             SendToConsole("bind " .. CROUCH .. " \"\"")
             SendToConsole("bind PAUSE main_menu_exec")
-			SendToConsole("fov_desired 80")
             if not loading_save_file then
                 SendToConsole("ent_fire player_speedmod ModifySpeed 0")
                 SendToConsole("setpos 0 -6154 6.473839")
@@ -1133,6 +1173,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                 if Convars:GetBool("vr_enable_fake_vr") then
                     SendToConsole("vr_fakemove_mlook_speed 0")
                     SendToConsole("vr_fakemove_speed 0")
+                    SendToConsole("achievement_disable 1")
                     ent = SpawnEntityFromTableSynchronous("info_hlvr_equip_player", {["energygun"]=true, ["pistol_upgrade_reflexsight"]=true})
                     DoEntFireByInstanceHandle(ent, "EquipNow", "", 0, nil, nil)
                     Entities:GetLocalPlayer():SetThink(function()
@@ -1161,32 +1202,38 @@ if GlobalSys:CommandLineCheck("-novr") then
             print("[GameMenu] pause_menu_mode")
             Entities:GetLocalPlayer():SetThink(function()
                 SendToConsole("gameui_allowescape;gameui_preventescapetoshow;gameui_hide")
-            end, "SetGameUIState", 0.1)
-            SendToConsole("alias +forwardfixed +iv_forward")
-            SendToConsole("alias -forwardfixed \"-iv_forward;unstuck\"")
-            SendToConsole("alias +backfixed +iv_back")
-            SendToConsole("alias -backfixed \"-iv_back;unstuck\"")
-            SendToConsole("alias +leftfixed +iv_left")
-            SendToConsole("alias -leftfixed \"-iv_left;unstuck\"")
-            SendToConsole("alias +rightfixed +iv_right")
-            SendToConsole("alias -rightfixed \"-iv_right;unstuck\"")
-            SendToConsole("alias +useextra \"+use;useextra\"")
-            SendToConsole("alias -useextra \"-use;useextra_release\"")
+
+                -- Prevent crash with delayed execution
+                SendToConsole("sv_gravity 500")
+                SendToConsole("alias -covermouth \"ent_fire !player suppresscough 0;ent_fire_output @player_proxy OnPlayerUncoverMouth;ent_fire lefthand Disable;novr_uncover_mouth\"")
+                SendToConsole("alias +covermouth \"ent_fire !player suppresscough 1;ent_fire_output @player_proxy OnPlayerCoverMouth;ent_fire lefthand Enable;novr_cover_mouth\"")
+                SendToConsole("alias -customattack -iv_attack")
+                SendToConsole("alias +customattack \"+iv_attack;usemultitool\"")
+                SendToConsole("alias +forwardfixed +iv_forward")
+                SendToConsole("alias -forwardfixed \"-iv_forward;unstuck\"")
+                SendToConsole("alias +backfixed +iv_back")
+                SendToConsole("alias -backfixed \"-iv_back;unstuck\"")
+                SendToConsole("alias +leftfixed +iv_left")
+                SendToConsole("alias -leftfixed \"-iv_left;unstuck\"")
+                SendToConsole("alias +rightfixed +iv_right")
+                SendToConsole("alias -rightfixed \"-iv_right;unstuck\"")
+                SendToConsole("alias +useextra \"+use;useextra\"")
+                SendToConsole("alias -useextra \"-use;useextra_release\"")
+                SendToConsole("-covermouth")
+            end, "SetGameUIState", 0.2)
             SendToConsole("bind " .. INTERACT .. " +useextra")
             SendToConsole("bind " .. JUMP .. " jumpfixed")
             SendToConsole("bind " .. NOCLIP .. " toggle_noclip")
-            SendToConsole("bind " .. NOTARGET .. " \"notarget;notarget_jeff\"")
             SendToConsole("bind " .. QUICK_SAVE .. " \"save quick;snd_sos_start_soundevent Instructor.StartLesson;ent_fire text_quicksave showmessage\"")
             SendToConsole("bind " .. QUICK_LOAD .. " \"vr_enable_fake_vr 0;vr_enable_fake_vr 0;load quick\"")
-            SendToConsole("bind " .. MAIN_MENU .. " \"map startup\"")
+            SendToConsole("bind " .. MAIN_MENU .. " \"addon_play startup\"")
             SendToConsole("bind " .. PRIMARY_ATTACK .. " \"+customattack;viewmodel_update\"")
             SendToConsole("bind " .. SECONDARY_ATTACK .. " +customattack2")
             SendToConsole("bind " .. TERTIARY_ATTACK .. " +customattack3")
             SendToConsole("bind " .. GRENADE .. " throwgrenade")
-            SendToConsole("bind " .. RELOAD .. " +reload")
+            SendToConsole("bind " .. RELOAD .. " \"+reload;novr_resetads\"")
             SendToConsole("bind " .. QUICK_SWAP .. " \"lastinv;viewmodel_update\"")
-            -- SendToConsole("bind " .. COVER_MOUTH .. " +covermouth")
-            SendToConsole("bind " .. COVER_MOUTH .. " covermouth_toggle")
+            SendToConsole("bind " .. COVER_MOUTH .. " +covermouth")
             SendToConsole("bind " .. MOVE_FORWARD .. " +forwardfixed")
             SendToConsole("bind " .. MOVE_BACK .. " +backfixed")
             SendToConsole("bind " .. MOVE_LEFT .. " +leftfixed")
@@ -1195,11 +1242,10 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. SPRINT .. " +iv_sprint")
             SendToConsole("bind " .. PAUSE .. " pause")
             SendToConsole("bind " .. VIEWM_INSPECT .. " viewmodel_inspect_animation")
-            SendToConsole("bind " .. ZOOM .. " +zoom")
+            SendToConsole("bind " .. ZOOM .. " +novr_zoom")
             SendToConsole("bind " .. UNEQUIP_WEARABLE .. " novr_unequip_wearable")
             -- NOTE: Put additional custom bindings under here. Example:
             -- SendToConsole("bind X quit")
-			SendToConsole("bind c ent_messages") -- DEV ONLY
             SendToConsole("sv_noclipaccelerate 1")
             SendToConsole("hl2_sprintspeed 140")
             SendToConsole("hl2_normspeed 140")
@@ -1208,6 +1254,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("cc_spectator_only 1")
             SendToConsole("sv_gameinstructor_disable 1")
             SendToConsole("hud_draw_fixed_reticle 0")
+            SendToConsole("hud_reticle_minalpha 255")
             SendToConsole("r_drawvgui 1")
             SendToConsole("ent_fire *_locker_door_* DisablePickup")
             SendToConsole("ent_fire *_hazmat_crate_lid DisablePickup")
@@ -1232,22 +1279,13 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("ent_fire *_van_door_* DisablePickup")
             SendToConsole("ent_fire *_cage_door_* DisablePickup")
             SendToConsole("ent_fire firedoor DisablePickup")
-			if Entities:FindByName(nil, "player_flashlight") then
-				SendToConsole("ent_remove player_flashlight")
-				SendToConsole("inv_flashlight")
-			end
+            SendToConsole("ent_remove player_flashlight")
             SendToConsole("hl_headcrab_deliberate_miss_chance 0")
             SendToConsole("combine_grenade_timer 4")
             SendToConsole("sk_auto_reload_time 9999")
-            SendToConsole("sv_gravity 500")
-            SendToConsole("alias -covermouth \"ent_fire !player suppresscough 0;ent_fire_output @player_proxy OnPlayerUncoverMouth;ent_fire lefthand Disable;novr_uncover_mouth\"")
-            SendToConsole("alias +covermouth \"ent_fire !player suppresscough 1;ent_fire_output @player_proxy OnPlayerCoverMouth;ent_fire lefthand Enable;novr_cover_mouth\"")
-            SendToConsole("alias -customattack -iv_attack")
-            SendToConsole("alias +customattack \"+iv_attack;usemultitool\"")
             SendToConsole("mouse_disableinput 0")
             SendToConsole("-attack")
             SendToConsole("-attack2")
-            SendToConsole("-covermouth")
             SendToConsole("sk_headcrab_runner_health 69")
             SendToConsole("sk_antlion_worker_spit_interval_max 2")
             SendToConsole("sk_antlion_worker_spit_interval_min 1")
@@ -1257,15 +1295,16 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("sk_plr_dmg_smg1 5")
             SendToConsole("hlvr_physcannon_forward_offset -5")
             SendToConsole("physcannon_tracelength 0")
-            SendToConsole("fov_desired " .. FOV)
             -- TODO: Lower this when picking up very low mass objects
             SendToConsole("player_throwforce 500")
-            -- Add locked door handle animation
             ent = Entities:FindByClassname(nil, "prop_door_rotating_physics")
             while ent do
+                -- Add locked door handle animation
                 ent:RedirectOutput("OnLockedUse", "PlayLockedDoorHandleAnimation", ent)
+
                 ent = Entities:FindByClassname(ent, "prop_door_rotating_physics")
             end
+
             -- Disable func_tracktrain user control
             ent = Entities:FindByClassname(nil, "func_tracktrain")
             while ent do
@@ -1286,6 +1325,8 @@ if GlobalSys:CommandLineCheck("-novr") then
             else
                 SendToConsole("pistol_use_new_accuracy 0")
             end
+            -- Viewmodel adjustments
+            SendToConsole("r_nearz 1.0")
 
             if Entities:FindByClassname(nil, "prop_hmd_avatar") then
                 ent = SpawnEntityFromTableSynchronous("env_message", {["message"]="VR_SAVE_NOT_SUPPORTED"})
@@ -1315,6 +1356,15 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                 AddCollisionToPhysicsProps("prop_physics")
                 AddCollisionToPhysicsProps("prop_physics_override")
+
+                local trigger_crouch = Entities:FindByClassname(nil, "trigger_multiple")
+                while trigger_crouch do
+                    if vlua.find(trigger_crouch:GetName(), "trigger_crouch") then
+                        trigger_crouch:RedirectOutput("OnStartTouch", "StartCrouching", trigger_crouch)
+                        trigger_crouch:RedirectOutput("OnEndTouch", "StopCrouching", trigger_crouch)
+                    end
+                    trigger_crouch = Entities:FindByClassname(trigger_crouch, "trigger_multiple")
+                end
             else
                 if is_on_map_or_later("a2_pistol") then
                     SendToConsole("give weapon_physcannon")
@@ -1354,15 +1404,22 @@ if GlobalSys:CommandLineCheck("-novr") then
                 local move_delta = Vector(0, 0, 0)
 
                 ent:SetThink(function()
-                    if Convars:GetStr("weapon_in_crafting_station") ~= "" and Convars:GetStr("chosen_upgrade") == "" and Entities:FindByClassnameNearest("prop_hlvr_crafting_station", Entities:GetLocalPlayer():GetAbsOrigin(), 200) == nil then
+                    if Convars:GetStr("novr_weapon_in_crafting_station") ~= "" and Convars:GetStr("novr_chosen_weapon_upgrade") == "" and Entities:FindByClassnameNearest("prop_hlvr_crafting_station", Entities:GetLocalPlayer():GetAbsOrigin(), 200) == nil then
                         SendToConsole("novr_crafting_station_cancel_upgrade")
                     end
                     return 1
                 end, "ReturnFabricatorWeapon", 0)
 
+                Convars:RegisterConvar("novr_current_vm_model", "", "", 0)
                 ent:SetThink(function()
                     local viewmodel = Entities:FindByClassname(nil, "viewmodel")
                     local player = Entities:GetLocalPlayer()
+
+                    local current_vm_model = viewmodel:GetModelName()
+                    if current_vm_model ~= Convars:GetStr("novr_current_vm_model") then
+                        SendToConsole("novr_resetads")
+                        Convars:SetStr("novr_current_vm_model", current_vm_model)
+                    end
 
                     if GetMapName() == "a3_c17_processing_plant" and player:Attribute_GetIntValue("activated_processing_plant_lift", 0) == 0 and player:GetAbsOrigin().z < 600 then
                         SendToConsole("snd_sos_start_soundevent Player.FallDamage")
@@ -1375,7 +1432,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                     end
 
                     local barnacle_tounge = Entities:FindByClassnameNearest("npc_barnacle_tongue_tip", player:GetOrigin(), 28)
-                    if barnacle_tounge then
+                    if barnacle_tounge and barnacle_tounge:GetOrigin().z > player:GetOrigin().z - 15 then
                         SendToConsole("novr_unequip_wearable")
                     end
 
@@ -1388,28 +1445,47 @@ if GlobalSys:CommandLineCheck("-novr") then
                         end
                     end
 
-                    local view_bob_x = sin(Time() * 8 % 6.28318530718) * move_delta.y * 0.0025
-                    local view_bob_y = sin(Time() * 8 % 6.28318530718) * move_delta.x * 0.0025
+                    local move_delta_length = Vector(move_delta.x, move_delta.y, move_delta.z * 0.1):Length()
+
+                    local view_bob_x = sin(Time() * 6 % 6.28318530718) * move_delta_length * 0.0020
+                    local view_bob_y = sin(Time() * 12 % 6.28318530718) * move_delta_length * 0.001
+
                     local angle = player:GetAngles()
                     angle = QAngle(0, -angle.y, 0)
                     move_delta = RotatePosition(Vector(0, 0, 0), angle, player:GetVelocity())
 
-                    local weapon_sway_x = RotationDelta(look_delta, viewmodel:GetAngles()).y * 0.07
-                    local weapon_sway_y = RotationDelta(look_delta, viewmodel:GetAngles()).x * 0.07
+                    local weapon_sway_x = RotationDelta(look_delta, viewmodel:GetAngles()).y * 0.1
+                    local weapon_sway_y = RotationDelta(look_delta, viewmodel:GetAngles()).x * 0.1
 
                     look_delta = viewmodel:GetAngles()
 
+                    local mult = -0.06
+                    local fov = cvar_getf("fov_desired")
+                    if fov > 80 then
+                        mult = -0.055
+                    end
+                    if fov > 90 then
+                        mult = -0.045
+                    end
+                    if fov > 100 then
+                        mult = -0.042
+                    end
+                    if string.match(viewmodel:GetModelName(), "v_shotgun") then
+                        mult = mult * 0.8
+                    elseif string.match(viewmodel:GetModelName(), "v_smg1") then
+                        mult = mult * 0.5
+                    end
+                    local viewmodel_offset_y_additional = mult * (fov - 60)
+
                     -- Set weapon sway and view bob if zoom is not active
                     if cvar_getf("fov_ads_zoom") > FOV_ADS_ZOOM then
-                        cvar_setf("viewmodel_offset_x", Lerp(0.06, cvar_getf("viewmodel_offset_x"), view_bob_x + weapon_sway_x))
-                        cvar_setf("viewmodel_offset_y", Lerp(0.06, cvar_getf("viewmodel_offset_y"), view_bob_y + weapon_sway_y))
+                        cvar_setf("viewmodel_offset_x", Lerp(0.07, cvar_getf("viewmodel_offset_x"), view_bob_x + weapon_sway_x))
+                        cvar_setf("viewmodel_offset_y", Lerp(0.07, cvar_getf("viewmodel_offset_y"), view_bob_y + weapon_sway_y + viewmodel_offset_y_additional))
                     end
 
                     local shard = Entities:FindByClassnameNearest("shatterglass_shard", player:GetCenter(), 30)
-                    if shard then
-                        if not (GetMapName() == "a3_c17_processing_plant" and #Entities:FindAllByClassnameWithin("shatterglass_shard", player:GetCenter(), 100) == 1) then
-                            DoEntFireByInstanceHandle(shard, "Break", "", 0, nil, nil)
-                        end
+                    if shard and shard:GetMoveParent() and #shard:GetMoveParent():GetChildren() > 1 then
+                        DoEntFireByInstanceHandle(shard, "Break", "", 0, nil, nil)
                     end
 
                     if Entities:GetLocalPlayer():GetBoundingMaxs().z == 36 then
@@ -1440,8 +1516,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("ent_create env_message { targetname text_smg_upgrade_aimdownsights message SMG_UPGRADE_AIMDOWNSIGHTS }")
 
             SendToConsole("ent_remove text_resin")
-            --SendToConsole("ent_create game_text { targetname text_resin effect 2 spawnflags 1 color \"255 220 0\" holdtime 0.11 x 0.027 y -0.15 }")
-            SendToConsole("ent_create game_text { targetname text_resin effect 2 spawnflags 1 color \"83 199 198\" holdtime 0.11 x 0.027 y -0.15 }")
+            SendToConsole("ent_create game_text { targetname text_resin effect 2 spawnflags 1 color \"255 220 0\" color2 \"92 107 192\" fadein 0 fadeout 0.15 fxtime 0.25 holdtime 5 x 0.02 y -0.16 }")
 
             SendToConsole("ent_remove text_grenade")
             SendToConsole("ent_create env_message { targetname text_grenade message GRENADE }")
@@ -1470,26 +1545,27 @@ if GlobalSys:CommandLineCheck("-novr") then
             HUDHearts_StartupPreparations()
             ViewmodelAnimation_ADSZoom()
 
+            local function PrecacheModels()
+                local ent_table = { -- used solution by SoMNst & Epic
+                    targetname = "novr_precachemodels",
+                    vscripts = "novr_precache.lua"
+                }
+                SpawnEntityFromTableAsynchronous("logic_script", ent_table, nil, nil);
+            end
+
+            PrecacheModels()
+
             if is_on_map_or_later("a2_quarantine_entrance") then
                 ent = Entities:GetLocalPlayer()
                 HUDHearts_StartUpdateLoop()
                 WristPockets_StartUpdateLoop()
-
-                -- Resin hud
-                local player = Entities:GetLocalPlayer()
-                player:SetThink(function()
-                    local textEntity = Entities:FindByName(nil, "text_resin")
-                    local t = {}
-                    player:GatherCriteria(t)
-                    DoEntFireByInstanceHandle(textEntity, "SetText", "Resin: " .. t.current_crafting_currency, 0, nil, nil)
-                    DoEntFireByInstanceHandle(textEntity, "Display", "", 0.1, nil, nil)
-                    return 0.1
-                end, "Resin_UpdateLoop", 0)
             end
 
             if GetMapName() == "a1_intro_world" then
-				_G.tuner_amount = 0.2
-                if not loading_save_file then
+                if loading_save_file then
+                    SendToConsole("novr_leavehingecam") -- avoid softlock
+                    MoveFreely()
+                else
                     SendToConsole("ent_fire player_speedmod ModifySpeed 0")
                     SendToConsole("mouse_disableinput 1")
                     SendToConsole("give weapon_bugbait")
@@ -1523,30 +1599,37 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="light_switch_1", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-541.6 1770.1 133.4", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="light_switch_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-903.2 1691.6 111", ["angles"]="0 0 0", ["modelscale"]=2})
-					
-					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="radio_tuner", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-223.492493 1990.992065 184.304428", ["angles"]="0.000000 217.598724 0.000000", ["modelscale"]=2}) --FAKE RADIO TUNER
-					
-					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="call_button_prop_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-225.384766 1880.790405 227.168457", ["angles"]="-90 110 0", ["modelscale"]=2}) --CALL BUTTON
-					
-					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_upper_left_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-216.930176 1904.178223 240.043457", ["angles"]="0 0 0", ["modelscale"]=2}) --MONITORS
-					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_upper_right_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-202.988281 1867.927246 246.378967", ["angles"]="0 0 0", ["modelscale"]=2})
-					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_lower_left_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-217.191895 1904.148438 229.349243", ["angles"]="0 0 0", ["modelscale"]=2})
-					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_lower_right_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-202.965332 1867.935059 236.032959", ["angles"]="0 0 0", ["modelscale"]=2})
 
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_1", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1473.99 -853.165 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1393.17 -923.015 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_3", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1393.17 -952.015 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_4", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1396.98 -982.97 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
 
-                    -- SendToConsole("ent_fire 563_vent_door DisablePickup")
-                    -- SendToConsole("ent_fire 563_vent_phys_hinge SetOffset 0.1")
+                    SendToConsole("ent_fire 563_vent_door DisablePickup")
+                    SendToConsole("ent_fire 563_vent_phys_hinge SetOffset 0.1")
 
                     -- TODO: Remove when Map Edits are done
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["solid"]=6, ["renderamt"]=0, ["model"]="models/props/industrial_door_1_40_92_white_temp.vmdl", ["origin"]="640 -1770 -210", ["angles"]="0 -10 0", ["modelscale"]=0.75})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["solid"]=6, ["renderamt"]=0, ["model"]="models/props/industrial_door_1_40_92_white_temp.vmdl", ["origin"]="-233 1772 182", ["angles"]="90 0 0"})
-                else
-                    MoveFreely()
                 end
+
+                Convars:RegisterCommand("novr_leavehingecam", function()
+                    ent = Entities:FindByName(nil, "205_2724_hingecam")  -- parent hingecam entity
+                    if ent:Attribute_GetIntValue("active", 0) == 1 then
+                        Entities:GetLocalPlayer():Attribute_SetIntValue("disable_unstuck", 0)
+                        ent:StopThink("UsingHingeCam")
+                        ent:FireOutput("OnInteractStop", nil, nil, nil, 0)
+                        local gunAngle = ent:LoadQAngle("OrigAngle")
+                        ent:SetAngles(gunAngle.x,gunAngle.y,gunAngle.z)
+                        ent:Attribute_SetIntValue("active", 0)
+                        SendToConsole("setpos_exact -831.591980 1946.499878 80")
+                        SendToConsole("noclip")
+                        SendToConsole("ent_fire 205_2724_hingecam enablecollision")
+                        SendToConsole("ent_fire player_speedmod ModifySpeed 1")
+                        SendToConsole("bind " .. PRIMARY_ATTACK .. " \"+customattack;viewmodel_update\"")
+                        SendToConsole("unbind J")
+                    end
+                end, "", 0)
             elseif GetMapName() == "a1_intro_world_2" then
                 if not loading_save_file then
                     ent = SpawnEntityFromTableSynchronous("env_message", {["message"]="CHAPTER1_TITLE"})
@@ -1557,10 +1640,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                     SendToConsole("ent_create env_message { targetname text_gg message GRAVITYGLOVES }")
                     SendToConsole("ent_create env_message { targetname text_shoot message SHOOT }")
 
-					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="monitor_switch", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-1820.253174 118.795120 122.034073", ["angles"]="-45.201099 205.106995 -88.618401", ["modelscale"]=2})
-					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="lightstand_switch", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_3_switch.vmdl", ["origin"]="-1621.750000 112.999878 128.000000", ["angles"]="0.000000 180.000000 180.000000", ["modelscale"]=2})
-					
-                    -- SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
+                    SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
 
                     SendToConsole("ent_fire car_door_rear DisablePickup")
                 end
@@ -1608,9 +1688,8 @@ if GlobalSys:CommandLineCheck("-novr") then
                     ent = SpawnEntityFromTableSynchronous("trigger_detect_bullet_fire", {["model"]="maps/a1_intro_world_2/entities/gate_ammo_trigger_621_2249_345.vmdl", ["origin"]= origin.x .. " " .. origin.y .. " " .. origin.z, ["angles"]= angles.x .. " " .. angles.y .. " " .. angles.z})
                     ent:RedirectOutput("OnDetectedBulletFire", "CheckTutorialPistolEmpty", ent)
 
-                    ent = Entities:FindByName(nil, "hint_crouch_trigger")
-                    -- ent:RedirectOutput("OnStartTouch", "GetOutOfCrashedVan", ent)
-                    ent:RedirectOutput("OnStartTouch", "ShowCrouchTutorial", ent)
+                    ent = Entities:FindByName(nil, "relay_van_open")
+                    ent:RedirectOutput("OnTrigger", "GetOutOfCrashedVan", ent)
 
                     ent = Entities:FindByName(nil, "relay_weapon_pistol_fakefire")
                     ent:RedirectOutput("OnTrigger", "RedirectPistol", ent)
@@ -1626,10 +1705,6 @@ if GlobalSys:CommandLineCheck("-novr") then
                         Entities:FindByName(nil, "toner_junction_1"):Attribute_SetIntValue("junction_rotation", 1)
                         Entities:FindByName(nil, "toner_junction_2"):Attribute_SetIntValue("junction_rotation", 1)
                         Entities:FindByName(nil, "toner_junction_3"):Attribute_SetIntValue("junction_rotation", 1)
-
-                        ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["solid"]=6, ["renderamt"]=0, ["model"]="models/props/industrial_door_1_40_92_white_temp.vmdl", ["origin"]="-1298 2480 280", ["angles"]="0 22 0", ["modelscale"]=10})
-                        ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["solid"]=6, ["renderamt"]=0, ["model"]="models/props/industrial_door_1_40_92_white_temp.vmdl", ["origin"]="-1100 2180 280", ["angles"]="0 22 0", ["modelscale"]=10})
-                        ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["solid"]=6, ["renderamt"]=0, ["model"]="models/props/industrial_door_1_40_92_white_temp.vmdl", ["origin"]="-1312 2504 280", ["angles"]="0 -67 0", ["modelscale"]=2})
 
                         ent = SpawnEntityFromTableSynchronous("env_message", {["message"]="CHAPTER2_TITLE"})
                         DoEntFireByInstanceHandle(ent, "ShowMessage", "", 0, nil, nil)
@@ -1656,6 +1731,9 @@ if GlobalSys:CommandLineCheck("-novr") then
                         SendToConsole("ent_create env_message { targetname text_break_boards message BREAK_BOARDS }")
 
                         SendToConsole("ent_fire *_rebar EnablePickup")
+
+                        Entities:FindByName(nil, "bullseye_explosion_platform_a"):SetOrigin(Vector(-128, 1123.933, 488))
+                        Entities:FindByName(nil, "no_look_trigger_for_hc_intro"):SetOrigin(Vector(-1984, 390, 440))
                     end
                 elseif GetMapName() == "a2_headcrabs_tunnel" then
                     if not loading_save_file then
@@ -1686,6 +1764,9 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                         ent = Entities:FindByClassnameNearest("trigger_once", Vector(-746, -943, -92), 10)
                         ent:Kill()
+
+                        ent = Entities:FindByClassnameNearest("prop_door_rotating_physics", Vector(-807, -643, -80), 10)
+                        DoEntFireByInstanceHandle(ent, "SetOpenDirection", "2", 0, nil, nil)
                     end
 
                     ent = Entities:GetLocalPlayer()
@@ -1714,12 +1795,20 @@ if GlobalSys:CommandLineCheck("-novr") then
                         local pos = ent:GetAbsOrigin()
                         local child = SpawnEntityFromTableSynchronous("prop_dynamic_override", {["targetname"]="hideout_gate_prop", ["CollisionGroupOverride"]=5, ["solid"]=6, ["DefaultAnim"]="vort_barrier_start_idle", ["renderamt"]=0, ["model"]=ent:GetModelName(), ["origin"]= pos.x .. " " .. pos.y .. " " .. pos.z, ["angles"]= angles.x .. " " .. angles.y .. " " .. angles.z - 20})
                         child:SetParent(ent, "")
+
+                        local player_clip = Entities:FindByClassnameNearest("func_brush", Vector(-692, -1369.25, -243.875), 10)
+                        if player_clip then
+                            SendToConsole("ent_fire trigger_player_in_big_room AddOutput \"OnTrigger>" .. player_clip:GetName() .. ">Enable>>0>-1\"")
+                            SendToConsole("ent_fire ss_kitchen_to_cardshow AddOutput \"OnScriptEvent01>" .. player_clip:GetName() .. ">Disable>>1>-1\"")
+                        end
                     end
                 else
                     SendToConsole("bind " .. FLASHLIGHT .. " inv_flashlight")
 
                     if GetMapName() == "a2_drainage" then
                         if not loading_save_file then
+                            Entities:FindByName(nil, "wheel2_physics"):SetOrigin(Vector(208, -2581, 420))
+
                             SendToConsole("ent_fire math_count_wheel2_installment AddOutput \"OnChangedFromMin>relay_install_wheel2>Trigger>>0>1\"")
                             SendToConsole("ent_fire math_count_wheel_installment AddOutput \"OnChangedFromMin>relay_install_wheel>Trigger>>0>1\"")
                             SendToConsole("ent_fire wheel_physics DisablePickup")
@@ -1738,11 +1827,17 @@ if GlobalSys:CommandLineCheck("-novr") then
                             DoEntFireByInstanceHandle(ent, "AddOutput", "OnTrigger>bullet_trigger>Kill>>0>1", 0, nil, nil)
                         end
                     elseif GetMapName() == "a2_train_yard" then
+                        ent = Entities:FindByName(nil, "train_arrival_trigger")
+                        ent:RedirectOutput("OnTrigger", "EnableTrainLeverReleaseDialogue", ent)
+
                         ent = Entities:FindByName(nil, "relay_train_will_crash")
                         ent:RedirectOutput("OnTrigger", "DisableTrainLever", ent)
 
                         ent = Entities:FindByName(nil, "mission_fail_relay")
                         ent:RedirectOutput("OnTrigger", "FailMission", ent)
+
+                        ent = Entities:FindByName(nil, "trainwreck_endfade_relay")
+                        ent:RedirectOutput("OnTrigger", "TeleportAfterTrainCrash", ent)
 
                         ent = Entities:FindByName(nil, "eli_rescue_3")
                         ent:RedirectOutput("OnCompletion", "ReachForEli", ent)
@@ -1767,20 +1862,25 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                             -- TODO: Remove when Map Edits are done
                             ent = SpawnEntityFromTableSynchronous("prop_dynamic_override", {["solid"]=6, ["renderamt"]=0, ["model"]="models/architecture/metal_siding/metal_siding_32_a.vmdl", ["origin"]="2320 -1854 834", ["angles"]="0 0 0", ["modelscale"]=0.5})
+
+                            -- Prevent picking up window
+                            SendToConsole("ent_fire window_sliding1* SetMass 501")
                         end
                     elseif GetMapName() == "a3_station_street" then
                         if not loading_save_file then
+                            -- Default Junction Rotations
+                            Entities:FindByName(nil, "toner_junction_1"):Attribute_SetIntValue("junction_rotation", 2)
+                            Entities:FindByName(nil, "toner_junction_2"):Attribute_SetIntValue("junction_rotation", 3)
+                            Entities:FindByName(nil, "toner_junction_3"):Attribute_SetIntValue("junction_rotation", 3)
+
                             ent = SpawnEntityFromTableSynchronous("env_message", {["message"]="CHAPTER4_TITLE"})
                             DoEntFireByInstanceHandle(ent, "ShowMessage", "", 0, nil, nil)
 
                             ent = Entities:FindByName(nil, "door")
                             DoEntFireByInstanceHandle(ent, "SetOpenDirection", "" .. 2, 0, nil, nil)
-							
-							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_1_call_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="905.444336 1883.500000 -152.125000", ["angles"]="90.000000 270.000000 0.000000", ["modelscale"]=2})
-							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_2_call_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="905.444336 1883.500000 112.006470", ["angles"]="90.000000 270.000000 0.000000", ["modelscale"]=2})
-							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_1_elev_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="891.588257 1889.000000 -148.850000", ["angles"]="90.000000 90.000000 0.000000", ["modelscale"]=2, ["parentname"]="2_8127_elev_base_ent"})
-							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="2_8127_elev_button_floor_2_elev_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="891.588257 1889.000000 -143.300000", ["angles"]="90.000000 90.000000 0.000000", ["modelscale"]=2, ["parentname"]="2_8127_elev_base_ent"})
-							
+
+                            ent = Entities:FindByName(nil, "patrol_trigger_seq_cancel")
+                            ent:SetOrigin(Vector(1834, -40, -488))
                         end
                     elseif GetMapName() == "a3_hotel_lobby_basement" then
                         Entities:FindByName(nil, "power_stake_2_start"):Attribute_SetIntValue("used", 1)
@@ -1827,6 +1927,7 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                             ent = Entities:FindByName(nil, "167_18945_hint_multitool_on_tripmine_trigger_1")
                             ent:RedirectOutput("OnTrigger", "ShowCrouchJumpTutorial", ent)
+                            ent:RedirectOutput("OnTrigger", "UnlockTripmineAchievement", ent)
 
                             ent = Entities:FindByClassnameNearest("prop_door_rotating_physics", Vector(780, 1614, 336), 10)
                             ent:RedirectOutput("OnOpen", "ExplodeFirstDoorMine", ent)
@@ -1835,22 +1936,22 @@ if GlobalSys:CommandLineCheck("-novr") then
                             DoEntFireByInstanceHandle(ent, "SetOpenDirection", "" .. 2, 0, nil, nil)
                         end
 
-                        -- SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+                        SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
 
-                        -- ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(775, 1677, 248), 10)
-                        -- if ent then
-                            -- ent:Kill()
-                        -- end
-                        -- ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(1440, 1306, 331), 10)
-                        -- if ent then
-                            -- ent:Kill()
-                        -- end
-                        -- ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(1657.083, 595.287, 426), 10)
-                        -- if ent then
-                            -- ent:SetOrigin(Vector(1657.083, 595.287, 400))
-                        -- end
+                        ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(775, 1677, 248), 10)
+                        if ent then
+                            ent:Kill()
+                        end
+                        ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(1440, 1306, 331), 10)
+                        if ent then
+                            ent:Kill()
+                        end
+                        ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(1657.083, 595.287, 426), 10)
+                        if ent then
+                            ent:SetOrigin(Vector(1657.083, 595.287, 400))
+                        end
                     elseif GetMapName() == "a3_c17_processing_plant" then
-                        -- SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+                        SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
 
                         if not loading_save_file then
                             -- Default Junction Rotations
@@ -1865,13 +1966,13 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                             SendToConsole("ent_fire vent_door DisablePickup")
 
-                            -- ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-896, -3768, 348), 10)
-                            -- if ent then
-                                -- ent:Kill()
-                            -- end
+                            ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-896, -3768, 348), 10)
+                            if ent then
+                                ent:Kill()
+                            end
 
-                            -- ent = Entities:FindByClassnameNearest("trigger_once", Vector(-1456, -3960, 224), 10)
-                            -- ent:RedirectOutput("OnTrigger", "SetupMineRoom", ent)
+                            ent = Entities:FindByClassnameNearest("trigger_once", Vector(-1456, -3960, 224), 10)
+                            ent:RedirectOutput("OnTrigger", "SetupMineRoom", ent)
 
                             ent = Entities:FindByName(nil, "shack_path_6_port_1_enable")
                             ent:RedirectOutput("OnTrigger", "EnableShackToner", ent)
@@ -1936,11 +2037,6 @@ if GlobalSys:CommandLineCheck("-novr") then
                             if ent then
                                 DoEntFireByInstanceHandle(ent, "Kill", "", 0, nil, nil)
                             end
-						
-							ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="tc_door_button", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/button_1_pusher.vmdl", ["origin"]="940.344482 1100.082153 557.023071", ["angles"]="-90.000000 81.092407 0.000000", ["modelscale"]=2, ["parentname"]="11578_2635_380_button_center_pusher"})
-
-                            -- TODO: Fix error model for this plank
-                            -- ent = SpawnEntityFromTableSynchronous("prop_dynamic_override", {["solid"]=6, ["modelscale"]=0.9, ["model"]="models/rural/barn_loose_boards_03.vmdl", ["origin"]="196 40 546.5", ["angles"]="3 0 0"})
 
                             -- Detect shooting so Jeff hears it
                             ent = SpawnEntityFromTableSynchronous("trigger_detect_bullet_fire", {["targetname"]="bullet_trigger", ["modelscale"]=1000, ["model"]="models/hacking/holo_hacking_sphere_prop.vmdl"})
@@ -1969,15 +2065,15 @@ if GlobalSys:CommandLineCheck("-novr") then
                             ent = Entities:FindByName(nil, "relay_power_receive")
                             ent:RedirectOutput("OnTrigger", "MakeLeverUsable", ent)
 
-                            -- ent = Entities:FindByClassnameNearest("trigger_multiple", Vector(5380, -1848, -117), 10)
-                            -- ent:RedirectOutput("OnStartTouch", "CrouchThroughZooHole", ent)
+                            ent = Entities:FindByClassnameNearest("trigger_multiple", Vector(5380, -1848, -117), 10)
+                            ent:RedirectOutput("OnStartTouch", "CrouchThroughZooHole", ent)
 
-                            -- SendToConsole("ent_fire port_health_trap Disable")
-                            -- SendToConsole("ent_fire health_trap_locked_door Unlock")
-                            -- SendToConsole("ent_fire 589_toner_port_5 Disable")
+                            SendToConsole("ent_fire port_health_trap Disable")
+                            SendToConsole("ent_fire health_trap_locked_door Unlock")
+                            SendToConsole("ent_fire 589_toner_port_5 Disable")
                             SendToConsole("ent_fire @prop_phys_portaloo_door DisablePickup")
 
-                            -- SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+                            SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
                         elseif GetMapName() == "a4_c17_tanker_yard" then
                             SendToConsole("ent_fire elev_hurt_player_* Kill")
 
@@ -2025,11 +2121,25 @@ if GlobalSys:CommandLineCheck("-novr") then
                             if not loading_save_file then
                                 ent = SpawnEntityFromTableSynchronous("env_message", {["message"]="CHAPTER10_TITLE"})
                                 DoEntFireByInstanceHandle(ent, "ShowMessage", "", 0, nil, nil)
+
+                                ent = Entities:FindByName(nil, "fade_out")
+                                ent:RedirectOutput("OnBeginFade", "CheckForGnome", ent)
+
+                                local player_clip = Entities:FindAllByClassname("func_brush")[1]
+                                local player_clip_name = player_clip:GetName()
+                                if vlua.find(player_clip_name, "fence_blocker_player")  then
+                                    ent = Entities:FindByClassnameNearest("trigger_once", Vector(2752, 5740, 384), 20)
+                                    DoEntFireByInstanceHandle(ent, "AddOutput", "OnTrigger>" .. player_clip_name .. ">Disable>>0>-1", 0, nil, nil)
+                                end
                             end
                         elseif GetMapName() == "a4_c17_parking_garage" then
                             if loading_save_file then
                                 SendToConsole("novr_leavecombinegun") -- avoid softlock
                             else
+                                SendToConsole("setpos -958 -842 910")
+
+                                SendToConsole("ent_fire template_spawn_black_headcrabs_01 AddOutput OnEntitySpawned>headcrab_black_underground_01>Kill>>0>-1\"")
+
                                 ent = Entities:FindByName(nil, "falling_cabinet_door")
                                 DoEntFireByInstanceHandle(ent, "DisablePickup", "", 0, nil, nil)
 
@@ -2043,6 +2153,14 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                                 ent = Entities:FindByName(nil, "relay_shoot_gun")
                                 ent:RedirectOutput("OnTrigger", "CombineGunHandleAnim", ent)
+
+                                if Entities:GetLocalPlayer():Attribute_GetIntValue("HasGnome", 0) == 1 then
+                                    Entities:GetLocalPlayer():SetThink(function()
+                                        local gnome = SpawnEntityFromTableSynchronous("prop_physics", {["model"]="models/props/choreo_office/gnome.vmdl"})
+                                        gnome:SetOrigin(Entities:GetLocalPlayer():GetCenter())
+                                        gnome:SetEntityName("gnome")
+                                    end, "SpawnGnome", 1.0)
+                                end
                             end
                             Convars:RegisterCommand("novr_shootcombinegun", function()
                                 ent = Entities:FindByName(nil, "combine_gun_interact")
@@ -2073,6 +2191,8 @@ if GlobalSys:CommandLineCheck("-novr") then
                             ent:SetThink(function()
                                 SendToConsole("hidehud 67")
                             end, "", 0)
+                            SendToConsole("bind " .. FLASHLIGHT .. " \"\"")
+                            WristPockets_DisableKeepAcrossMaps()
 
                             if not loading_save_file then
                                 Entities:GetLocalPlayer():Attribute_SetIntValue("grenade", 0)
@@ -2103,6 +2223,12 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                                 ent = Entities:FindByName(nil, "longcorridor_energysource_01_activate_relay")
                                 ent:RedirectOutput("OnTrigger", "GiveVortEnergy", ent)
+
+                                local player_clip = Entities:FindByClassnameNearest("func_brush", Vector(-931, 264, -481), 10)
+                                if player_clip then
+                                    ent = Entities:FindByName(nil, "rooftop_concretedislodge_relay")
+                                    DoEntFireByInstanceHandle(ent, "AddOutput", "OnTrigger>" .. player_clip:GetName() .. ">Disable>>0>-1", 0, nil, nil)
+                                end
                             else
                                 if Entities:GetLocalPlayer():Attribute_GetIntValue("vort_energy", 0) == 1 then
                                     GiveVortEnergy()
@@ -2119,17 +2245,30 @@ if GlobalSys:CommandLineCheck("-novr") then
                             SendToConsole("bind " .. COVER_MOUTH .. " \"\"")
                             Entities:GetLocalPlayer():Attribute_SetIntValue("grenade", 0)
 
-                            ent = Entities:FindByName(nil, "timer_briefcase")
-                            DoEntFireByInstanceHandle(ent, "RefireTime", "5", 0, nil, nil)
+                            if not loading_save_file then
+                                local player_clip = Entities:FindAllByClassname("func_brush")[1]
+                                local player_clip_name = player_clip:GetName()
+                                ent = Entities:FindByClassnameNearest("trigger_once", Vector(620, -144, -2432), 20)
+                                if vlua.find(player_clip_name, "innervault_nobacktrack_brush_player")  then
+                                    DoEntFireByInstanceHandle(ent, "AddOutput", "OnTrigger>" .. player_clip_name .. ">Enable>>0>-1", 0, nil, nil)
+                                end
+                                ent:RedirectOutput("OnTrigger", "GrabCandlers", ent)
 
-                            ent = Entities:FindByName(nil, "relay_advisor_void")
-                            ent:RedirectOutput("OnTrigger", "GiveAdvisorVortEnergy", ent)
+                                ent = Entities:FindByName(nil, "timer_briefcase")
+                                DoEntFireByInstanceHandle(ent, "RefireTime", "5", 0, nil, nil)
 
-                            ent = Entities:FindByName(nil, "relay_first_credits_start")
-                            ent:RedirectOutput("OnTrigger", "StartCredits", ent)
+                                ent = Entities:FindByName(nil, "relay_advisor_void")
+                                ent:RedirectOutput("OnTrigger", "GiveAdvisorVortEnergy", ent)
 
-                            ent = Entities:FindByName(nil, "vcd_ending_eli")
-                            ent:RedirectOutput("OnTrigger3", "EndCredits", ent)
+                                ent = Entities:FindByName(nil, "relay_first_credits_start")
+                                ent:RedirectOutput("OnTrigger", "StartCredits", ent)
+
+                                ent = Entities:FindByName(nil, "vcd_ending_eli")
+                                ent:RedirectOutput("OnTrigger3", "EndCredits", ent)
+
+                                ent = Entities:FindByName(nil, "ss_gordon")
+                                ent:RedirectOutput("OnScriptEvent01", "GiveCrowbar", ent)
+                            end
                         end
                     end
                 end
@@ -2160,6 +2299,7 @@ if GlobalSys:CommandLineCheck("-novr") then
         print("[GameMenu] main_menu_mode")
         Entities:GetLocalPlayer():SetThink(function()
             SendToConsole("gameui_preventescape;gameui_allowescapetoshow;gameui_activate")
+            SendToConsole("achievement_disable 0")
         end, "SetGameUIState", 0.1)
     end
 
@@ -2174,11 +2314,51 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("ent_fire point_clientui_world_panel IgnoreUserInput")
     end
 
-    -- function GetOutOfCrashedVan(a, b)
-        -- SendToConsole("fadein 0.2")
-        -- SendToConsole("setpos_exact -1408 2307 -114")
-        -- SendToConsole("ent_fire 4962_car_door_left_front open")
-    -- end
+    -- TODO: Do this when successfully hacking a tripmine
+    function UnlockTripmineAchievement(a, b)
+        local params = { ["userid"]=Entities:GetLocalPlayer():GetUserID() }
+        FireGameEvent("tripmine_hacked", params)
+    end
+
+    function CheckForGnome(a, b)
+        -- GNOME RANGE
+        local ents = Entities:FindAllByClassnameWithin("prop_physics", Entities:GetLocalPlayer():GetCenter(), 100)
+        for k, v in pairs(ents) do
+            if vlua.find(v:GetModelName(), "models/props/choreo_office/gnome.vmdl") then
+                if GetMapName() == "a3_hotel_interior_rooftop" then
+                    v:SetOrigin(Vector(792, -1420, 576))
+                else
+                    Entities:GetLocalPlayer():Attribute_SetIntValue("HasGnome", 1)
+                end
+            end
+        end
+    end
+
+    function EquipHingeCam(player)
+        SendToConsole("setpos_exact -844 1974 62;setang 0 90 0")
+        SendToConsole("ent_fire player_speedmod ModifySpeed 0")
+        SendToConsole("bind " .. PRIMARY_ATTACK .. " novr_shootcombinegun")
+        SendToConsole("r_drawviewmodel 0")
+
+        local ent = Entities:FindByName(nil, "205_2724_hingecam")  -- parent hingecam entity -- Take interaction cam entity instead of base model
+        ent:Attribute_SetIntValue("active", 1)
+        ent:FireOutput("OnInteractStart", nil, nil, nil, 0)
+        ent:SetThink(function()
+            ent:SetAngles(player:EyeAngles().x,player:EyeAngles().y,0)
+            return 0.05
+        end, "UsingHingeCam", 0)
+    end
+
+    function GetOutOfCrashedVan(a, b)
+        Entities:GetLocalPlayer():SetThink(function()
+            SendToConsole("fadeout 0.5")
+        end, "FadeOut", 1.5)
+        Entities:GetLocalPlayer():SetThink(function()
+            SendToConsole("fadein 0.5")
+            SendToConsole("setpos_exact -1408 2307 -114")
+            SendToConsole("ent_fire 4962_car_door_left_front open")
+        end, "FadeIn", 2)
+    end
 
     function RedirectPistol(a, b)
         ent = Entities:FindByName(nil, "weapon_pistol")
@@ -2190,11 +2370,14 @@ if GlobalSys:CommandLineCheck("-novr") then
     end
 
     function EquipPistol(a, b)
+        local player = Entities:GetLocalPlayer()
         SendToConsole("ent_fire_output weapon_equip_listener OnEventFired")
         SendToConsole("hidehud 64")
-        SendToConsole("r_drawviewmodel 1")
         SendToConsole("ent_fire item_hlvr_weapon_energygun kill")
-        Entities:GetLocalPlayer():Attribute_SetIntValue("pistol", 1)
+        player:Attribute_SetIntValue("pistol", 1)
+        player:SetThink(function()
+            SendToConsole("r_drawviewmodel 1")
+        end, "ShowPistolViewmodel", 0.02)
     end
 
     function DisableHideoutPuzzleButtons(a, b)
@@ -2219,11 +2402,15 @@ if GlobalSys:CommandLineCheck("-novr") then
         Entities:FindByName(nil, "12712_shotgun_wheel"):Attribute_SetIntValue("used", 0)
     end
 
+    function EnableTrainLeverReleaseDialogue(a, b)
+        Entities:GetLocalPlayer():Attribute_SetIntValue("enable_released_train_lever_dialogue", 1)
+    end
+
     function DisableTrainLever(a, b)
         Entities:GetLocalPlayer():Attribute_SetIntValue("released_train_lever_once", 1)
     end
 
-    function FailMission()
+    function FailMission(a, b)
         SendToConsole("ent_fire player_speedmod ModifySpeed 0")
         SendToConsole("mouse_disableinput 1")
         SendToConsole("impulse 200")
@@ -2231,6 +2418,12 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("bind " .. FLASHLIGHT .. " \"\"")
         SendToConsole("disable_flashlight")
         SendToConsole("hidehud 4")
+    end
+
+    function TeleportAfterTrainCrash(a, b)
+        Entities:GetLocalPlayer():SetThink(function()
+            SendToConsole("setpos 124 4066 60")
+        end, "TeleportAfterTrainCrash", 1)
     end
 
     function RemoveEliPreventFall(a, b)
@@ -2260,8 +2453,8 @@ if GlobalSys:CommandLineCheck("-novr") then
     end
 
     function CrouchThroughZooHole(a, b)
-        -- SendToConsole("fadein 0.2")
-        -- SendToConsole("setpos 5393 -1960 -125")
+        SendToConsole("fadein 0.2")
+        SendToConsole("setpos 5393 -1960 -125")
 
         local ent = Entities:FindByClassnameNearest("prop_physics", Vector(5126, -1957, -53), 10)
         DoEntFireByInstanceHandle(ent, "DisablePickup", "", 0, nil, nil)
@@ -2275,6 +2468,14 @@ if GlobalSys:CommandLineCheck("-novr") then
                 DoEntFireByInstanceHandle(v, "PlayAnimation", "doorhandle_locked_anim", 0, nil, nil)
             end
         end
+    end
+
+    function StartCrouching(a, b)
+        SendToConsole("+duck")
+    end
+
+    function StopCrouching(a, b)
+        SendToConsole("-duck")
     end
 
     function ClimbLadder(height, push_direction)
@@ -2306,39 +2507,6 @@ if GlobalSys:CommandLineCheck("-novr") then
         end, "ClimbUp", 0)
     end
 
-    function ClimbLadderRight(height, push_direction, rotation)
-        local ent = Entities:GetLocalPlayer()
-        if ent:Attribute_GetIntValue("disable_unstuck", 0) == 1 then
-            return
-        end
-        ent:Attribute_SetIntValue("disable_unstuck", 1)
-        local ticks = 0
-        ent:SetThink(function()
-            if ent:GetOrigin().z > height then
-                if push_direction == nil then
-                    ent:SetVelocity(Vector(ent:GetForwardVector().x, ent:GetForwardVector().y, 0):Normalized() * 150)
-                else
-                    ent:SetVelocity(Vector(push_direction.z, push_direction.y, push_direction.z) * 150)
-                end
-                SendToConsole("+iv_duck;-iv_duck")
-                ent:Attribute_SetIntValue("disable_unstuck", 0)
-            else
-                ent:SetVelocity(Vector(0, 0, 0))
-                ent:SetOrigin(ent:GetOrigin() + Vector(0, 0, 2.1))
-                ticks = ticks + 1
-                if ticks == 25 then
-                    SendToConsole("snd_sos_start_soundevent Step_Player.Ladder_Single")
-                    ticks = 0
-                end
-                return 0
-            end
-			if rotation then
-				SendToConsole("fadein 0.1")
-				ent:SetAngles(0, rotation, 0)
-			end
-        end, "ClimbUpRight", 0)
-    end
-
     function ClimbLadderSound()
         local sounds = 0
         local player = Entities:GetLocalPlayer()
@@ -2354,8 +2522,8 @@ if GlobalSys:CommandLineCheck("-novr") then
     function FixJeffBatteryPuzzle()
         SendToConsole("ent_fire @barnacle_battery kill")
         SendToConsole("ent_create item_hlvr_prop_battery { origin \"959 1970 427\" }")
-        -- SendToConsole("ent_fire @crank_battery kill")
-        -- SendToConsole("ent_create item_hlvr_prop_battery { origin \"1325 2245 435\" }")
+        SendToConsole("ent_fire @crank_battery kill")
+        SendToConsole("ent_create item_hlvr_prop_battery { origin \"1325 2245 435\" }")
         SendToConsole("ent_fire @relay_installcrank Trigger")
     end
 
@@ -2472,35 +2640,35 @@ if GlobalSys:CommandLineCheck("-novr") then
         end, "EnableStreetElevatorDoor", 10)
     end
 
-    -- function SetupMineRoom()
-        -- local ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1165, -3770, 158), 10)
-        -- if ent then
-            -- ent:Kill()
-        -- end
+    function SetupMineRoom()
+        local ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1165, -3770, 158), 10)
+        if ent then
+            ent:Kill()
+        end
 
-        -- SendToConsole("ent_fire collidable_physics_prop Kill")
+        SendToConsole("ent_fire collidable_physics_prop Kill")
 
-        -- Entities:GetLocalPlayer():SetThink(function()
-            -- ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1165, -3770, 158), 10)
-            -- if ent then
-                -- ent:SetAbsAngles(90, -166, 0)
-                -- ent:SetAbsOrigin(Vector(-1175, -3770, 135))
-            -- end
+        Entities:GetLocalPlayer():SetThink(function()
+            ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1165, -3770, 158), 10)
+            if ent then
+                ent:SetAbsAngles(90, -166, 0)
+                ent:SetAbsOrigin(Vector(-1175, -3770, 135))
+            end
 
 
-            -- ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1105.788, -4058.940, 164.177), 10)
-            -- if ent then
-                -- ent:SetAbsOrigin(Vector(-1105.788, -4058.940, 140))
-            -- end
+            ent = Entities:FindByClassnameNearest("item_hlvr_weapon_tripmine", Vector(-1105.788, -4058.940, 164.177), 10)
+            if ent then
+                ent:SetAbsOrigin(Vector(-1105.788, -4058.940, 140))
+            end
 
-            -- ent = SpawnEntityFromTableSynchronous("prop_physics", {["model"]="models/props_c17/oildrum001_explosive.vmdl", ["origin"]="-1121 -3814 105"})
+            ent = SpawnEntityFromTableSynchronous("prop_physics", {["model"]="models/props_c17/oildrum001_explosive.vmdl", ["origin"]="-1121 -3814 105"})
 
-            -- AddCollisionToPhysicsProps("prop_physics")
-            -- AddCollisionToPhysicsProps("prop_physics_override")
+            AddCollisionToPhysicsProps("prop_physics")
+            AddCollisionToPhysicsProps("prop_physics_override")
 
-            -- SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
-        -- end, "SetupMineRoom", 0.1)
-    -- end
+            SendToConsole("ent_fire item_hlvr_weapon_tripmine OnHackSuccessAnimationComplete")
+        end, "SetupMineRoom", 0.1)
+    end
 
     function EnableShackToner()
         Entities:FindByName(nil, "shack_path_6_port_1"):Attribute_SetIntValue("used", 0)
@@ -2511,7 +2679,12 @@ if GlobalSys:CommandLineCheck("-novr") then
     end
 
     function LarrySeesWearable()
+        -- TODO: Add respirator voice line
         local ent = Entities:FindByName(nil, "hat_construction_viewmodel")
+        if ent then
+            SendToConsole("ent_fire_output @player_proxy OutPlayerIsWearingHat " .. ent:GetModelName())
+        end
+        ent = Entities:FindByName(nil, "respirator_viewmodel")
         if ent then
             SendToConsole("ent_fire_output @player_proxy OutPlayerIsWearingHat " .. ent:GetModelName())
         end
@@ -2622,6 +2795,8 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("ent_fire player_speedmod ModifySpeed 0")
         SendToConsole("phys_pushscale 1")
         SendToConsole("ent_remove hat_construction_viewmodel")
+        SendToConsole("ent_remove respirator_viewmodel")
+        WristPockets_DisableKeepAcrossMaps()
     end
 
     function ShowVortEnergyTutorial()
@@ -2640,18 +2815,62 @@ if GlobalSys:CommandLineCheck("-novr") then
         Entities:GetLocalPlayer():Attribute_SetIntValue("vort_energy", 0)
     end
 
+    function GrabCandlers(a, b)
+        local player = Entities:GetLocalPlayer()
+        player:SetThink(function()
+            player:Attribute_SetIntValue("disable_unstuck", 1)
+            SendToConsole("ent_fire innervault_energize_event_relay Kill")
+            SendToConsole("ent_fire_output g_release_hand1 OnHandPosed")
+            SendToConsole("ent_fire_output g_release_hand2 OnHandPosed")
+            SendToConsole("ent_fire player_speedmod ModifySpeed 0")
+            -- If subtitles are deactivated hide also the custom hud elements
+            if Convars:GetStr("cc_subtitles") == "0" then
+                SendToConsole("r_drawvgui 0")
+            else
+                SendToConsole("hidehud 4")
+            end
+            -- Just to make sure the heart icons are gone, hidehud 4 seems fine
+            SendToConsole("hudhearts_stopupdateloop")
+            SendToConsole("wristpockets_stopupdateloop")
+        end, "GrabCandlers", 5)
+    end
+
     function GiveAdvisorVortEnergy(a, b)
         SendToConsole("bind " .. PRIMARY_ATTACK .. " shootadvisorvortenergy")
     end
 
     function StartCredits(a, b)
         SendToConsole("mouse_disableinput 1")
+        Entities:GetLocalPlayer():SetThink(function()
+            SendToConsole("ent_fire assignment_panel_1 IgnoreUserInput")
+            SendToConsole("ent_fire assignment_panel_2 IgnoreUserInput")
+            SendToConsole("ent_fire assignment_panel_3 IgnoreUserInput")
+        end, "HideUICursorAssignment", 1.1)
+        Entities:GetLocalPlayer():SetThink(function()
+            SendToConsole("ent_fire credits_panel_left IgnoreUserInput")
+            SendToConsole("ent_fire credits_panel_middle IgnoreUserInput")
+            SendToConsole("ent_fire credits_panel_right IgnoreUserInput")
+        end, "HideUICursorCredits", 14.1)
     end
 
     function EndCredits(a, b)
         SendToConsole("mouse_disableinput 0")
         SendToConsole("use weapon_bugbait")
-        SendToConsole("hidehud 32")
+        SendToConsole("hidehud 96")
+    end
+
+    function GiveCrowbar(a, b)
+        Entities:GetLocalPlayer():SetThink(function()
+            SendToConsole("give weapon_crowbar")
+            SendToConsole("use weapon_crowbar")
+            SendToConsole("r_drawviewmodel 1")
+            SendToConsole("ent_fire_output prop_crowbar OnPlayerPickup")
+            SendToConsole("ent_fire prop_crowbar Kill")
+        end, "GiveCrowbar", 4.0)
+        Entities:GetLocalPlayer():SetThink(function()
+            SendToConsole("r_drawviewmodel 0")
+            SendToConsole("hidehud 4")
+        end, "HideCrowbar", 9.0)
     end
 
     function AddCollisionToPhysicsProps(class)
