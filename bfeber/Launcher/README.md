@@ -1,47 +1,27 @@
 # HLA-NoVR-Launcher
 Launcher for Half-Life: Alyx NoVR
 
-Modified by pmein1, original by bfeber
-
 ## Installation
 
-This launcher is currently using bfeber's v2.4 code.
-
 ### Windows
-[Download and extract the archive to a folder of your choice.](https://github.com/real-pmein1/freeman/releases/latest/download/HLA-NoVR-Launcher.7z)
+[Download the latest release.](https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.exe)
 
 ---
 
 ### Steam Deck/Linux
 
-Not yet tested.
+If you use a Steam Deck/Linux, see the [FAQ](https://docs.google.com/document/d/1mlDz24iE1r4Lf16y5N9I37ZIvm4V0ie2Sxg1GBlcs10) for installation instructions.
 
 ## Important Information
 
-If prompted after clicking "Play" in the launcher, select your Half-Life: Alyx installation folder (the one with the folders `game` and `content` inside).
+In case you need to select a folder after clicking "Play" in the launcher, select your "Half-Life Alyx" folder (it's located where Steam installed the game and it has the folders `game` and `content` inside of it).
 
-## Changes from the bfeber Launcher
-
-+ Removed launcher auto-update
-+ Removed mod auto-update (for now)
-+ Removed Steam requirement (to still use Steam, launch Steam first then run the launcher)
-+ Removed administrator elevation requirement on Windows
-+ Removed "Branch" textbox
-+ Moved "Custom launch options" away from the window edge
-
-### Additional Game Parameters
-
-These parameters are sent to hlvr.exe by the launcher, in addition to those provided in the Custom launch options box:
-+ -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 -window
-
-## Compiling the Launcher
-
-Instructions will be provided in due course as to how to compile the launcher from source.
+Only official copies of the game bought on Steam are supported.
 
 ## Credits
-Original launcher made by [bfeber](https://www.github.com/bfeber/HLA-NoVR-Launcher)
-
 The awesome background video was made by [Half Peeps](https://www.youtube.com/@HALFPEEPS).
 
 ## License
-This program is licensed under the [LGPL](LICENSE.txt). It uses the [Qt 6.6.1 library](https://www.qt.io) and parts of the [7-Zip program](www.7-zip.org), both also licensed under the [LGPL](LICENSE.txt).
+This program is licensed under the [GPL](LICENSE).
+
+It also uses a custom version of [Steam Achievement Manager](https://github.com/gibbed/SteamAchievementManager), modified to give achievements from the command line.
