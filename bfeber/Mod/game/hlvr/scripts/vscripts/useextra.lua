@@ -529,8 +529,9 @@ end
 
 ---------- a1_intro_world ----------
 
-if name == "microphone" or name == "call_button_prop" or model == "maps/a1_intro_world/entities/unnamed_205_2961_1020.vmdl" then
-    SendToConsole("ent_fire call_button_relay trigger")
+if name == "call_button_prop_2" then
+    SendToConsole("ent_fire_output call_button onin")
+end
 end
 
 if name == "greenhouse_door_lock" then

@@ -1605,6 +1605,8 @@ if GlobalSys:CommandLineCheck("-novr") then
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="light_switch_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-903.2 1691.6 111", ["angles"]="0 0 0", ["modelscale"]=2})
 					
 					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="radio_tuner", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-223.492493 1990.992065 184.304428", ["angles"]="0.000000 217.598724 0.000000", ["modelscale"]=2}) --RADIO TUNER
+					
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="call_button_prop_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-225.384766 1880.790405 227.168457", ["angles"]="-90 110 0", ["modelscale"]=2}) --CALL BUTTON
 
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_1", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1473.99 -853.165 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1393.17 -923.015 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
