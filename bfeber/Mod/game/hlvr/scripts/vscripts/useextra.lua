@@ -532,6 +532,25 @@ end
 if name == "call_button_prop_2" then
     SendToConsole("ent_fire_output call_button onin")
 end
+
+if name == "button_monitor_upper_left_2" then
+	SendToConsole("ent_fire branch_screen_up_left toggletest")
+	SendToConsole("ent_fire snd_button_a StartSound")
+end
+
+if name == "button_monitor_upper_right_2" then
+	SendToConsole("ent_fire branch_screen_up_right toggletest")
+	SendToConsole("ent_fire snd_button_c StartSound")
+end
+
+if name == "button_monitor_lower_left_2" then
+	SendToConsole("ent_fire branch_screen_left_lower toggletest")
+	SendToConsole("ent_fire snd_button_b StartSound")
+end
+
+if name == "button_monitor_lower_right_2" then
+	SendToConsole("ent_fire branch_screen_lower_right toggletest")
+	SendToConsole("ent_fire snd_button_d StartSound")
 end
 
 if name == "greenhouse_door_lock" then

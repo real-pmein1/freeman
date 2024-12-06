@@ -1607,6 +1607,11 @@ if GlobalSys:CommandLineCheck("-novr") then
 					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="radio_tuner", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-223.492493 1990.992065 184.304428", ["angles"]="0.000000 217.598724 0.000000", ["modelscale"]=2}) --RADIO TUNER
 					
 					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="call_button_prop_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-225.384766 1880.790405 227.168457", ["angles"]="-90 110 0", ["modelscale"]=2}) --CALL BUTTON
+					
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_upper_left_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-216.930176 1904.178223 240.043457", ["angles"]="0 0 0", ["modelscale"]=2}) --MONITORS
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_upper_right_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-202.988281 1867.927246 246.378967", ["angles"]="0 0 0", ["modelscale"]=2})
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_lower_left_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-217.191895 1904.148438 229.349243", ["angles"]="0 0 0", ["modelscale"]=2})
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_lower_right_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-202.965332 1867.935059 236.032959", ["angles"]="0 0 0", ["modelscale"]=2})
 
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_1", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1473.99 -853.165 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1393.17 -923.015 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
