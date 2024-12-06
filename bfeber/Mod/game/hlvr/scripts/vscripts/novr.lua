@@ -1139,6 +1139,25 @@ if GlobalSys:CommandLineCheck("-novr") then
 
     player_spawn_ev = ListenToGameEvent('player_activate', function(info)
         if not IsServer() then return end
+		
+		------ PMEIN1 FIND PLAYER POS ----------
+		local playerEnt = Entities:GetLocalPlayer()
+		EmitSoundOnClient("HL2Player.Use", playerEnt)
+		local startVector = playerEnt:EyePosition()
+		local fullpos = string.sub(string.format("%s", startVector),26,-2)
+		local xpos_index = string.find(fullpos, " ")
+		local xpos = tonumber(string.sub(fullpos,0,xpos_index - 1))
+		local ypos_index = string.find(fullpos, " ", xpos_index + 1)
+		local ypos = tonumber(string.sub(fullpos,xpos_index + 1,ypos_index - 1))
+		local zpos = tonumber(string.sub(fullpos,ypos_index + 1,fullpos:len()))
+		--print(fullpos)
+		--print(xpos_index)
+		--print(ypos_index)
+		print("Current x position: " .. xpos)
+		print("Current y position: " .. ypos)
+		print("Current z position: " .. zpos)
+		local map = GetMapName()
+		---------------------------------------
 
         local loading_save_file = false
         local ent = Entities:FindByClassname(ent, "player_speedmod")
@@ -1151,6 +1170,9 @@ if GlobalSys:CommandLineCheck("-novr") then
         SendToConsole("mouse_pitchyaw_sensitivity " .. MOUSE_SENSITIVITY)
         SendToConsole("fov_desired " .. FOV)
         SendToConsole("snd_remove_soundevent HL2Player.UseDeny")
+		
+		SendToConsole('ent_remove position_script')
+		SendToConsole('ent_create logic_script {"targetname" "position_script" "origin" "0 0 0" "vscripts" "player_pos.lua"')
 
         DoIncludeScript("version.lua", nil)
 
