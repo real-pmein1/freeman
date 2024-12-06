@@ -56,242 +56,244 @@ if map == "a3_distillery" then
 end
 
 if not vlua.find(model, "doorhandle") and name ~= "russell_entry_window" and name ~= "larry_ladder" and name ~= "@pod_shell" and name ~= "589_panel_switch" and name ~= "tc_door_control" and (class == "item_health_station_charger" or (class == "prop_animinteractable" and (not vlua.find(name, "elev_anim_door") or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 1 and thisEntity:GetVelocity() == Vector(0, 0, 0))) and not vlua.find(name, "5628_2901_barricade_door")) or (class == "item_hlvr_combine_console_rack" and IsCombineConsoleLocked() == false)) and not (map == "a4_c17_parking_garage" and name == "door_reset" and player:Attribute_GetIntValue("circuit_" .. map .. "_toner_junction_5_completed", 0) == 0) and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
-    if vlua.find(name, "slide_train_door") and Entities:FindByClassnameNearest("phys_constraint", thisEntity:GetCenter(), 20) then
-        return
-    end
+    if not vlua.find(name, "intro_rollup_door") and not vlua.find(name, "bell") and not vlua.find(name, "monitor_dial") and not ((map == "a4_c17_zoo" or map == "a4_c17_parking_garage") and vlua.find(name, "door_reset")) then
+		if vlua.find(name, "slide_train_door") and Entities:FindByClassnameNearest("phys_constraint", thisEntity:GetCenter(), 20) then
+			return
+		end
 
-    if name == "12712_shotgun_wheel" and Entities:FindByNameNearest("12712_shotgun_bar_for_wheel", thisEntity:GetCenter(), 20) then
-        return
-    end
+		if name == "12712_shotgun_wheel" and Entities:FindByNameNearest("12712_shotgun_bar_for_wheel", thisEntity:GetCenter(), 20) then
+			return
+		end
 
-    if name == "greenhouse_door" then
-        if string.format("%.2f", thisEntity:GetCycle()) ~= "0.05" then
-            return
-        end
-    end
+		if name == "greenhouse_door" then
+			if string.format("%.2f", thisEntity:GetCycle()) ~= "0.05" then
+				return
+			end
+		end
 
-    local count = 0
-    if class == "prop_animinteractable" and model == "models/props_subway/scenes/desk_lever.vmdl" then
-        thisEntity:FireOutput("OnCompletionB", nil, nil, nil, 0)
-    elseif name ~= "plug_console_starter_lever" then
-        if name == "track_switch_lever" then
-            count = 0.35
-            player:SetThink(function()
-                if player:Attribute_GetIntValue("use_released", 0) == 1 then
-                    SendToConsole("ent_fire track_switch_lever SetCompletionValue 0.35 0")
-                    SendToConsole("ent_fire train_switch_reset_relay Trigger 0 0")
-                    if player:Attribute_GetIntValue("enable_released_train_lever_dialogue", 0) == 1 and player:Attribute_GetIntValue("released_train_lever_once", 0) == 0 then
-                        SendToConsole("ent_fire speech_radio CancelSpeech")
-                        SendToConsole("ent_fire train_switch_control_override_0 Cancel")
-                        SendToConsole("ent_fire train_switch_control_override_10 Start")
-                        player:Attribute_SetIntValue("released_train_lever_once", 1)
-                    end
-                else
-                    return 0
-                end
-            end, "Interacting", 0)
-            SendToConsole("ent_fire traincar_01_hackplug Alpha 0")
-        elseif map == "a3_distillery" and name == "verticaldoor_wheel" then
-            count = 0
-            player:SetThink(function()
-                local jeff = Entities:FindByClassname(ent, "npc_zombie_blind")
-                if player:Attribute_GetIntValue("use_released", 0) == 1 and count < 10 or vlua.find(Entities:FindAllInSphere(Vector(291, 291, 322), 10), jeff) then
-                    SendToConsole("ent_fire verticaldoor_wheel EnableReturnToCompletion 0 0")
-                    SendToConsole("ent_fire @verticaldoor SetSpeed 100")
-                    SendToConsole("ent_fire @verticaldoor Close")
-                else
-                    SendToConsole("ent_fire verticaldoor_wheel DisableReturnToCompletion 0 0")
-                    SendToConsole("ent_fire @verticaldoor SetSpeed 10")
-                    SendToConsole("ent_fire @verticaldoor Open")
-                    return 0
-                end
-            end, "Interacting", 0)
-        elseif name == "12712_shotgun_wheel" then
-            count = 0
-            player:SetThink(function()
-                if player:Attribute_GetIntValue("use_released", 0) == 1 and count < 1 then
-                    DoEntFireByInstanceHandle(thisEntity, "EnableReturnToCompletion", "", 0, nil, nil)
-                else
-                    DoEntFireByInstanceHandle(thisEntity, "DisableReturnToCompletion", "", 0, nil, nil)
-                    SendToConsole("ent_fire_output " .. thisEntity:GetName() .. " Position " .. count / 2)
-                    return 0
-                end
-            end, "Interacting", 0)
-        elseif name == "console_selector_interact" then
-            local ent = Entities:FindByName(nil, "console_opener_prop_handle_interact")
-            ent:Attribute_SetIntValue("used", 0)
-            SendToConsole("ent_fire_output console_opener_prop_handle_interact OnCompletionExitA")
-            local count2 = ent:GetCycle()
-            ent:SetThink(function()
-                if count2 > 0 then
-                    count2 = count2 - 0.015
-                    DoEntFireByInstanceHandle(ent, "SetCompletionValue", "" .. count2, 0, nil, nil)
-                    return 0
-                else
-                    return nil
-                end
-            end, "", 0)
-            count = thisEntity:GetCycle()
-            player:SetThink(function()
-                if player:Attribute_GetIntValue("use_released", 0) == 0 then
-                    DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
-                    return 0
-                end
-            end, "Interacting", 0)
-        elseif not vlua.find(name, "elev_anim_door") and not vlua.find(name, "tractor_beam_console_lever") then
-            thisEntity:Attribute_SetIntValue("used", 1)
-        end
-    end
+		local count = 0
+		if class == "prop_animinteractable" and model == "models/props_subway/scenes/desk_lever.vmdl" then
+			thisEntity:FireOutput("OnCompletionB", nil, nil, nil, 0)
+		elseif name ~= "plug_console_starter_lever" then
+			if name == "track_switch_lever" then
+				count = 0.35
+				player:SetThink(function()
+					if player:Attribute_GetIntValue("use_released", 0) == 1 then
+						SendToConsole("ent_fire track_switch_lever SetCompletionValue 0.35 0")
+						SendToConsole("ent_fire train_switch_reset_relay Trigger 0 0")
+						if player:Attribute_GetIntValue("enable_released_train_lever_dialogue", 0) == 1 and player:Attribute_GetIntValue("released_train_lever_once", 0) == 0 then
+							SendToConsole("ent_fire speech_radio CancelSpeech")
+							SendToConsole("ent_fire train_switch_control_override_0 Cancel")
+							SendToConsole("ent_fire train_switch_control_override_10 Start")
+							player:Attribute_SetIntValue("released_train_lever_once", 1)
+						end
+					else
+						return 0
+					end
+				end, "Interacting", 0)
+				SendToConsole("ent_fire traincar_01_hackplug Alpha 0")
+			elseif map == "a3_distillery" and name == "verticaldoor_wheel" then
+				count = 0
+				player:SetThink(function()
+					local jeff = Entities:FindByClassname(ent, "npc_zombie_blind")
+					if player:Attribute_GetIntValue("use_released", 0) == 1 and count < 10 or vlua.find(Entities:FindAllInSphere(Vector(291, 291, 322), 10), jeff) then
+						SendToConsole("ent_fire verticaldoor_wheel EnableReturnToCompletion 0 0")
+						SendToConsole("ent_fire @verticaldoor SetSpeed 100")
+						SendToConsole("ent_fire @verticaldoor Close")
+					else
+						SendToConsole("ent_fire verticaldoor_wheel DisableReturnToCompletion 0 0")
+						SendToConsole("ent_fire @verticaldoor SetSpeed 10")
+						SendToConsole("ent_fire @verticaldoor Open")
+						return 0
+					end
+				end, "Interacting", 0)
+			elseif name == "12712_shotgun_wheel" then
+				count = 0
+				player:SetThink(function()
+					if player:Attribute_GetIntValue("use_released", 0) == 1 and count < 1 then
+						DoEntFireByInstanceHandle(thisEntity, "EnableReturnToCompletion", "", 0, nil, nil)
+					else
+						DoEntFireByInstanceHandle(thisEntity, "DisableReturnToCompletion", "", 0, nil, nil)
+						SendToConsole("ent_fire_output " .. thisEntity:GetName() .. " Position " .. count / 2)
+						return 0
+					end
+				end, "Interacting", 0)
+			elseif name == "console_selector_interact" then
+				local ent = Entities:FindByName(nil, "console_opener_prop_handle_interact")
+				ent:Attribute_SetIntValue("used", 0)
+				SendToConsole("ent_fire_output console_opener_prop_handle_interact OnCompletionExitA")
+				local count2 = ent:GetCycle()
+				ent:SetThink(function()
+					if count2 > 0 then
+						count2 = count2 - 0.015
+						DoEntFireByInstanceHandle(ent, "SetCompletionValue", "" .. count2, 0, nil, nil)
+						return 0
+					else
+						return nil
+					end
+				end, "", 0)
+				count = thisEntity:GetCycle()
+				player:SetThink(function()
+					if player:Attribute_GetIntValue("use_released", 0) == 0 then
+						DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
+						return 0
+					end
+				end, "Interacting", 0)
+			elseif not vlua.find(name, "elev_anim_door") and not vlua.find(name, "tractor_beam_console_lever") then
+				thisEntity:Attribute_SetIntValue("used", 1)
+			end
+		end
 
-    if class == "item_health_station_charger" or class == "item_hlvr_combine_console_rack" then
-        DoEntFireByInstanceHandle(thisEntity, "EnableOnlyRunForward", "", 0, nil, nil)
-    end
+		if class == "item_health_station_charger" or class == "item_hlvr_combine_console_rack" then
+			DoEntFireByInstanceHandle(thisEntity, "EnableOnlyRunForward", "", 0, nil, nil)
+		end
 
-    if model == "models/interaction/anim_interact/twohandlift/twohandlift.vmdl" then
-        SendToConsole("snd_sos_start_soundevent RollUpDoor.MoveLinear_Start")
-        thisEntity:FireOutput("OnCompletionB", nil, nil, nil, 1)
-    end
+		if model == "models/interaction/anim_interact/twohandlift/twohandlift.vmdl" then
+			SendToConsole("snd_sos_start_soundevent RollUpDoor.MoveLinear_Start")
+			thisEntity:FireOutput("OnCompletionB", nil, nil, nil, 1)
+		end
 
-    if model == "models/interaction/anim_interact/rollingdoor/rollingdoor.vmdl" then
-        count = thisEntity:GetCycle()
-        thisEntity:FireOutput("OnCompletionB", nil, nil, nil, 0)
-    end
+		if model == "models/interaction/anim_interact/rollingdoor/rollingdoor.vmdl" then
+			count = thisEntity:GetCycle()
+			thisEntity:FireOutput("OnCompletionB", nil, nil, nil, 0)
+		end
 
-    if name == "greenhouse_door" then
-        count = thisEntity:GetCycle()
-        StartSoundEvent("Sliding_Window.Down", player)
-        player:SetThink(function()
-            StopSoundEvent("Sliding_Window.Down", player)
-        end, "StopGreenhouseDoorSound", 1)
-    end
+		if name == "greenhouse_door" then
+			count = thisEntity:GetCycle()
+			StartSoundEvent("Sliding_Window.Down", player)
+			player:SetThink(function()
+				StopSoundEvent("Sliding_Window.Down", player)
+			end, "StopGreenhouseDoorSound", 1)
+		end
 
-    if name == "barricade_door_hook" then
-        count = thisEntity:GetCycle()
-    end
+		if name == "barricade_door_hook" then
+			count = thisEntity:GetCycle()
+		end
 
-    if name == "barricade_door" then
-        local ent = Entities:FindByName(nil, "barricade_door_hook")
-        ent:Attribute_SetIntValue("used", 0)
-        DoEntFireByInstanceHandle(ent, "SetCompletionValue", "0", 0, nil, nil)
-        DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0.1, nil, nil)
-        SendToConsole("ent_fire player_speedmod ModifySpeed 0")
-    end
+		if name == "barricade_door" then
+			local ent = Entities:FindByName(nil, "barricade_door_hook")
+			ent:Attribute_SetIntValue("used", 0)
+			DoEntFireByInstanceHandle(ent, "SetCompletionValue", "0", 0, nil, nil)
+			DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0.1, nil, nil)
+			SendToConsole("ent_fire player_speedmod ModifySpeed 0")
+		end
 
-    local is_console = class == "prop_animinteractable" and model == "models/props_combine/combine_consoles/vr_console_rack_1.vmdl"
+		local is_console = class == "prop_animinteractable" and model == "models/props_combine/combine_consoles/vr_console_rack_1.vmdl"
 
-    if name == "" then
-        thisEntity:SetEntityName("" .. thisEntity:GetEntityIndex())
-    end
+		if name == "" then
+			thisEntity:SetEntityName("" .. thisEntity:GetEntityIndex())
+		end
 
-    thisEntity:SetThink(function()
-        if not is_console then
-            DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
-        end
+		thisEntity:SetThink(function()
+			if not is_console then
+				DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
+			end
 
-        if name == "12712_shotgun_wheel" then
-            count = count + 0.003
-        elseif name == "console_selector_interact" then
-            if thisEntity:Attribute_GetIntValue("reverse", 0) == 1 then
-                count = count - 0.003
-            else
-                count = count + 0.003
-            end
-        else
-            count = count + 0.01
-        end
+			if name == "12712_shotgun_wheel" then
+				count = count + 0.003
+			elseif name == "console_selector_interact" then
+				if thisEntity:Attribute_GetIntValue("reverse", 0) == 1 then
+					count = count - 0.003
+				else
+					count = count + 0.003
+				end
+			else
+				count = count + 0.01
+			end
 
-        if vlua.find(name, "elev_anim_door") then
-            if math.floor((count * 100 % 20)) == 5 then
-                SendToConsole("snd_sos_start_soundevent AnimDoor_Elevator_Combine.Grab")
-            end
-        end
+			if vlua.find(name, "elev_anim_door") then
+				if math.floor((count * 100 % 20)) == 5 then
+					SendToConsole("snd_sos_start_soundevent AnimDoor_Elevator_Combine.Grab")
+				end
+			end
 
-        if is_console then
-            DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
-        end
+			if is_console then
+				DoEntFireByInstanceHandle(thisEntity, "SetCompletionValue", "" .. count, 0, nil, nil)
+			end
 
-        if name == "12712_shotgun_wheel" then
-            if player:Attribute_GetIntValue("use_released", 0) == 1 then
-                thisEntity:Attribute_SetIntValue("used", 0)
-                return nil
-            end
-        end
+			if name == "12712_shotgun_wheel" then
+				if player:Attribute_GetIntValue("use_released", 0) == 1 then
+					thisEntity:Attribute_SetIntValue("used", 0)
+					return nil
+				end
+			end
 
-        if name == "console_selector_interact" then
-            if player:Attribute_GetIntValue("use_released", 0) == 1 then
-                thisEntity:Attribute_SetIntValue("used", 0)
-                return nil
-            end
-        end
+			if name == "console_selector_interact" then
+				if player:Attribute_GetIntValue("use_released", 0) == 1 then
+					thisEntity:Attribute_SetIntValue("used", 0)
+					return nil
+				end
+			end
 
-        if model == "models/interaction/anim_interact/hand_crank_wheel/hand_crank_wheel.vmdl" then
-            SendToConsole("ent_fire_output " .. thisEntity:GetName() .. " Position " .. count)
-        end
+			if model == "models/interaction/anim_interact/hand_crank_wheel/hand_crank_wheel.vmdl" then
+				SendToConsole("ent_fire_output " .. thisEntity:GetName() .. " Position " .. count)
+			end
 
-        if name == "track_switch_lever" and player:Attribute_GetIntValue("use_released", 0) == 1 then
-            return nil
-        end
+			if name == "track_switch_lever" and player:Attribute_GetIntValue("use_released", 0) == 1 then
+				return nil
+			end
 
-        if map == "a3_distillery" then
-            if name == "verticaldoor_wheel" then
-                local jeff = Entities:FindByClassname(ent, "npc_zombie_blind")
-                if player:Attribute_GetIntValue("use_released", 0) == 1 or vlua.find(Entities:FindAllInSphere(Vector(291, 291, 322), 10), jeff) then
-                    thisEntity:Attribute_SetIntValue("used", 0)
-                    return nil
-                end
-            end
-        end
+			if map == "a3_distillery" then
+				if name == "verticaldoor_wheel" then
+					local jeff = Entities:FindByClassname(ent, "npc_zombie_blind")
+					if player:Attribute_GetIntValue("use_released", 0) == 1 or vlua.find(Entities:FindAllInSphere(Vector(291, 291, 322), 10), jeff) then
+						thisEntity:Attribute_SetIntValue("used", 0)
+						return nil
+					end
+				end
+			end
 
-        if vlua.find(name, "elev_anim_door") then
-            DoEntFireByInstanceHandle(thisEntity, "DisableReturnToCompletion", "", 0, nil, nil)
-        end
+			if vlua.find(name, "elev_anim_door") then
+				DoEntFireByInstanceHandle(thisEntity, "DisableReturnToCompletion", "", 0, nil, nil)
+			end
 
-        if not (map == "a3_distillery" and name == "verticaldoor_wheel") and count >= 1 or count >= 10 then
-            if vlua.find(name, "elev_anim_door") then
-                thisEntity:Attribute_SetIntValue("player_in_combine_elevator", 0)
-                SendToConsole("snd_sos_start_soundevent AnimDoor_Elevator_Combine.Tick")
-            end
+			if not (map == "a3_distillery" and name == "verticaldoor_wheel") and count >= 1 or count >= 10 then
+				if vlua.find(name, "elev_anim_door") then
+					thisEntity:Attribute_SetIntValue("player_in_combine_elevator", 0)
+					SendToConsole("snd_sos_start_soundevent AnimDoor_Elevator_Combine.Tick")
+				end
 
-            if name ~= "barricade_door_hook" then
-                thisEntity:FireOutput("OnCompletionA_Forward", nil, nil, nil, 0)
-                if map == "a3_distillery" and name == "verticaldoor_wheel" then
-                    Entities:GetLocalPlayer():Attribute_SetIntValue("locked_jeff_in_freezer", 1)
-                    SendToConsole("ent_fire relay_verticaldoor_opened Trigger")
-                end
-            end
+				if name ~= "barricade_door_hook" then
+					thisEntity:FireOutput("OnCompletionA_Forward", nil, nil, nil, 0)
+					if map == "a3_distillery" and name == "verticaldoor_wheel" then
+						Entities:GetLocalPlayer():Attribute_SetIntValue("locked_jeff_in_freezer", 1)
+						SendToConsole("ent_fire relay_verticaldoor_opened Trigger")
+					end
+				end
 
-            if name == "barricade_door" then
-                DoEntFireByInstanceHandle(Entities:FindByName(nil, "barricade_lock_relay"), "Trigger", "", 0, nil, nil)
-                SendToConsole("ent_fire player_speedmod ModifySpeed 1")
-            elseif name == "12712_shotgun_wheel" then
-                local bar = Entities:FindByName(nil, "12712_shotgun_bar_for_wheel")
-                bar:Kill()
-                bar = SpawnEntityFromTableSynchronous("prop_dynamic_override", {["targetname"]="12712_shotgun_bar_for_wheel", ["model"]="models/props/misc_debris/vort_winch_pipe.vmdl", ["origin"]="711.395874 1319.248047 -168.302490", ["angles"]="0.087952 120.220528 90.588112"})
-                SendToConsole("ent_remove shotgun_pickup_blocker")
-            elseif name == "console_opener_prop_handle_interact" then
-                SendToConsole("ent_fire_output console_opener_prop_handle_interact OnCompletionA")
-            elseif name == "console_selector_interact" then
-                thisEntity:Attribute_SetIntValue("reverse", 1)
-            elseif model == "models/interaction/anim_interact/twohandlift/twohandlift.vmdl" then
-                SendToConsole("snd_sos_start_soundevent RollUpDoor.FullOpen")
-            end
+				if name == "barricade_door" then
+					DoEntFireByInstanceHandle(Entities:FindByName(nil, "barricade_lock_relay"), "Trigger", "", 0, nil, nil)
+					SendToConsole("ent_fire player_speedmod ModifySpeed 1")
+				elseif name == "12712_shotgun_wheel" then
+					local bar = Entities:FindByName(nil, "12712_shotgun_bar_for_wheel")
+					bar:Kill()
+					bar = SpawnEntityFromTableSynchronous("prop_dynamic_override", {["targetname"]="12712_shotgun_bar_for_wheel", ["model"]="models/props/misc_debris/vort_winch_pipe.vmdl", ["origin"]="711.395874 1319.248047 -168.302490", ["angles"]="0.087952 120.220528 90.588112"})
+					SendToConsole("ent_remove shotgun_pickup_blocker")
+				elseif name == "console_opener_prop_handle_interact" then
+					SendToConsole("ent_fire_output console_opener_prop_handle_interact OnCompletionA")
+				elseif name == "console_selector_interact" then
+					thisEntity:Attribute_SetIntValue("reverse", 1)
+				elseif model == "models/interaction/anim_interact/twohandlift/twohandlift.vmdl" then
+					SendToConsole("snd_sos_start_soundevent RollUpDoor.FullOpen")
+				end
 
-            if is_console then
-                -- Wrist Pockets Tutorial
-                if player:Attribute_GetIntValue("wristpockets_tutorial_shown", 0) < 3 then
-                    player:Attribute_SetIntValue("wristpockets_tutorial_shown", player:Attribute_GetIntValue("wristpockets_tutorial_shown", 0) + 1)
-                    SendToConsole("ent_fire text_wristpockets ShowMessage")
-                    SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-                end
-            end
+				if is_console then
+					-- Wrist Pockets Tutorial
+					if player:Attribute_GetIntValue("wristpockets_tutorial_shown", 0) < 3 then
+						player:Attribute_SetIntValue("wristpockets_tutorial_shown", player:Attribute_GetIntValue("wristpockets_tutorial_shown", 0) + 1)
+						SendToConsole("ent_fire text_wristpockets ShowMessage")
+						SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
+					end
+				end
 
-            return nil
-        elseif name == "console_selector_interact" and count <= 0 then
-            thisEntity:Attribute_SetIntValue("reverse", 0)
-        else
-            return 0
-        end
-    end, "AnimateCompletionValue", 0)
+				return nil
+			elseif name == "console_selector_interact" and count <= 0 then
+				thisEntity:Attribute_SetIntValue("reverse", 0)
+			else
+				return 0
+			end
+		end, "AnimateCompletionValue", 0)
+	end
 elseif (name == "barricade_door_hook" and player:Attribute_GetIntValue("locked_jeff_in_freezer", 0) == 0) or (name == "589_panel_switch" and Entities:FindByName(nil, "589_path_11"):Attribute_GetIntValue("toner_path_powered", 0) == 1) or name == "5628_2901_barricade_door_hook" or name == "tc_door_control" or (vlua.find(name, "elev_anim_door") and thisEntity:Attribute_GetIntValue("toggle", 0) == 0 and thisEntity:GetVelocity() == Vector(0, 0, 0)) then
     if thisEntity:Attribute_GetIntValue("used", 0) == 1 then
         if name == "barricade_door_hook" then
