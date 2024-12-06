@@ -1671,6 +1671,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                     SendToConsole("ent_create env_message { targetname text_gg message GRAVITYGLOVES }")
                     SendToConsole("ent_create env_message { targetname text_shoot message SHOOT }")
 
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="lightstand_switch", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_3_switch.vmdl", ["origin"]="-1621.750000 112.999878 128.000000", ["angles"]="0.000000 180.000000 180.000000", ["modelscale"]=2})
 
                     SendToConsole("ent_fire car_door_rear DisablePickup")
                 end
