@@ -1166,6 +1166,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("bind " .. PRIMARY_ATTACK .. " +use")
             SendToConsole("bind " .. CROUCH .. " \"\"")
             SendToConsole("bind PAUSE main_menu_exec")
+			SendToConsole("fov_desired 80")
             if not loading_save_file then
                 SendToConsole("ent_fire player_speedmod ModifySpeed 0")
                 SendToConsole("setpos 0 -6154 6.473839")
@@ -1295,6 +1296,7 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("sk_plr_dmg_smg1 5")
             SendToConsole("hlvr_physcannon_forward_offset -5")
             SendToConsole("physcannon_tracelength 0")
+            SendToConsole("fov_desired " .. FOV)
             -- TODO: Lower this when picking up very low mass objects
             SendToConsole("player_throwforce 500")
             ent = Entities:FindByClassname(nil, "prop_door_rotating_physics")
