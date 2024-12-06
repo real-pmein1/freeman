@@ -743,6 +743,16 @@ if name == "glove_dispenser_brush" and thisEntity:Attribute_GetIntValue("used", 
     Entities:GetLocalPlayer():Attribute_SetIntValue("gravity_gloves", 1)
 end
 
+if name == "monitor_switch" then
+	if thisEntity:Attribute_GetIntValue("switch_on", 0) == 0 then
+		SendToConsole("ent_fire_output 621_6822_switch_on_handpose onhandposed")
+		thisEntity:Attribute_SetIntValue("switch_on", 1)
+	else
+		SendToConsole("ent_fire_output 621_6822_switch_off_handpose onhandposed")
+		thisEntity:Attribute_SetIntValue("switch_on", 0)
+	end
+end
+
 if name == "lightstand_switch" then
 	if thisEntity:Attribute_GetIntValue("switch_on", 0) == 0 then
 		SendToConsole("ent_fire_output 621_6492_switch_off_handpose onhandposed")
