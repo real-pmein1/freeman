@@ -1719,8 +1719,8 @@ if GlobalSys:CommandLineCheck("-novr") then
                     ent = SpawnEntityFromTableSynchronous("trigger_detect_bullet_fire", {["model"]="maps/a1_intro_world_2/entities/gate_ammo_trigger_621_2249_345.vmdl", ["origin"]= origin.x .. " " .. origin.y .. " " .. origin.z, ["angles"]= angles.x .. " " .. angles.y .. " " .. angles.z})
                     ent:RedirectOutput("OnDetectedBulletFire", "CheckTutorialPistolEmpty", ent)
 
-                    ent = Entities:FindByName(nil, "relay_van_open")
-                    ent:RedirectOutput("OnTrigger", "GetOutOfCrashedVan", ent)
+                    ent = Entities:FindByName(nil, "hint_crouch_trigger")
+                    ent:RedirectOutput("OnStartTouch", "ShowCrouchTutorial", ent)
 
                     ent = Entities:FindByName(nil, "relay_weapon_pistol_fakefire")
                     ent:RedirectOutput("OnTrigger", "RedirectPistol", ent)
@@ -2378,17 +2378,6 @@ if GlobalSys:CommandLineCheck("-novr") then
             ent:SetAngles(player:EyeAngles().x,player:EyeAngles().y,0)
             return 0.05
         end, "UsingHingeCam", 0)
-    end
-
-    function GetOutOfCrashedVan(a, b)
-        Entities:GetLocalPlayer():SetThink(function()
-            SendToConsole("fadeout 0.5")
-        end, "FadeOut", 1.5)
-        Entities:GetLocalPlayer():SetThink(function()
-            SendToConsole("fadein 0.5")
-            SendToConsole("setpos_exact -1408 2307 -114")
-            SendToConsole("ent_fire 4962_car_door_left_front open")
-        end, "FadeIn", 2)
     end
 
     function RedirectPistol(a, b)
