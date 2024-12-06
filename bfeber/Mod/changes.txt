@@ -1,0 +1,44 @@
+Using bfeber's mod commit ea1d592
+
+General
+=======
+
+Added player_pos script to all maps for in-game position-based triggers
+Changed bind for console to ~
+Changed in-game field of view to 60 to stop fish-eye effect but allow the showing of wearables
+Changed resin HUD counter to blue
+
+a1_intro_world
+==============
+
+Added usable radio tuner
+Added usable monitor buttons in the Eli call area
+Added usable monitor dial
+Changed Eli call button to only function on the button and not on the microphone
+Changed both of the elevators' button commands from a debug command to a button press
+Removed the auto-teleport on the end vent so it can be manually opened and traversed
+
+TO-DO:
+Make the vent close once through it
+
+a1_intro_world_2
+================
+
+Added crouch tutorial message to the crashed van's exit
+Added missing lightstand switch in Russell's hideout entrance
+Added missing monitor switch on Russell's hideout PC
+Changed the headset pickup from a debug command to the correct output command
+Changed the crashed van to require crouching to exit it
+Changed the parked car to have its door correctly open
+Changed Russell's window to be correctly closed instead of partially open
+Changed the auto-teleport on Russell's window so it can be manually opened
+
+a2_quarantine_entrance
+======================
+
+No changes
+
+a2_pistol
+=========
+
+No changes
