@@ -702,9 +702,7 @@ if vlua.find(name, "mailbox") and vlua.find(model, "door") then
 end
 
 if name == "russell_entry_window" and thisEntity:Attribute_GetIntValue("used", 0) == 0 then
-    SendToConsole("fadein 0.2")
-    SendToConsole("setpos -1728 275 100")
-    SendToConsole("ent_fire russell_entry_window SetCompletionValue 1")
+	SendToConsole("ent_fire russell_entry_window setreturntocompletionamount 1;ent_fire russell_entry_window setreturntocompletionstyle 2;ent_fire russell_entry_window enablereturntocompletion")
     thisEntity:Attribute_SetIntValue("used", 1)
 end
 

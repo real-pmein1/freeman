@@ -1671,7 +1671,6 @@ if GlobalSys:CommandLineCheck("-novr") then
                     SendToConsole("ent_create env_message { targetname text_gg message GRAVITYGLOVES }")
                     SendToConsole("ent_create env_message { targetname text_shoot message SHOOT }")
 
-                    SendToConsole("ent_fire russell_entry_window SetCompletionValue 0.4")
 
                     SendToConsole("ent_fire car_door_rear DisablePickup")
                 end
