@@ -682,6 +682,7 @@ end
 
 if name == "russell_headset" then
 	SendToConsole("ent_fire_output russell_headset onputonheadset")
+	SendToConsole("ent_fire 4962_car_door_left_front close")
 end
 
 if name == "carousel" then

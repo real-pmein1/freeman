@@ -2569,11 +2569,13 @@ if GlobalSys:CommandLineCheck("-novr") then
     function ShowSprintTutorial()
         SendToConsole("ent_fire text_sprint ShowMessage")
         SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
+		SendToConsole("ent_fire 4962_car_door_left_front open")
     end
 
     function ShowCrouchTutorial()
         SendToConsole("ent_fire text_crouch ShowMessage")
         SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
+		SendToConsole("ent_fire 4962_car_door_left_front open")
     end
 
     function ShowPickUpTutorial()
