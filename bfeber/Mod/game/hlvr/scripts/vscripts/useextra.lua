@@ -357,6 +357,28 @@ elseif (vlua.find(name, "radio_tuner")) then
 			return 0
 		end
 	end, "Interacting", 0)
+elseif (vlua.find(name, "monitor_dial_2")) then
+	-- thisEntity:FireOutput("OnInteractStart", nil, nil, nil, 0)
+	completion_amount = _G.dial_amount
+	player:SetThink(function()
+		if player:Attribute_GetIntValue("use_released", 0) == 1 then
+			if thisEntity:Attribute_GetIntValue("dial_direction", 0) == 0 then
+				thisEntity:Attribute_SetIntValue("dial_direction", 1)
+			else
+				thisEntity:Attribute_SetIntValue("dial_direction", 0)
+			end
+		else
+			SendToConsole("ent_fire monitor_dial EnableReturnToCompletion")
+			if thisEntity:Attribute_GetIntValue("dial_direction", 0) == 0 then
+				completion_amount = completion_amount + 0.002
+			else
+				completion_amount = completion_amount - 0.002
+			end
+			_G.dial_amount = completion_amount
+			SendToConsole("ent_fire monitor_dial setreturntocompletionamount " .. completion_amount)
+			return 0
+		end
+	end, "Interacting", 0)
 end
 
 if vlua.find(model, "doorhandle") then

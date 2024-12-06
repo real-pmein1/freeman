@@ -1566,6 +1566,7 @@ if GlobalSys:CommandLineCheck("-novr") then
 
             if GetMapName() == "a1_intro_world" then
 				_G.tuner_amount = 0.2
+				_G.dial_amount = 0.25
                 if loading_save_file then
                     SendToConsole("novr_leavehingecam") -- avoid softlock
                     MoveFreely()
@@ -1612,6 +1613,8 @@ if GlobalSys:CommandLineCheck("-novr") then
 					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_upper_right_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-202.988281 1867.927246 246.378967", ["angles"]="0 0 0", ["modelscale"]=2})
 					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_lower_left_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-217.191895 1904.148438 229.349243", ["angles"]="0 0 0", ["modelscale"]=2})
 					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="button_monitor_lower_right_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-202.965332 1867.935059 236.032959", ["angles"]="0 0 0", ["modelscale"]=2})
+					
+					ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="monitor_dial_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="-211.402344 1890.260254 250.427979", ["angles"]="0.000000 204.999985 0.000000", ["modelscale"]=2}) --MONITOR DIAL
 
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_1", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1473.99 -853.165 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
                     ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="washing_machine_button_2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/lightswitch_2_switch.vmdl", ["origin"]="1393.17 -923.015 -347.75", ["angles"]="0 0 0", ["modelscale"]=2})
