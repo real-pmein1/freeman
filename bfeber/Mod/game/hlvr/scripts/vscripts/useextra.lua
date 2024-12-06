@@ -335,6 +335,28 @@ elseif (name == "barricade_door_hook" and player:Attribute_GetIntValue("locked_j
             return 0
         end
     end, "AnimateCompletionValue", 0)
+elseif (vlua.find(name, "radio_tuner")) then
+	-- thisEntity:FireOutput("OnInteractStart", nil, nil, nil, 0)
+	completion_amount = _G.tuner_amount
+	player:SetThink(function()
+		if player:Attribute_GetIntValue("use_released", 0) == 1 then
+			if thisEntity:Attribute_GetIntValue("tuner_direction", 0) == 0 then
+				thisEntity:Attribute_SetIntValue("tuner_direction", 1)
+			else
+				thisEntity:Attribute_SetIntValue("tuner_direction", 0)
+			end
+		else
+			SendToConsole("ent_fire 205_4130_alyx_radio EnableReturnToCompletion")
+			if thisEntity:Attribute_GetIntValue("tuner_direction", 0) == 0 then
+				completion_amount = completion_amount + 0.001
+			else
+				completion_amount = completion_amount - 0.001
+			end
+			_G.tuner_amount = completion_amount
+			SendToConsole("ent_fire 205_4130_alyx_radio setreturntocompletionamount " .. completion_amount)
+			return 0
+		end
+	end, "Interacting", 0)
 end
 
 if vlua.find(model, "doorhandle") then
