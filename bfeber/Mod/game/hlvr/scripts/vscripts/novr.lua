@@ -1807,6 +1807,7 @@ if GlobalSys:CommandLineCheck("-novr") then
                     end
                 elseif GetMapName() == "a2_hideout" then
                     if not loading_save_file then
+						ent = SpawnEntityFromTableSynchronous("prop_dynamic", {["targetname"]="bell2", ["solid"]=6, ["renderamt"]=0, ["model"]="models/props/vort_hideout/vort_alarm.vmdl", ["origin"]="-703.000000 -1049.250000 -245.866211", ["angles"]="0.000000 90.000000 0.000000", ["modelscale"]=0.5})
                         ent = Entities:FindByName(nil, "8271_button_counter")
                         ent:RedirectOutput("OnHitMax", "DisableHideoutPuzzleButtons", ent)
 

@@ -391,6 +391,19 @@ elseif (vlua.find(name, "4910_135_interactive_wheel")) then
 			return 0
 		end
 	end, "Interacting", 0)
+elseif map == "a2_hideout" and (name == "bell2" or name == "bell") then
+	count = 0
+	completion_amount = -0.5
+	player:SetThink(function()
+		if player:Attribute_GetIntValue("use_released", 0) == 1 and count < 1 then
+			SendToConsole("ent_fire bell setreturntocompletionamount 0")
+		else
+			SendToConsole("ent_fire bell EnableReturnToCompletion")
+			completion_amount = completion_amount + 0.5
+			SendToConsole("ent_fire bell setreturntocompletionamount " .. completion_amount)
+			return 0
+		end
+	end, "Interacting", 0)
 end
 
 if vlua.find(model, "doorhandle") then
