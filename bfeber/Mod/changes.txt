@@ -42,3 +42,9 @@ a2_pistol
 =========
 
 No changes
+
+a2_hideout
+==========
+
+Fixed roller door wheel to turn on hold
+Fixed hideout bell not being able to be pulled more than once
