@@ -67,36 +67,34 @@ function MainThinkFunc()
 	if playerEnt_pos:Attribute_GetIntValue("auto_flashlight", 1) == 1 then
 		if string.match(GetMapName(), "a2_headcrabs_tunnel") then
 			if ( xpos > 991 and xpos < 1072 ) and ( ypos > -2456 and ypos < -2375 ) then
-				destroy_flashlight()
-				--SendToConsole("inv_flashlight")
+				SendToConsole("disable_flashlight")
 				if Entities:FindByName(nil, "player_flashlight") then SendToConsole("ent_remove player_flashlight") end
 				_G.flashlight_on = "0"
 			elseif (xpos > 1107 and xpos < 1212 ) and ( ypos > -2424 and ypos < -2375 ) then
 				if _G.flashlight_on == "0" then
-					create_flashlight()
-					--SendToConsole("inv_flashlight")
+					SendToConsole("inv_flashlight")
 					_G.flashlight_on = "1"
 				end
 			end
 		elseif string.match(GetMapName(), "a2_drainage") then
 			if (xpos > 1335 and xpos < 1477 ) and ( ypos > -1842 and ypos < -1798 ) then
-				destroy_flashlight()
+				SendToConsole("disable_flashlight")
 				if Entities:FindByName(nil, "player_flashlight") then SendToConsole("ent_remove player_flashlight") end
 				_G.flashlight_on = "0"
 			elseif ( xpos > 914 and xpos < 998 ) and ( ypos > -2565 and ypos < -2455 ) then
 				if _G.flashlight_on == "0" then
-					create_flashlight()
+					SendToConsole("inv_flashlight")
 					_G.flashlight_on = "1"
 				end
 			elseif ( xpos > 1313 and xpos < 1362 ) and ( ypos > -1940 and ypos < -1838 ) then
 				if _G.flashlight_on == "0" then
-					create_flashlight()
+					SendToConsole("inv_flashlight")
 					_G.flashlight_on = "1"
 				end
 			end
 		elseif string.match(GetMapName(), "a3_hotel_interior_rooftop") then
 			if ( xpos > 1855 and xpos < 1934 ) and ( ypos > -2528 and ypos < -2455 ) then
-				destroy_flashlight()
+				SendToConsole("disable_flashlight")
 				if Entities:FindByName(nil, "player_flashlight") then SendToConsole("ent_remove player_flashlight") end
 				_G.flashlight_on = "0"
 			end
@@ -106,7 +104,7 @@ function MainThinkFunc()
 					distillery_elev_called_count = distillery_elev_called_count + 1
 				elseif distillery_elev_called_count == 52 then
 					if _G.flashlight_on == "0" then
-						create_flashlight()
+						SendToConsole("inv_flashlight")
 						_G.flashlight_on = "1"
 					end
 					distillery_elev_called_count = 53
@@ -114,38 +112,38 @@ function MainThinkFunc()
 			end
 			if ( xpos > 278 and xpos < 430 ) and ( ypos > 1175 and ypos < 1423 ) and ( zpos > 250 and zpos < 400 ) then
 				if _G.flashlight_on == "0" then
-					create_flashlight()
+					SendToConsole("inv_flashlight")
 					_G.flashlight_on = "1"
 				end
 			end
 		elseif string.match(GetMapName(), "a4_c17_zoo") then
 			if ( xpos > 7582 and xpos < 7720 ) and ( ypos > -3810 and ypos < -3380 ) then
 				if _G.flashlight_on == "0" then
-					create_flashlight()
+					SendToConsole("inv_flashlight")
 					_G.flashlight_on = "1"
 				end
 			elseif ( xpos > 7274 and xpos < 7533 ) and ( ypos > -3772 and ypos < -3619 ) then
-				destroy_flashlight()
+				SendToConsole("disable_flashlight")
 				if Entities:FindByName(nil, "player_flashlight") then SendToConsole("ent_remove player_flashlight") end
 				_G.flashlight_on = "0"
 			elseif ( xpos > 4940 and xpos < 5033 ) and ( ypos > -1946 and ypos < -1739 ) then
 				if _G.flashlight_on == "0" then
-					create_flashlight()
+					SendToConsole("inv_flashlight")
 					_G.flashlight_on = "1"
 				end
 			elseif ( xpos > 5071 and xpos < 5161 ) and ( ypos > -1843 and ypos < -1714 ) then
-				destroy_flashlight()
+				SendToConsole("disable_flashlight")
 				if Entities:FindByName(nil, "player_flashlight") then SendToConsole("ent_remove player_flashlight") end
 				_G.flashlight_on = "0"
 			end
 		elseif string.match(GetMapName(), "a4_c17_tanker_yard") then
 			if ( xpos > 6015 and xpos < 6073 ) and ( ypos > 3892 and ypos < 4044 ) and ( zpos > 380 and zpos < 430 ) then
 				if _G.flashlight_on == "0" then
-					create_flashlight()
+					SendToConsole("inv_flashlight")
 					_G.flashlight_on = "1"
 				end
 			elseif ( xpos > 6124 and xpos < 6180 ) and ( ypos > 4171 and ypos < 4240 ) then
-				destroy_flashlight()
+				SendToConsole("disable_flashlight")
 				if Entities:FindByName(nil, "player_flashlight") then SendToConsole("ent_remove player_flashlight") end
 				_G.flashlight_on = "0"
 			end
