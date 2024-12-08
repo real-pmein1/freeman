@@ -48,3 +48,8 @@ a2_hideout
 
 Fixed roller door wheel to turn on hold
 Fixed hideout bell not being able to be pulled more than once
+
+a2_headcrabs_tunnel
+===================
+
+Removed flashlight tutorial on auto-flashlight
