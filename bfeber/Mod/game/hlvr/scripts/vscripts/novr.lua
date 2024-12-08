@@ -1173,6 +1173,14 @@ if GlobalSys:CommandLineCheck("-novr") then
 		
 		SendToConsole('ent_remove position_script')
 		SendToConsole('ent_create logic_script {"targetname" "position_script" "origin" "0 0 0" "vscripts" "player_pos.lua"')
+		
+		if FLASHLIGHT == "" then
+		    print("AUTO FLASHLIGHT ENABLED")
+			playerEnt:Attribute_SetIntValue("auto_flashlight", 1)
+		else
+		    print("AUTO FLASHLIGHT DISABLED")
+			playerEnt:Attribute_SetIntValue("auto_flashlight", 0)
+		end
 
         DoIncludeScript("version.lua", nil)
 
