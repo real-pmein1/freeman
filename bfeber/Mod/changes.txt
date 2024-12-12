@@ -65,3 +65,14 @@ a2_train_yard
 No changes
 
 TODO: Open fence port by default
+
+a3_station_street
+=================
+
+Fixed hotel window entry to auto-teleport
+Added window wedge break on hotel entry
+
+a3_hotel_lobby_basement
+=======================
+
+Fixed power ports to close on multitool use
