@@ -110,6 +110,8 @@ elseif map == "a3_hotel_lobby_basement" then
         toner_start_junction = "junction_1"
         toner_start_junction_input = 0
         toner_end_path = "toner_path_6"
+		SendToConsole("ent_fire power_stake_1_start disable")
+		SendToConsole("ent_fire power_stake_1_start enable")
 
         toner_paths = {
             toner_path_1 = {{0}, {"junction_1"}, Vector(919.6, -1457.38, 191.875), Vector(919.6, -1447.5, 191.875), Vector(920.6, -1447.5, 191.875), Vector(920.6, -1447.5, 187.099), Vector(920.6, -1429, 187.099)},
@@ -685,6 +687,8 @@ if class == "info_hlvr_toner_port" and (thisEntity:Attribute_GetIntValue("used",
             if map == "a3_hotel_lobby_basement" and toner_path_name == "toner_path_7" and player:Attribute_GetIntValue("circuit_" .. map .. "_junction_1_completed", 0) == 1 then
                 Entities:FindByName(nil, toner_path_name):Attribute_SetIntValue("toner_path_powered", 1)
                 SendToConsole("ent_fire_output " .. toner_path_name .. " OnPowerOn")
+				SendToConsole("ent_fire power_stake_2_start disable")
+				SendToConsole("ent_fire power_stake_2_start enable")
             end
 
             if map == "a3_hotel_street" and toner_path_name == "toner_path_7" then
