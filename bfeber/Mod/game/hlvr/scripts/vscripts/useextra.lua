@@ -1158,11 +1158,6 @@ if class == "prop_dynamic" or "func_physical_button" then
     end
 end
 
-if name == "2860_window_sliding1" then
-    SendToConsole("fadein 0.2")
-    SendToConsole("setpos_exact 1437 -1422 140")
-end
-
 if name == "2_11128_cshield_station_1" then
     if thisEntity:GetCycle() == 1 then
         Entities:FindByName(nil, "2_11128_cshield_station_handpose"):FireOutput("OnHandPosed", nil, nil, nil, 0)
